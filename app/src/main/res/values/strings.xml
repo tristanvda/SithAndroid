@@ -1,0 +1,66 @@
+<resources>
+    <string name="app_name">SithAndroid</string>
+
+
+    <!-- Service Strings -->
+    <string name="service_fetch_data_error">Unable to fetch data</string>
+    <string name="player_not_found">Unable to find player</string>
+    <string name="sith_card_not_found">Unable to find sith card</string>
+    <string name="played_game_not_found">Unable to find played game</string>
+
+    <!-- Menu items -->
+    <string name="menu_start_game">Start Game</string>
+    <string name="menu_resume_game">Resume Game</string>
+    <string name="menu_players">Players</string>
+
+    <string name="basis1_intro">A long time ago, in a galaxy far far away… ging iedereen slapen. Iedereen doet nu zijn ogen dicht.”</string>
+    <string name="basis2_han_solo_wordt_wakker">Han Solo wordt nu wakker, hij mag uit de overgebleven rollen een nieuwe rol kiezen.</string>
+    <string name="basis3_han_solo_mag_terug_gaan_slapen">Han Solo mag terug gaan slapen.</string>
+    <string name="basis4_BB8wordtwakker">BB8 wordt nu wakker, hij mag twee mensen in de echt verbinden.</string>
+    <string name="basis5_bb8_geliefden_kijken_elkaar_liefdevol_in_de_ogen">De geliefden kijken elkaar liefdevol in de ogen en gaan terug slapen.</string>
+    <string name="basis6_bb8_mag_terug_gaan_slapen">BB8 mag terug gaan slapen.</string>
+    <string name="basis7_maz_kanata_wordt_wakker">Maz Kanata wordt nu wakker, zij mag van één iemand de rol kiezen en die dan bekijken.</string>
+    <string name="basis8_maz_kanata_mag_terug_gaan_slapen">Maz Kanata mag terug gaan slapen.</string>
+    <string name="basis9_sith_worden_wakker">Nu worden de Sith worden wakker, zij mogen hun slachtoffer voor deze avond uitkiezen.</string>
+    <string name="basis10_sith_mogen_terug_gaan_slapen">De Sith mogen terug gaan slapen.</string>
+    <string name="basis11_boba_fett_wordt_wakker">Boba Fett ontwaakt uit zijn slaap, hij krijgt het slachtoffer van deze nacht te zien. Gebruikt hij zijn med pack?</string>
+    <string name="basis12_boba_fett_rocketlauncher">Gebruikt hij zijn rocket launcher?</string>
+    <string name="basis13_boba_fett_gaat_terug_slapen">Boba Fett gaat terug slapen en de Jedi council ontwaakt.</string>
+    <string name="basis14_kylo_ren_ontwaakt">Kylo Ren ontwaakt deze nacht, hij heeft definitief voor de Dark Side gekozen en speelt nu dus mee met de Sith.</string>
+
+    <string name="behalve">Behalve</string>
+    <string name="bb8">BB8</string>
+    <string name="boba_fett">Boba Fett</string>
+    <string name="chewbacca">Chewbacca</string>
+    <string name="darth_maul">Darth Maul</string>
+    <string name="darth_vader">Darth Vader</string>
+    <string name="finn">Finn</string>
+    <string name="han_Solo">Han Solo</string>
+    <string name="kylo_ren">Kylo Ren</string>
+    <string name="luke_skywalker">Luke Skywalker</string>
+    <string name="maz_kanata">Maz Kanata</string>
+    <string name="obi_wan_kenobi">Obi-Wan Kenobi</string>
+    <string name="rey">Rey</string>
+    <string name="the_emperor">The Emperor</string>
+    <string name="yoda">Yoda</string>
+
+    <string name="Extra_babs_is_droge_witte_wijn_ook_goed">Babs, is droge witte wijn ook goed?</string>
+    <string name="Extra_gaat_ge_straks_mee_wandelen_babs">Gaat ge straks mee wandelen Babs?</string>
+    <string name="Extra_ge_doet_dat_goed_mathias">Ge doet dat goed, Matthias.</string>
+    <string name="Extra_gerry_stop_met_lassen">Gerry stop met lassen.</string>
+    <string name="Extra_ge_waart_beter_als_verteller_matthias">Ge waart beter als verteller Matthias.</string>
+    <string name="Extra_klopt_dat_wouter">Klopt dat Wouter?</string>
+    <string name="Extra_lukt_het_nog_gerry">Lukt het nog Gerry?</string>
+    <string name="Extra_nee_wouter_ge_moogt_niet_altijd_darth_vader_zijn">Nee Wouter, ge moogt niet altijd Darth Vader zijn.</string>
+    <string name="Extra_niet_slapen_pieter">Niet slapen Pieter.</string>
+    <string name="Extra_nog_ne_duvel_tristan">Nog ne Duvel Tristan?</string>
+    <string name="Extra_pieter_nog_honger">Pieter nog honger?</string>
+    <string name="Extra_pieter_stop_met_eten">Pieter stop met eten.</string>
+    <string name="Extra_timo_blijft_daar_van_af">Timo blijft daar van af.</string>
+    <string name="Extra_timo_en_gerry_stop_met_discussiëren">Timo en Gerry, stop met discussiëren.</string>
+    <string name="Extra_tristandatisuwrolniet">Tristan, dat is uw rol niet.</string>
+    <string name="Extra_tristanhetisaanu">Tristan het is aan u.</string>
+    <string name="Extra_wanneer_gaat_ge_pannenkoeken_bakken_matthias">Wanneer gaat ge pannenkoeken bakken Matthias?</string>
+
+
+</resources>

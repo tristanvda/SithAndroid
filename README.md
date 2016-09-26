@@ -3,6 +3,8 @@ Werewolves variant set in the Star Wars Universe
 
 # License
 ```
+ The MIT License (MIT)
+
  Copyright (c) 2016 Tristan Vanderaerden
 
  Permission is hereby granted, free of charge, to any person

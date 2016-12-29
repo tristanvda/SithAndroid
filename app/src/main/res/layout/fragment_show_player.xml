@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/listLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/margin_default"
+    android:fitsSystemWindows="true">
+
+    <TextView
+        android:id="@+id/showPlayerTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:textStyle="bold"
+        android:clickable="true"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textColor="@color/color_yellow_selector" />
+
+    <FrameLayout
+        android:layout_width="@dimen/card_size"
+        android:layout_height="@dimen/card_size"
+        android:layout_centerInParent="true"
+        android:background="@drawable/card_shape_background"
+        tools:ignore="UselessParent">
+
+        <com.grietenenknapen.sithandroid.ui.views.RoundedFrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/lightBlue">
+
+                <TextView
+                    android:id="@+id/playerCardName"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/card_shape_selector"
+                    android:gravity="center"
+                    android:textAppearance="?android:textAppearanceLarge"
+                    android:textColor="@color/darkBlue" />
+
+            </LinearLayout>
+
+        </com.grietenenknapen.sithandroid.ui.views.RoundedFrameLayout>
+
+    </FrameLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/margin_large"
+        android:gravity="center"
+        android:orientation="horizontal"
+        tools:ignore="UselessParent">
+
+        <TextView
+            android:id="@+id/menuYes"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="@string/yes"
+            android:textAppearance="@style/TextAppearance.Big"
+            android:textColor="@color/color_yellow_selector" />
+
+        <TextView
+            android:id="@+id/menuNo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="@string/no"
+            android:textAppearance="@style/TextAppearance.Big"
+            android:textColor="@color/color_yellow_selector" />
+    </LinearLayout>
+
+</RelativeLayout>

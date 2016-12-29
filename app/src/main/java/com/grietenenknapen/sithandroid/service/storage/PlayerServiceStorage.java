@@ -73,7 +73,7 @@ public class PlayerServiceStorage implements PlayerService {
             @Override
             public List<Player> onExecute() {
                 if (!playerMap.isEmpty()) {
-                    return new ArrayList<Player>(playerMap.values());
+                    return new ArrayList<>(playerMap.values());
                 }
                 final SQLiteDatabase db = sithDatabase.openDatabase();
 
@@ -151,7 +151,7 @@ public class PlayerServiceStorage implements PlayerService {
                     }
                 }
 
-                playerMap.put(id, player);
+                playerMap.put(id, Player.newBuilder(player)._id(id).build());
 
                 sithDatabase.closeDatabase();
 

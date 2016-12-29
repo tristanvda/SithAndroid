@@ -4,7 +4,7 @@ import com.grietenenknapen.sithandroid.game.flowmanager.GameFlowCallBack;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
 import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseId;
 import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCasePairId;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseYesNo;
+import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseYesNoId;
 import com.grietenenknapen.sithandroid.maingame.usecases.GameUseCaseCard;
 import com.grietenenknapen.sithandroid.model.database.SithCard;
 import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
@@ -17,20 +17,28 @@ public interface MainGameFlowCallBack extends GameFlowCallBack {
 
     void showDelay(long delay, GameUseCase gameUseCase);
 
-    void requestYesNoAnswer(boolean disableYes, GameUseCaseYesNo useCase);
+    void requestYesNoAnswer(boolean disableYes, GameUseCaseYesNoId useCase, int titleResId);
 
-    void showKilledPlayerDelay(ActivePlayer activePlayer, long delay, GameUseCase useCase);
+    void showKilledPlayerYesNo(ActivePlayer activePlayer, boolean disableYes, int titleResId, GameUseCaseYesNoId useCase);
 
     void requestUserPlayerSelection(List<ActivePlayer> activePlayers, GameUseCaseId useCase);
 
-    void requestUserPlayerSelection(List<ActivePlayer> activePlayers, GameUseCaseYesNo useCase);
+    void requestUserPlayerSelection(List<ActivePlayer> activePlayers, GameUseCaseYesNoId useCase);
 
-    void requestUserCardSelection(GameUseCaseCard useCase);
+    void requestUserCardSelection(List<SithCard> availableSithCards, GameUseCaseCard useCase);
 
     void requestUserCardPeek(List<ActivePlayer> players, long delay, GameUseCase useCase);
 
     void speak(int soundResId, int stringResId, GameUseCase useCase);
 
     void stackAndSpeak(String soundResStringId);
+
+    void saveGame(MainGame game);
+
+    void deleteSavedGame();
+
+    void playMusic(int musicType);
+
+    void stopPlayingMusic();
 
 }

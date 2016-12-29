@@ -1,1 +1,22 @@
 /build
+
+#Exclude the entire raw folder with the voice and music files
+src/main/res/raw/
+
+#List of all the resource names that have to be excluded from every folder
+**/card_bb8*
+**/card_boba_fett*
+**/card_chewbacca*
+**/card_darth_maul*
+**/card_darth_vader*
+**/card_finn*
+**/card_front*
+**/card_han_solo*
+**/card_kylo_ren*
+**/card_luke*
+**/card_maz_kanata*
+**/card_obi_wan*
+**/card_rey*
+**/card_the_emperor*
+**/card_yoda*
+**/day_background*

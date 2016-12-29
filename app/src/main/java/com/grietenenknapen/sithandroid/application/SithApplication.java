@@ -2,6 +2,7 @@ package com.grietenenknapen.sithandroid.application;
 
 import android.app.Application;
 
+import com.bugsnag.android.Bugsnag;
 import com.grietenenknapen.sithandroid.service.PlayedGameService;
 import com.grietenenknapen.sithandroid.service.PlayerService;
 import com.grietenenknapen.sithandroid.service.SithCardService;
@@ -21,6 +22,7 @@ public class SithApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Bugsnag.init(this);
 
         final Cupboard cupboard = CupboardFactory.cupboard();
         SithDatabase.initializeInstance(new SithDatabase.DbHelper(this));

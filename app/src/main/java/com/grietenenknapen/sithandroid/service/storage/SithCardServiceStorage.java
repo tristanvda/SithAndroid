@@ -125,7 +125,7 @@ public class SithCardServiceStorage implements SithCardService {
                 final SQLiteDatabase db = sithDatabase.openDatabase();
                 final long id = cupboard.withDatabase(db).put(sithCard);
 
-                sithCardMap.put(id, sithCard);
+                sithCardMap.put(id, SithCard.newBuilder(sithCard)._id(id).build());
 
                 sithDatabase.closeDatabase();
 

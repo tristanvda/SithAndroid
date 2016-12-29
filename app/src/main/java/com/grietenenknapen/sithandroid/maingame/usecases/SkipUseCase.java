@@ -5,8 +5,13 @@ import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseV
 
 public class SkipUseCase extends GameUseCaseVoid<SkipUseCase.CallBack> {
 
-    public SkipUseCase(CallBack flowManagerListener, boolean active) {
-        super(flowManagerListener, active);
+
+    public SkipUseCase(CallBack flowManagerListener) {
+        super(flowManagerListener, false, false);
+    }
+
+    public SkipUseCase(CallBack flowManagerListener, boolean active, boolean skip) {
+        super(flowManagerListener, active, skip);
     }
 
     @Override

@@ -3,7 +3,18 @@
 
     <!-- margins -->
     <dimen name="margin_default">16dp</dimen>
+    <dimen name="margin_large">24dp</dimen>
+    <dimen name="margin_small">8dp</dimen>
+
+    <dimen name="padding_very_small">4dp</dimen>
+
 
     <!-- text_sizes -->
+
+
+    <!-- sizes -->
+    <dimen name="card_size">160dp</dimen>
+    <dimen name="button_main_size">65dp</dimen>
+    <dimen name="card_margin">8dp</dimen>
 
 </resources>

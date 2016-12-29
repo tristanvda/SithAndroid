@@ -7,7 +7,12 @@ import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
 
 public abstract class GameUseCasePairId<L extends UseCaseCallBack> extends GameUseCase<Pair<Long, Long>, L> {
 
-    public GameUseCasePairId(L flowManagerListener, boolean active) {
-        super(flowManagerListener, active);
+    public GameUseCasePairId(L flowManagerListener, boolean active, boolean skip) {
+        super(flowManagerListener, active, skip);
+    }
+
+    @Override
+    public void onExecuteStep(int step, Pair<Long, Long> stepData) {
+        super.onExecuteStep(step, stepData);
     }
 }

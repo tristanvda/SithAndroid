@@ -25,6 +25,7 @@ import nl.qbusict.cupboard.Cupboard;
 import nl.qbusict.cupboard.DatabaseCompartment;
 import nl.qbusict.cupboard.QueryResultIterable;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
@@ -50,7 +51,7 @@ public class PlayerServiceStorageTest {
     public void setUp() {
         oldPlayer = Player.newBuilder()
                 .favourites(new ArrayList<Favourite>())
-                ._id(1)
+                ._id(1l)
                 .name("john")
                 .telephoneNumber("0471589366")
                 .wins(1)
@@ -65,6 +66,7 @@ public class PlayerServiceStorageTest {
                 .build();
 
         final Favourite favourite = Favourite.newBuilder()
+                ._id(0l)
                 .sithCard(sithCard)
                 .timesUsed(1)
                 .build();
@@ -73,7 +75,7 @@ public class PlayerServiceStorageTest {
 
         newPlayer = Player.newBuilder()
                 .favourites(favourites)
-                ._id(2)
+                ._id(2l)
                 .name("Jos")
                 .telephoneNumber("0471589366")
                 .wins(1)
@@ -202,7 +204,7 @@ public class PlayerServiceStorageTest {
 
         Robolectric.flushBackgroundThreadScheduler();
 
-        verify(serviceCallBackMockPlayer).onSuccess(newPlayer);
+        verify(serviceCallBackMockPlayer).onSuccess(any(Player.class));
     }
 
     @Test
@@ -239,7 +241,7 @@ public class PlayerServiceStorageTest {
         final ServiceCallBack<Player> serviceCallBackMockPlayer = Mockito.mock(ServiceCallBack.class);
         playerServiceStorage.retrievePlayerById(newPlayer.getId(), serviceCallBackMockPlayer);
 
-        verify(serviceCallBackMockPlayer).onSuccess(newPlayer);
+        verify(serviceCallBackMockPlayer).onSuccess(any(Player.class));
     }
 
     @Test

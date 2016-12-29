@@ -27,6 +27,7 @@ import nl.qbusict.cupboard.Cupboard;
 import nl.qbusict.cupboard.DatabaseCompartment;
 import nl.qbusict.cupboard.QueryResultIterable;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
@@ -59,7 +60,7 @@ public class PlayedGameServiceStorageTest {
 
         final List<GamePlayer> gamePlayers = new ArrayList<>();
         gamePlayers.add(GamePlayer.newBuilder()
-                ._id(1)
+                ._id(1l)
                 .player(Player.newBuilder().build())
                 .side(GameSide.JEDI)
                 .sithCards(sithCards)
@@ -75,7 +76,7 @@ public class PlayedGameServiceStorageTest {
                 .build());
 
         newPlayedGame = PlayedGame.newBuilder()
-                ._id(1)
+                ._id(1l)
                 .rounds(1)
                 .startTime(1)
                 .stopTime(1)
@@ -121,7 +122,7 @@ public class PlayedGameServiceStorageTest {
 
         Robolectric.flushBackgroundThreadScheduler();
 
-        verify(serviceCallBackMockPlayer).onSuccess(newPlayedGame);
+        verify(serviceCallBackMockPlayer).onSuccess(any(PlayedGame.class));
     }
 
     @Test
@@ -153,6 +154,6 @@ public class PlayedGameServiceStorageTest {
 
         Robolectric.flushBackgroundThreadScheduler();
 
-        verify(serviceCallBackMockPlayer).onSuccess(newPlayedGame);
+        verify(serviceCallBackMockPlayer).onSuccess(any(PlayedGame.class));
     }
 }

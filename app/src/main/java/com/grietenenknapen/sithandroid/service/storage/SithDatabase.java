@@ -1,7 +1,6 @@
 package com.grietenenknapen.sithandroid.service.storage;
 
 import android.content.Context;
-import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -14,6 +13,8 @@ import com.grietenenknapen.sithandroid.model.database.relations.GamePlayerRelati
 import com.grietenenknapen.sithandroid.model.database.relations.PlayerFavourite;
 import com.grietenenknapen.sithandroid.service.storage.tools.DatabaseDefaults;
 import com.grietenenknapen.sithandroid.service.storage.tools.DatabaseManager;
+
+import java.util.List;
 
 import static nl.qbusict.cupboard.CupboardFactory.cupboard;
 
@@ -63,7 +64,7 @@ public class SithDatabase extends DatabaseManager<SithDatabase.DbHelper> {
         public void onCreate(SQLiteDatabase sqLiteDatabase) {
             cupboard().withDatabase(sqLiteDatabase).createTables();
             cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardBB8());
-            cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardBB8());
+            cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardBobaFett());
             cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardChewBacca());
             cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardDarthMaul());
             cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardDartVader());
@@ -75,7 +76,12 @@ public class SithDatabase extends DatabaseManager<SithDatabase.DbHelper> {
             cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardObiWanKenobi());
             cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardRey());
             cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardTheEmperor());
-            cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardYoda());
+
+            List<Player> defaultPlayers = DatabaseDefaults.generateBros();
+
+            for (Player player : defaultPlayers) {
+                cupboard().withDatabase(sqLiteDatabase).put(player);
+            }
         }
 
         @Override

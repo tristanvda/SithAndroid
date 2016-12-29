@@ -9,11 +9,14 @@ public abstract class GameUseCase<T, L extends UseCaseCallBack> implements UseCa
     protected L flowManagerListener;
     protected int round;
     protected boolean active;
+    private boolean skip;
 
     public GameUseCase(L flowManagerListener,
-                       boolean active) {
+                       boolean active,
+                       boolean skip) {
         this.active = active;
         this.flowManagerListener = flowManagerListener;
+        this.skip = skip;
     }
 
     @Override
@@ -31,6 +34,11 @@ public abstract class GameUseCase<T, L extends UseCaseCallBack> implements UseCa
     public void onExecuteStep(final int step) {
         this.onUseCaseExecuteStep(step, null);
         flowManagerListener.nextStep(NEXT_STEP_DELAY);
+    }
+
+    @Override
+    public boolean finishUseCase(int step) {
+        return skip;
     }
 
     protected abstract void onUseCaseExecuteStep(int step, T stepData);

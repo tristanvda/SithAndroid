@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/dayTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_margin="@dimen/margin_default"
+        android:gravity="center"
+        android:text="@string/title_day_time"
+        android:textAppearance="?android:textAppearanceLarge" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="-50dp"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/day_background" />
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/dayTitle"
+        android:layout_margin="@dimen/margin_default"
+        android:fitsSystemWindows="true">
+
+        <LinearLayout
+            android:id="@+id/ripSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="@dimen/margin_large"
+            android:layout_marginTop="@dimen/margin_large">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/ripRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:clipToPadding="false"
+                android:requiresFadingEdge="vertical" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/dayButtonStart"
+            android:layout_width="@dimen/button_main_size"
+            android:layout_height="@dimen/button_main_size"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/button_circle_background"
+            android:src="@drawable/ic_play" />
+
+        <ImageButton
+            android:id="@+id/dayButtonKill"
+            android:layout_width="@dimen/button_main_size"
+            android:layout_height="@dimen/button_main_size"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:background="@drawable/button_circle_background_red"
+            android:src="@drawable/ic_thumb_down" />
+
+        <ImageButton
+            android:id="@+id/dayButtonPlayers"
+            android:layout_width="@dimen/button_main_size"
+            android:layout_height="@dimen/button_main_size"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/button_circle_background_blue"
+            android:src="@drawable/ic_person" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,5 +1,6 @@
 package com.grietenenknapen.sithandroid.maingame.usecases;
 
+import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.flowmanager.UseCaseCallBack;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
 import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseId;
@@ -7,25 +8,29 @@ import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseI
 public class SithUseCase extends GameUseCaseId<SithUseCase.CallBack> {
     private static final long DELAY_SHORT = 3 * 1000;
 
-    public SithUseCase(CallBack flowManagerListener, boolean active) {
-        super(flowManagerListener, active);
+    public SithUseCase(CallBack flowManagerListener, boolean active, boolean skip) {
+        super(flowManagerListener, active, skip);
     }
 
     @Override
     public void onPrepareStep(final int step) {
         switch (step) {
             case 1:
-                flowManagerListener.speak(1, 1, this);
+                flowManagerListener.speak(R.raw.basis9_sithwordenwakker,
+                        R.string.basis9_sith_worden_wakker, this);
                 break;
             case 2:
+                flowManagerListener.playSithMusic();
                 if (!active) {
                     flowManagerListener.skipStepDelay(DELAY_SHORT);
                 } else {
-                    flowManagerListener.requestUserPlayerSelection(this);
+                    flowManagerListener.requestUserPlayerSelectionSith(this);
                 }
                 break;
             case 3:
-                flowManagerListener.speak(1, 1, this);
+                flowManagerListener.stopPlayingMusic();
+                flowManagerListener.speak(R.raw.basis10_sithmogenteruggaanslapen,
+                        R.string.basis10_sith_mogen_terug_gaan_slapen, this);
                 break;
         }
     }
@@ -39,16 +44,20 @@ public class SithUseCase extends GameUseCaseId<SithUseCase.CallBack> {
 
     @Override
     public boolean finishUseCase(final int step) {
-        return (step > 3);
+        return super.finishUseCase(step) || (step > 3);
     }
 
     public interface CallBack extends UseCaseCallBack {
 
-        void requestUserPlayerSelection(GameUseCaseId useCase);
+        void requestUserPlayerSelectionSith(GameUseCaseId useCase);
 
         void speak(int soundResId, int stringResId, GameUseCase gameUseCase);
 
         void markUserAsDeath(long id);
+
+        void playSithMusic();
+
+        void stopPlayingMusic();
 
     }
 }

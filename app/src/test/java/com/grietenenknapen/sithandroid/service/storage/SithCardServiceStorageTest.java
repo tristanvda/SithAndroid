@@ -22,6 +22,7 @@ import nl.qbusict.cupboard.Cupboard;
 import nl.qbusict.cupboard.DatabaseCompartment;
 import nl.qbusict.cupboard.QueryResultIterable;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.verify;
@@ -153,7 +154,7 @@ public class SithCardServiceStorageTest {
 
         Robolectric.flushBackgroundThreadScheduler();
 
-        verify(serviceCallBackMockSithCard).onSuccess(newSithCard);
+        verify(serviceCallBackMockSithCard).onSuccess(any(SithCard.class));
     }
 
     @Test

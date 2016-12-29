@@ -1,6 +1,7 @@
 package com.grietenenknapen.sithandroid.model.database;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import nl.qbusict.cupboard.annotation.Ignore;
@@ -15,7 +16,10 @@ public class PlayedGame {
     private Long stopTime;
     private Integer rounds;
     @Ignore
-    private List<GamePlayer> gamePlayers;
+    private transient List<GamePlayer> gamePlayers;
+
+    public PlayedGame(){
+    }
 
     private PlayedGame(Builder builder) {
         _id = builder._id;
@@ -80,11 +84,11 @@ public class PlayedGame {
      * {@code PlayedGame} builder static inner class.
      */
     public static final class Builder {
-        private long _id;
+        private Long _id;
         private long startTime;
         private long stopTime;
         private int rounds;
-        private List<GamePlayer> gamePlayers;
+        private List<GamePlayer> gamePlayers = new ArrayList<>();
 
         private Builder() {
         }
@@ -95,7 +99,7 @@ public class PlayedGame {
          * @param val the {@code _id} to set
          * @return a reference to this Builder
          */
-        public Builder _id(long val) {
+        public Builder _id(Long val) {
             _id = val;
             return this;
         }

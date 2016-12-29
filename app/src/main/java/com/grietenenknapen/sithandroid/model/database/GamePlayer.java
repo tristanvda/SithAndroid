@@ -3,6 +3,7 @@ package com.grietenenknapen.sithandroid.model.database;
 
 import com.grietenenknapen.sithandroid.model.game.GameSide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import nl.qbusict.cupboard.annotation.Ignore;
@@ -14,9 +15,12 @@ public class GamePlayer {
     @GameSide.Side
     private Integer side;
     @Ignore
-    private List<SithCard> sithCards;
+    private transient List<SithCard> sithCards;
     @Ignore
-    private Player player;
+    private transient Player player;
+
+    public GamePlayer(){
+    }
 
     private GamePlayer(Builder builder) {
         _id = builder._id;
@@ -79,10 +83,10 @@ public class GamePlayer {
      * {@code GamePlayer} builder static inner class.
      */
     public static final class Builder {
-        private long _id;
+        private Long _id;
         @GameSide.Side
         private int side;
-        private List<SithCard> sithCards;
+        private List<SithCard> sithCards = new ArrayList<>();
         private Player player;
 
         private Builder() {
@@ -94,7 +98,7 @@ public class GamePlayer {
          * @param val the {@code _id} to set
          * @return a reference to this Builder
          */
-        public Builder _id(long val) {
+        public Builder _id(Long val) {
             _id = val;
             return this;
         }

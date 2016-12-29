@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.pddstudio.starview.StarView
+    <com.grietenenknapen.sithandroid.ui.views.starview.StarView
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -24,19 +24,24 @@
             android:paddingBottom="100dp">
 
             <TextView
-                android:id="@+id/menu_start"
+                android:id="@+id/menuStart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:clickable="true"
                 android:text="@string/menu_start_game"
-                android:textAppearance="@style/TextAppearance.Big" />
-
+                android:layout_marginBottom="@dimen/margin_small"
+                android:textAppearance="@style/TextAppearance.Big"
+                android:textColor="@color/color_yellow_selector" />
 
             <TextView
-                android:id="@+id/menu_resume"
+                android:id="@+id/menuResume"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:clickable="true"
                 android:text="@string/menu_resume_game"
+                android:layout_marginTop="@dimen/margin_small"
                 android:textAppearance="@style/TextAppearance.Big"
+                android:textColor="@color/color_yellow_selector"
                 android:visibility="gone" />
         </LinearLayout>
 
@@ -49,15 +54,15 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_gravity="bottom|right"
-            fab:menu_icon="@drawable/ic_menu_fab"
             fab:menu_colorNormal="@color/colorPrimary"
             fab:menu_colorPressed="@color/colorPrimaryDark"
             fab:menu_colorRipple="@color/colorPrimaryDark"
             fab:menu_fab_size="normal"
+            fab:menu_icon="@drawable/ic_menu_fab"
             tools:ignore="RtlHardcoded">
 
             <com.github.clans.fab.FloatingActionButton
-                android:id="@+id/menu_players"
+                android:id="@+id/menuPlayers"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_person"

@@ -155,7 +155,7 @@ public class PlayedGameServiceStorage implements PlayedGameService {
                     //TODO: remove all the playerFavourites and favourites that are not in the playedgame anymore
                 }
 
-                playedGameMap.put(id, playedGame);
+                playedGameMap.put(id, PlayedGame.newBuilder(playedGame)._id(id).build());
 
                 sithDatabase.closeDatabase();
 
@@ -184,6 +184,8 @@ public class PlayedGameServiceStorage implements PlayedGameService {
 
                 cupboard.withDatabase(db).delete(GamePlayerRelations.class,
                         GamePlayerRelations.PLAYED_GAME_ID + " = ? ", String.valueOf(playedGame.getId()));
+
+                playedGameMap.remove(playedGame.getId());
 
                 sithDatabase.closeDatabase();
 

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.grietenenknapen.sithandroid.ui.views.starview.StarView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:ignore="UnusedAttribute" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/playerRecyclerView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:clipToPadding="false"
+            android:fitsSystemWindows="true"
+            android:requiresFadingEdge="vertical" />
+
+    </FrameLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:background="@color/yellow"
+        android:clipToPadding="true"
+        android:padding="@dimen/margin_default"
+        app:behavior_hideable="true"
+        app:layout_behavior="@string/bottom_sheet_behavior">
+
+        <android.support.percent.PercentRelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <ImageButton
+                android:id="@+id/playerConfirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:background="?android:attr/selectableItemBackground"
+                android:contentDescription=""
+                android:padding="@dimen/padding_very_small"
+                android:src="@drawable/ic_done"
+                android:visibility="visible" />
+
+            <ImageButton
+                android:id="@+id/playerDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignWithParentIfMissing="true"
+                android:layout_toLeftOf="@+id/playerConfirm"
+                android:background="?android:attr/selectableItemBackground"
+                android:contentDescription=""
+                android:padding="@dimen/padding_very_small"
+                android:src="@drawable/ic_delete"
+                android:visibility="visible" />
+
+            <LinearLayout
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:orientation="vertical"
+                app:layout_marginLeftPercent="20%"
+                app:layout_marginRightPercent="20%"
+                app:layout_widthPercent="60%">
+
+                <TextView
+                    android:id="@+id/playerNameText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/padding_very_small"
+                    android:text="@string/player_name"
+                    android:textAppearance="?android:textAppearanceLarge"
+                    android:textColor="@android:color/black"
+                    tools:ignore="RelativeOverlap,RtlHardcoded" />
+
+                <EditText
+                    android:id="@+id/playerNameEdit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:imeOptions="actionNext"
+                    android:inputType="textPersonName"
+                    android:nextFocusDown="@+id/playerPhoneEdit"
+                    android:textAppearance="?android:textAppearanceLarge"
+                    tools:ignore="RtlHardcoded" />
+
+
+                <TextView
+                    android:id="@+id/playerNumberText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/padding_very_small"
+                    android:layout_marginTop="@dimen/margin_default"
+                    android:text="@string/player_number"
+                    android:textAppearance="?android:textAppearanceLarge"
+                    android:textColor="@android:color/black"
+                    tools:ignore="RtlHardcoded" />
+
+                <EditText
+                    android:id="@+id/playerPhoneEdit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:digits="0123456789+"
+                    android:ems="10"
+                    android:imeOptions="actionDone"
+                    android:inputType="phone"
+                    android:textAppearance="?android:textAppearanceLarge"
+                    tools:ignore="RtlHardcoded" />
+
+            </LinearLayout>
+
+        </android.support.percent.PercentRelativeLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+</android.support.design.widget.CoordinatorLayout>

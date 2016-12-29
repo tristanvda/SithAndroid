@@ -22,6 +22,9 @@ public class SithCard implements Parcelable {
     @GameCardType.CardType
     private Integer cardType;
 
+    public SithCard(){
+    }
+
     private SithCard(Builder builder) {
         _id = builder._id;
         name = builder.name;

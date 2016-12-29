@@ -11,6 +11,9 @@ public class Favourite {
     private Long _id;
     private Integer timesUsed;
 
+    public Favourite(){
+    }
+
     @Ignore
     private SithCard sithCard;
 
@@ -57,7 +60,7 @@ public class Favourite {
      * {@code Favourite} builder static inner class.
      */
     public static final class Builder {
-        private long _id;
+        private Long _id;
         private int timesUsed;
         private SithCard sithCard;
 
@@ -70,7 +73,7 @@ public class Favourite {
          * @param val the {@code _id} to set
          * @return a reference to this Builder
          */
-        public Builder _id(long val) {
+        public Builder _id(Long val) {
             _id = val;
             return this;
         }

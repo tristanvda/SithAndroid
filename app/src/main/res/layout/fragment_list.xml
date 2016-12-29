@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/listLayout"
+    android:layout_margin="@dimen/margin_default"
+    android:fitsSystemWindows="true">
+
+    <TextView
+        android:id="@+id/listTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="@dimen/margin_small"
+        android:textStyle="bold"
+        android:gravity="center_horizontal"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/listRecyclerView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/listButton"
+        android:layout_below="@id/listTitle"
+        android:layout_centerHorizontal="true"
+        android:clipToPadding="false"
+        android:requiresFadingEdge="horizontal|vertical" />
+
+    <ImageButton
+        android:id="@+id/listButton"
+        android:layout_width="@dimen/button_main_size"
+        android:layout_height="@dimen/button_main_size"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_circle_background"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+</RelativeLayout>

@@ -13,6 +13,7 @@ public abstract class GameFlowManager<U extends GameFlowCallBack> implements Use
     protected GameUseCase currentUseCase;
     private Handler handler = new Handler();
     private boolean started;
+    private boolean gameRunning;
     protected U uiListener;
 
     public GameFlowManager(Game game) {
@@ -20,8 +21,13 @@ public abstract class GameFlowManager<U extends GameFlowCallBack> implements Use
     }
 
     public void startNewRound() {
-        game.setupNewRound();
-        started = true;
+        if (!started) {
+            game.setupNewRound();
+            started = true;
+            checkGameStatus();
+            processStep();
+        }
+        gameRunning = true;
     }
 
     /**
@@ -52,6 +58,14 @@ public abstract class GameFlowManager<U extends GameFlowCallBack> implements Use
      */
     public boolean isStarted() {
         return started;
+    }
+
+    public boolean isGameRunning() {
+        return gameRunning;
+    }
+
+    public boolean isAttached() {
+        return uiListener != null;
     }
 
     @Override
@@ -86,6 +100,11 @@ public abstract class GameFlowManager<U extends GameFlowCallBack> implements Use
             } else {
                 handler.postDelayed(runnableNextTurn, TURN_DELAY);
             }
+            if (!isGameOver()) {
+                saveGameStatus();
+            } else {
+                deleteGameStatus();
+            }
         } else {
             currentUseCase.onPrepareStep(game.getCurrentStep());
         }
@@ -101,18 +120,22 @@ public abstract class GameFlowManager<U extends GameFlowCallBack> implements Use
 
     private void proceedToNextTurn() {
         game.nextTurn();
+        currentUseCase = getCurrentUseCase(game.getCurrentTurn());
+        currentUseCase.onSetupUseCase(game.getCurrentRound());
         processStep();
     }
 
     private void checkGameStatus() {
         if (game.isRoundActive()) {
-            currentUseCase = getCurrentUseCase(game.getCurrentRound());
+            currentUseCase = getCurrentUseCase(game.getCurrentTurn());
+            currentUseCase.onSetupUseCase(game.getCurrentRound());
             started = true;
             uiListener.roundStatusChanged(started, false);
         } else {
             started = false;
             uiListener.roundStatusChanged(started, false);
         }
+        gameRunning = true;
     }
 
     //TODO: ENDING THE USE CASEEEEEEEEEEEEEEEEEEEE!!!!!
@@ -124,5 +147,9 @@ public abstract class GameFlowManager<U extends GameFlowCallBack> implements Use
     protected abstract GameUseCase getCurrentUseCase(int turn);
 
     protected abstract int getTurnCount();
+
+    protected abstract void saveGameStatus();
+
+    protected abstract void deleteGameStatus();
 
 }

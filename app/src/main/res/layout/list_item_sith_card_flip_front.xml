@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.grietenenknapen.sithandroid.ui.views.RoundedFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/card_shape_selector">
+
+        <ImageView
+            android:id="@+id/sithCardBackImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/darkBlue"
+            android:scaleType="fitXY"
+            android:src="@drawable/card_front"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/playerCardName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:padding="@dimen/margin_default"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:textColor="@color/darkYellow" />
+
+    </RelativeLayout>
+
+</com.grietenenknapen.sithandroid.ui.views.RoundedFrameLayout>

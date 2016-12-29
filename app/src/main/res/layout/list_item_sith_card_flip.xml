@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/flipView"
+    android:layout_width="@dimen/card_size"
+    android:layout_height="@dimen/card_size">
+
+    <include layout="@layout/list_item_sith_card_flip_front" />
+
+    <include layout="@layout/list_item_sith_card_flip_back" />
+</ViewFlipper>

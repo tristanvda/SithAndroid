@@ -5,12 +5,26 @@ import android.support.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class GameSide {
+public final class GameSide {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({SITH, JEDI})
 
-    public @interface Side {}
+    public @interface Side {
+    }
+
     public static final int SITH = 1;
     public static final int JEDI = 2;
+
+    private GameSide() {
+    }
+
+    @GameSide.Side
+    public static int getSideFromCardType(@GameCardType.CardType int cardType) {
+        if (cardType == GameCardType.SITH) {
+            return SITH;
+        } else {
+            return JEDI;
+        }
+    }
 }

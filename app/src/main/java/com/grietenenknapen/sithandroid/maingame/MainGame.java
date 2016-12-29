@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.support.v4.util.Pair;
 
 import com.grietenenknapen.sithandroid.game.Game;
+import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
 import com.grietenenknapen.sithandroid.model.database.Player;
 import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 import com.grietenenknapen.sithandroid.model.game.GameCardType;
@@ -24,7 +25,6 @@ public class MainGame implements Game, Parcelable {
     private boolean bobaMedPackUsed = false;
     private boolean bobaRocketUsed = false;
     private boolean rocketAlreadySelected = false;
-    private boolean medPackAlreadySelected = false;
 
     @DayCycle.Cycle
     private int dayCycle;
@@ -32,14 +32,15 @@ public class MainGame implements Game, Parcelable {
     public MainGame(List<ActivePlayer> activePlayers) {
         this.activePlayers = activePlayers;
         dayCycle = DayCycle.CYCLE_DAY;
+        deathList = new ArrayList<>();
     }
 
-    public boolean isMedPackAlreadySelected() {
-        return medPackAlreadySelected;
+    public FlowDetails getFlowDetails() {
+        return new FlowDetails(currentNight, currentUseCaseStep, currentTurn);
     }
 
-    public void setMedPackAlreadySelected(boolean medPackAlreadySelected) {
-        this.medPackAlreadySelected = medPackAlreadySelected;
+    public List<ActivePlayer> getActivePlayers() {
+        return activePlayers;
     }
 
     public boolean isRocketAlreadySelected() {
@@ -120,8 +121,21 @@ public class MainGame implements Game, Parcelable {
         }
     }
 
+    public void killPlayers(List<Player> players) {
+        for (Player player : players) {
+            ActivePlayer activePlayer = getActivePlayer(player.getId());
+            if (activePlayer != null) {
+                activePlayer.setAlive(false);
+            }
+        }
+    }
+
     private void updateDeathListWithLovers() {
         ActivePlayer loverPlayer = null;
+        if (lovers == null) {
+            return;
+        }
+
         for (ActivePlayer deathPlayer : deathList) {
 
             if (deathPlayer.getPlayerId() == lovers.first.getPlayerId()) {
@@ -133,7 +147,7 @@ public class MainGame implements Game, Parcelable {
             }
         }
 
-        if (loverPlayer != null) {
+        if (loverPlayer != null && !deathList.contains(loverPlayer)) {
             deathList.add(loverPlayer);
         }
     }
@@ -193,7 +207,29 @@ public class MainGame implements Game, Parcelable {
         return alivePlayers;
     }
 
-    public List<ActivePlayer> findPlayersrByType(@GameCardType.CardType int type) {
+    public List<ActivePlayer> getKilledPlayers() {
+        final List<ActivePlayer> killedPlayers = new ArrayList<>();
+
+        for (ActivePlayer activePlayer : activePlayers) {
+            if (!activePlayer.isAlive()) {
+                killedPlayers.add(activePlayer);
+            }
+        }
+        return killedPlayers;
+    }
+
+    public List<ActivePlayer> getAlivePlayersLightSide() {
+        final List<ActivePlayer> alivePlayers = new ArrayList<>();
+
+        for (ActivePlayer activePlayer : activePlayers) {
+            if (activePlayer.isAlive() && activePlayer.getSide() != GameSide.SITH) {
+                alivePlayers.add(activePlayer);
+            }
+        }
+        return alivePlayers;
+    }
+
+    public List<ActivePlayer> findPlayersByType(@GameCardType.CardType int type) {
         final List<ActivePlayer> typePlayers = new ArrayList<>();
 
         for (ActivePlayer activePlayer : activePlayers) {
@@ -205,22 +241,44 @@ public class MainGame implements Game, Parcelable {
     }
 
     public ActivePlayer getCurrentKilledPlayer() {
-        return deathList.get(0);
+        if (deathList.size() > 0) {
+            return deathList.get(0);
+        } else {
+            return null;
+        }
     }
 
     public boolean isGameOver() {
         int jediSideCount = 0;
         int sithSideCount = 0;
+        int aliveCount = 0;
 
         for (ActivePlayer activePlayer : activePlayers) {
+            if (!activePlayer.isAlive()) {
+                continue;
+            }
+
+            aliveCount++;
+
             if (activePlayer.getSide() == GameSide.SITH) {
                 sithSideCount++;
             } else {
-                jediSideCount++;
+                if (activePlayer.getSithCard().getCardType() == GameCardType.KYLO_REN && currentNight >= 2) {
+                    sithSideCount++;
+                } else {
+                    jediSideCount++;
+                }
             }
         }
 
-        return jediSideCount == 0 || sithSideCount == 0;
+        if (lovers != null
+                && lovers.first.isAlive()
+                && lovers.second.isAlive()
+                && aliveCount == 2) {
+            return true;
+        } else {
+            return jediSideCount == 0 || sithSideCount == 0;
+        }
     }
 
     @Override

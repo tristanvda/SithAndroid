@@ -7,8 +7,13 @@ import com.grietenenknapen.sithandroid.model.database.SithCard;
 
 public abstract class GameUseCaseCard<L extends UseCaseCallBack> extends GameUseCase<SithCard, L> {
 
-    public GameUseCaseCard(L flowManagerListener, boolean active) {
-        super(flowManagerListener, active);
+    public GameUseCaseCard(L flowManagerListener, boolean active, boolean skip) {
+        super(flowManagerListener, active, skip);
+    }
+
+    @Override
+    public void onExecuteStep(int step, SithCard stepData) {
+        super.onExecuteStep(step, stepData);
     }
 }
 

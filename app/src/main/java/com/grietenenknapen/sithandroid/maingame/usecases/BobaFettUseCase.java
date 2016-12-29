@@ -2,102 +2,106 @@ package com.grietenenknapen.sithandroid.maingame.usecases;
 
 import android.util.Pair;
 
+import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.flowmanager.UseCaseCallBack;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseYesNo;
+import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseYesNoId;
 
-public class BobaFettUseCase extends GameUseCaseYesNo<BobaFettUseCase.CallBack> {
+public class BobaFettUseCase extends GameUseCaseYesNoId<BobaFettUseCase.CallBack> {
     private static final long DELAY_SHORT = 3 * 1000;
+    private static final long DELAY_LONG = 5 * 1000;
+
 
     private boolean rocketAlreadySelected = false;
-    private boolean medPackAlreadySelected = false;
 
     public BobaFettUseCase(CallBack flowManagerListener,
                            boolean active,
                            boolean rockedAlreadySelected,
-                           boolean medPackAlreadySelected) {
-        super(flowManagerListener, active);
+                           boolean skip) {
+        super(flowManagerListener, active, skip);
         this.rocketAlreadySelected = rockedAlreadySelected;
-        this.medPackAlreadySelected = medPackAlreadySelected;
     }
 
     @Override
     public void onPrepareStep(final int step) {
         switch (step) {
             case 1:
-                flowManagerListener.speak(1, 1, this);
+                flowManagerListener.speak(R.raw.basis11_bobafettwordtwakker, R.string.basis11_boba_fett_wordt_wakker, this);
                 break;
             case 2:
-                flowManagerListener.showKilledPlayerDelay(this);
-                break;
-            case 3:
-                flowManagerListener.speak(1, 1, this);
-                break;
-            case 4:
+                flowManagerListener.playBobaFettMusic();
                 if (!active) {
                     flowManagerListener.skipStepDelay(DELAY_SHORT);
                 } else {
-                    flowManagerListener.requestYesNoAnswerMedPack(this);
+                    flowManagerListener.showKilledPlayerMedPackYesNo(this);
+                }
+                break;
+            case 3:
+                flowManagerListener.stopPlayingMusic();
+                flowManagerListener.speak(R.raw.basis12_bobafettrocketlauncher, R.string.basis12_boba_fett_rocketlauncher, this);
+                break;
+            case 4:
+                flowManagerListener.playBobaFettMusic();
+                if (!active) {
+                    flowManagerListener.skipStepDelay(DELAY_LONG);
+                } else {
+                    flowManagerListener.requestYesNoAnswerRocket(this, R.string.boba_fett_use_rocket_launcher);
                 }
                 break;
             case 5:
-                flowManagerListener.speak(1, 1, this);
-                break;
-            case 6:
-                if (!active) {
-                    flowManagerListener.skipStepDelay(DELAY_SHORT);
-                } else {
-                    flowManagerListener.requestYesNoAnswerRocket(this);
-                }
-                break;
-            case 7:
                 if (!active) {
                     flowManagerListener.skipStep();
                     break;
                 }
                 if (rocketAlreadySelected) {
-                    flowManagerListener.requestUserPlayerSelection(this);
+                    flowManagerListener.requestUserPlayerRocketSelection(this);
                 } else {
-                    flowManagerListener.speak(1, 1, this);
+                    flowManagerListener.stopPlayingMusic();
+                    flowManagerListener.speak(R.raw.basis13_bobafettgaatterugslapen, R.string.basis13_boba_fett_gaat_terug_slapen, this);
                 }
                 break;
-            case 8:
-                flowManagerListener.speak(1, 1, this);
+            case 6:
+                flowManagerListener.stopPlayingMusic();
+                flowManagerListener.speak(R.raw.basis13_bobafettgaatterugslapen, R.string.basis13_boba_fett_gaat_terug_slapen, this);
                 break;
         }
     }
 
     @Override
     public boolean finishUseCase(final int step) {
-        return (step == 8 && !rocketAlreadySelected) || step > 8;
+        return super.finishUseCase(step) || (step == 6 && !rocketAlreadySelected && active) || step > 6;
     }
 
     @Override
     protected void onUseCaseExecuteStep(int step, Pair<Boolean, Long> stepData) {
-        if (step == 4 && stepData != null && stepData.first) {
+        if (step == 2 && stepData != null && stepData.first) {
             flowManagerListener.useMedPack();
-            medPackAlreadySelected = true;
-        } else if (step == 6 && stepData != null && stepData.first) {
+        } else if (step == 4 && stepData != null && stepData.first) {
             rocketAlreadySelected = true;
-        } else if (step == 7 && stepData != null) {
+            flowManagerListener.setRockedAlreadySelected(rocketAlreadySelected);
+        } else if (step == 5 && stepData != null) {
             flowManagerListener.useRockedLauncher(stepData.second);
         }
     }
 
     public interface CallBack extends UseCaseCallBack {
 
-        void requestYesNoAnswerMedPack(GameUseCaseYesNo useCase);
+        void requestYesNoAnswerRocket(GameUseCaseYesNoId useCase, final int titleResId);
 
-        void requestYesNoAnswerRocket(GameUseCaseYesNo useCase);
+        void showKilledPlayerMedPackYesNo(GameUseCaseYesNoId useCase);
 
-        void showKilledPlayerDelay(GameUseCase useCase);
-
-        void requestUserPlayerSelection(GameUseCaseYesNo useCase);
+        void requestUserPlayerRocketSelection(GameUseCaseYesNoId useCase);
 
         void speak(int soundResId, int stringResId, GameUseCase gameUseCase);
 
         void useMedPack();
 
         void useRockedLauncher(long playerId);
+
+        void setRockedAlreadySelected(boolean rockedAlreadySelected);
+
+        void playBobaFettMusic();
+
+        void stopPlayingMusic();
     }
 }

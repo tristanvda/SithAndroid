@@ -3,7 +3,7 @@ Werewolves (http://www.playwerewolf.co/rules) variant set in the Star Wars Unive
 This game takes the job of the teller and keeps track of all the players and the full status of the game.
 It's the Sith (Werewolves) against the Jedi (Civilians) together with other roles that can influence the flow of each game.
 
-![alt tag](https://raw.githubusercontent.com/tristanvda/SithAndroid/master/resources/screen_home.png)
+<img src="https://raw.githubusercontent.com/tristanvda/SithAndroid/master/resources/screen_home.png" width="320" height="570">
 
 
 # License

@@ -220,7 +220,7 @@ public class ActivePlayer implements Parcelable {
         dest.writeString(this.telephoneNumber);
     }
 
-    @SuppressWarnings("resourceType")
+    @SuppressWarnings("WrongConstant")
     protected ActivePlayer(Parcel in) {
         this.sithCard = in.readParcelable(SithCard.class.getClassLoader());
         this.team = in.readInt();

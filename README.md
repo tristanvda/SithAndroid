@@ -1,5 +1,10 @@
 # SithAndroid
-Werewolves variant set in the Star Wars Universe
+Werewolves (http://www.playwerewolf.co/rules) variant set in the Star Wars Universe!
+This game takes the job of the teller and keeps track of all the players and the full status of the game.
+It's the Sith (Werewolves) against the Jedi (Civilians) together with other roles that can influence the flow of each game.
+
+![alt tag](https://raw.githubusercontent.com/tristanvda/SithAndroid/master/resources/screen_home.png)
+
 
 # License
 ```

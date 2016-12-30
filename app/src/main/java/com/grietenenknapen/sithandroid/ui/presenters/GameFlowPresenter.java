@@ -18,6 +18,7 @@ import com.grietenenknapen.sithandroid.maingame.usecases.GameUseCaseCard;
 import com.grietenenknapen.sithandroid.model.database.Player;
 import com.grietenenknapen.sithandroid.model.database.SithCard;
 import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
+import com.grietenenknapen.sithandroid.model.game.GameTeam;
 import com.grietenenknapen.sithandroid.service.PlayerService;
 import com.grietenenknapen.sithandroid.service.ServiceCallBack;
 import com.grietenenknapen.sithandroid.service.SithCardService;
@@ -134,7 +135,7 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
             for (Player player : players) {
                 game.addToDeathList(player.getId());
             }
-            if (game.isGameOver()) {
+            if (game.checkGameOver()) {
                 getView().deleteSavedGame();
                 goToGameOverFragment();
             } else {
@@ -283,14 +284,14 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
 
     @Override
     public void playMusic(int musicType) {
-        if (getView() != null){
+        if (getView() != null) {
             getView().playMusic(musicType);
         }
     }
 
     @Override
     public void stopPlayingMusic() {
-        if (getView() != null){
+        if (getView() != null) {
             getView().stopPlayingMusic();
         }
     }
@@ -324,12 +325,7 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
     }
 
     private void goToGameOverFragment() {
-        List<String> players = new ArrayList<>();
-        for (ActivePlayer player : game.getAlivePlayers()) {
-            players.add(player.getName());
-        }
-
-        getView().showGameOver(players);
+        getView().showGameOver(game.getAlivePlayers(), game.getWinningTeam());
     }
 
     public interface View extends PresenterView {
@@ -364,7 +360,7 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
 
         void showExitDialog();
 
-        void showGameOver(List<String> players);
+        void showGameOver(List<ActivePlayer> players, @GameTeam.Team int winningTeam);
 
         void showError(int stringResId);
 

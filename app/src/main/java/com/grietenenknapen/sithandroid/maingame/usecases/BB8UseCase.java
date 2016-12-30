@@ -8,8 +8,7 @@ import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
 import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCasePairId;
 
 public class BB8UseCase extends GameUseCasePairId<BB8UseCase.CallBack> {
-    private static final long DELAY = 10 * 1000;
-    private static final long DELAY_SHORT = 3 * 1000;
+    private static final long DELAY_LOVERS = 10 * 1000;
 
     public BB8UseCase(CallBack flowManagerListener, boolean active, boolean skip) {
         super(flowManagerListener, active, skip);
@@ -26,7 +25,7 @@ public class BB8UseCase extends GameUseCasePairId<BB8UseCase.CallBack> {
             case 2:
                 flowManagerListener.playBB8Music();
                 if (!active) {
-                    flowManagerListener.skipStepDelay(DELAY_SHORT);
+                    flowManagerListener.skipStepDelay(delayShort);
                 } else {
                     flowManagerListener.requestUserPairPlayerSelection(this);
                 }
@@ -38,7 +37,7 @@ public class BB8UseCase extends GameUseCasePairId<BB8UseCase.CallBack> {
                 break;
             case 4:
                 flowManagerListener.playBB8Music();
-                flowManagerListener.showDelay(DELAY, this);
+                flowManagerListener.showDelay(DELAY_LOVERS, this);
                 break;
             case 5:
                 flowManagerListener.stopPlayingMusic();

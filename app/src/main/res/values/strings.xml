@@ -32,6 +32,13 @@
     <string name="alive_players">Alive players:</string>
     <string name="players">Players</string>
 
+    <!-- Teams -->
+    <string name="team_sith">Sith</string>
+    <string name="team_jedi">Jedi</string>
+    <string name="team_lovers">Lovers</string>
+    <string name="winning_team_1">The</string>
+    <string name="winning_team_2">have won the game!</string>
+
     <!-- Menu items -->
     <string name="menu_start_game">Start Game</string>
     <string name="menu_resume_game">Resume Game</string>

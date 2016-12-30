@@ -8,8 +8,6 @@ import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
 import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseYesNoId;
 
 public class BobaFettUseCase extends GameUseCaseYesNoId<BobaFettUseCase.CallBack> {
-    private static final long DELAY_SHORT = 3 * 1000;
-    private static final long DELAY_LONG = 5 * 1000;
 
 
     private boolean rocketAlreadySelected = false;
@@ -31,7 +29,7 @@ public class BobaFettUseCase extends GameUseCaseYesNoId<BobaFettUseCase.CallBack
             case 2:
                 flowManagerListener.playBobaFettMusic();
                 if (!active) {
-                    flowManagerListener.skipStepDelay(DELAY_SHORT);
+                    flowManagerListener.skipStepDelay(delayShort);
                 } else {
                     flowManagerListener.showKilledPlayerMedPackYesNo(this);
                 }
@@ -43,7 +41,7 @@ public class BobaFettUseCase extends GameUseCaseYesNoId<BobaFettUseCase.CallBack
             case 4:
                 flowManagerListener.playBobaFettMusic();
                 if (!active) {
-                    flowManagerListener.skipStepDelay(DELAY_LONG);
+                    flowManagerListener.skipStepDelay(delayLong);
                 } else {
                     flowManagerListener.requestYesNoAnswerRocket(this, R.string.boba_fett_use_rocket_launcher);
                 }

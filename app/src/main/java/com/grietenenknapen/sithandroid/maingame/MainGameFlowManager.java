@@ -25,6 +25,7 @@ import com.grietenenknapen.sithandroid.model.database.SithCard;
 import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 import com.grietenenknapen.sithandroid.model.game.GameCardType;
 import com.grietenenknapen.sithandroid.model.game.GameSide;
+import com.grietenenknapen.sithandroid.model.game.GameTeam;
 import com.grietenenknapen.sithandroid.util.SMSUtils;
 import com.grietenenknapen.sithandroid.util.SithMusicPlayer;
 
@@ -70,7 +71,11 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
             case 5:
                 return new KyloRenUseCase(this, cardIsActive(GameCardType.KYLO_REN), cardsInGameAndKilled(GameCardType.KYLO_REN));
             case 6:
-                return new SithUseCase(this, cardIsActive(GameCardType.SITH), cardsInGameAndKilled(GameCardType.SITH));
+                if (mainGame.getAlivePlayersLightSide().size() > 0){
+                    return new SithUseCase(this, cardIsActive(GameCardType.SITH), cardsInGameAndKilled(GameCardType.SITH));
+                } else {
+                    return new SkipUseCase(this, true, false);
+                }
             case 7:
                 return new JediUseCase(this, cardIsActive(GameCardType.JEDI), cardsInGameAndKilled(GameCardType.JEDI));
             case 8:
@@ -108,7 +113,7 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
 
     @Override
     protected boolean isGameOver() {
-        return mainGame.isGameOver();
+        return mainGame.checkGameOver();
     }
 
     private boolean cardIsActive(@GameCardType.CardType int type) {
@@ -156,6 +161,7 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
         if (players.size() > 0) {
             ActivePlayer kyloRen = players.get(0);
             kyloRen.setSide(GameSide.SITH);
+            kyloRen.setTeam(GameTeam.SITH);
         }
     }
 
@@ -189,6 +195,8 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
     public void linkTwoLovers(final long lover1Id, long lover2Id) {
         final ActivePlayer lover1 = mainGame.getActivePlayer(lover1Id);
         final ActivePlayer lover2 = mainGame.getActivePlayer(lover2Id);
+        lover1.setTeam(GameTeam.LOVERS);
+        lover2.setTeam(GameTeam.LOVERS);
         mainGame.setLovers(new Pair<>(lover1, lover2));
 
         if (!TextUtils.isEmpty(lover1.getTelephoneNumber())) {

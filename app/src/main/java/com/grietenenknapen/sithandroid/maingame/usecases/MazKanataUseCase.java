@@ -7,7 +7,6 @@ import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseI
 
 
 public class MazKanataUseCase extends GameUseCaseId<MazKanataUseCase.CallBack> {
-    private static final long DELAY_SHORT = 3 * 1000;
 
     public MazKanataUseCase(CallBack flowManagerListener, boolean active, boolean skip) {
         super(flowManagerListener, active, skip);
@@ -23,7 +22,7 @@ public class MazKanataUseCase extends GameUseCaseId<MazKanataUseCase.CallBack> {
             case 2:
                 flowManagerListener.playMazKanataMusic();
                 if (!active) {
-                    flowManagerListener.skipStepDelay(DELAY_SHORT);
+                    flowManagerListener.skipStepDelay(delayShort);
                 } else {
                     flowManagerListener.requestUserCardPeek(this);
                 }

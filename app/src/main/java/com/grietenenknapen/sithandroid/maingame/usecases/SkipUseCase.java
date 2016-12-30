@@ -5,7 +5,6 @@ import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseV
 
 public class SkipUseCase extends GameUseCaseVoid<SkipUseCase.CallBack> {
 
-
     public SkipUseCase(CallBack flowManagerListener) {
         super(flowManagerListener, false, false);
     }

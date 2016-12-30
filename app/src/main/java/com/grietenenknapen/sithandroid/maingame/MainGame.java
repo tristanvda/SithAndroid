@@ -10,6 +10,7 @@ import com.grietenenknapen.sithandroid.model.database.Player;
 import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 import com.grietenenknapen.sithandroid.model.game.GameCardType;
 import com.grietenenknapen.sithandroid.model.game.GameSide;
+import com.grietenenknapen.sithandroid.model.game.GameTeam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,9 @@ public class MainGame implements Game, Parcelable {
 
     @DayCycle.Cycle
     private int dayCycle;
+
+    @GameTeam.Team
+    private int winningTeam = GameTeam.SITH;
 
     public MainGame(List<ActivePlayer> activePlayers) {
         this.activePlayers = activePlayers;
@@ -103,6 +107,7 @@ public class MainGame implements Game, Parcelable {
     public void setupNewRound() {
         currentTurn = 1;
         currentUseCaseStep = 1;
+        rocketAlreadySelected = false;
         nextRound();
         dayCycle = DayCycle.CYCLE_NIGHT;
         deathList = new ArrayList<>();
@@ -112,6 +117,7 @@ public class MainGame implements Game, Parcelable {
     public void finishRound() {
         currentUseCaseStep = 0;
         currentTurn = 0;
+        rocketAlreadySelected = false;
         dayCycle = DayCycle.CYCLE_DAY;
 
         updateDeathListWithLovers();
@@ -248,7 +254,7 @@ public class MainGame implements Game, Parcelable {
         }
     }
 
-    public boolean isGameOver() {
+    public boolean checkGameOver() {
         int jediSideCount = 0;
         int sithSideCount = 0;
         int aliveCount = 0;
@@ -263,11 +269,7 @@ public class MainGame implements Game, Parcelable {
             if (activePlayer.getSide() == GameSide.SITH) {
                 sithSideCount++;
             } else {
-                if (activePlayer.getSithCard().getCardType() == GameCardType.KYLO_REN && currentNight >= 2) {
-                    sithSideCount++;
-                } else {
-                    jediSideCount++;
-                }
+                jediSideCount++;
             }
         }
 
@@ -275,10 +277,29 @@ public class MainGame implements Game, Parcelable {
                 && lovers.first.isAlive()
                 && lovers.second.isAlive()
                 && aliveCount == 2) {
+            setWinningTeam(GameTeam.LOVERS);
             return true;
         } else {
-            return jediSideCount == 0 || sithSideCount == 0;
+
+            if (jediSideCount == 0) {
+                setWinningTeam(GameTeam.SITH);
+                return true;
+            } else if (sithSideCount == 0) {
+                setWinningTeam(GameTeam.JEDI);
+                return true;
+            }
+
+            return false;
         }
+    }
+
+    @GameTeam.Team
+    public int getWinningTeam() {
+        return winningTeam;
+    }
+
+    public void setWinningTeam(@GameTeam.Team int winningTeam) {
+        this.winningTeam = winningTeam;
     }
 
     @Override

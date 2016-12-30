@@ -21,6 +21,7 @@ import com.grietenenknapen.sithandroid.maingame.usecases.GameUseCaseCard;
 import com.grietenenknapen.sithandroid.model.database.Player;
 import com.grietenenknapen.sithandroid.model.database.SithCard;
 import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
+import com.grietenenknapen.sithandroid.model.game.GameTeam;
 import com.grietenenknapen.sithandroid.service.PlayerService;
 import com.grietenenknapen.sithandroid.service.SithCardService;
 import com.grietenenknapen.sithandroid.ui.fragments.CardShuffleFragment;
@@ -94,6 +95,12 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
     protected void onStop() {
         super.onStop();
         MediaSoundPlayer.stopPlayer(PRESENTER_TAG);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SithMusicPlayer.stopPlaying();
     }
 
     @Override
@@ -373,10 +380,10 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
     }
 
     @Override
-    public void showGameOver(List<String> players) {
+    public void showGameOver(List<ActivePlayer> players, @GameTeam.Team int winningTeam) {
         FragmentUtils.replaceOrAddFragment(this, GameOverFragment.class, R.id.container,
                 GameOverFragment.class.getName(), FragmentUtils.ANIMATE_SLIDE_LEFT,
-                GameOverFragment.createArguments((ArrayList<String>) players), false);
+                GameOverFragment.createArguments((ArrayList<ActivePlayer>) players, winningTeam), false);
     }
 
     @Override

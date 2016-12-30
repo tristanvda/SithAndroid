@@ -89,7 +89,7 @@ public class PlayerSelectFragment extends CallbackPresenterFragment<PlayerSelect
     }
 
     protected void setNextButtonVisibility(boolean visible) {
-        nextButton.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        nextButton.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     protected SelectPlayerAdapter getAdapter() {

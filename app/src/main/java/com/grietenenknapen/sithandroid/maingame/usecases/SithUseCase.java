@@ -6,7 +6,6 @@ import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
 import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseId;
 
 public class SithUseCase extends GameUseCaseId<SithUseCase.CallBack> {
-    private static final long DELAY_SHORT = 3 * 1000;
 
     public SithUseCase(CallBack flowManagerListener, boolean active, boolean skip) {
         super(flowManagerListener, active, skip);
@@ -22,7 +21,7 @@ public class SithUseCase extends GameUseCaseId<SithUseCase.CallBack> {
             case 2:
                 flowManagerListener.playSithMusic();
                 if (!active) {
-                    flowManagerListener.skipStepDelay(DELAY_SHORT);
+                    flowManagerListener.skipStepDelay(delayShort);
                 } else {
                     flowManagerListener.requestUserPlayerSelectionSith(this);
                 }

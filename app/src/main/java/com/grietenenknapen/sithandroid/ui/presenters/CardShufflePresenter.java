@@ -7,6 +7,7 @@ import com.grietenenknapen.sithandroid.model.database.SithCard;
 import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 import com.grietenenknapen.sithandroid.model.game.GameCardType;
 import com.grietenenknapen.sithandroid.model.game.GameSide;
+import com.grietenenknapen.sithandroid.model.game.GameTeam;
 import com.grietenenknapen.sithandroid.service.ServiceCallBack;
 import com.grietenenknapen.sithandroid.service.SithCardService;
 import com.grietenenknapen.sithandroid.ui.Presenter;
@@ -83,6 +84,7 @@ public class CardShufflePresenter extends Presenter<CardShufflePresenter.View> {
                     .alive(true)
                     .name(player.getName())
                     .side(GameSide.getSideFromCardType(card.getCardType()))
+                    .team(GameTeam.getInitialTeamFromCardType(card.getCardType()))
                     .sithCard(card)
                     .telephoneNumber(player.getTelephoneNumber())
                     .build();
@@ -104,6 +106,7 @@ public class CardShufflePresenter extends Presenter<CardShufflePresenter.View> {
                 final ActivePlayer activePlayer = activePlayers.get(replacePosition);
                 activePlayer.setSithCard(card);
                 activePlayer.setSide(GameSide.getSideFromCardType(card.getCardType()));
+                activePlayer.setTeam(GameTeam.getInitialTeamFromCardType(card.getCardType()));
                 break;
             }
         }

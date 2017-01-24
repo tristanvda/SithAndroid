@@ -24,7 +24,6 @@ import com.grietenenknapen.sithandroid.service.ServiceCallBack;
 import com.grietenenknapen.sithandroid.service.SithCardService;
 import com.grietenenknapen.sithandroid.ui.Presenter;
 import com.grietenenknapen.sithandroid.ui.PresenterView;
-import com.grietenenknapen.sithandroid.util.SMSUtils;
 
 import java.lang.annotation.Retention;
 import java.util.ArrayList;
@@ -157,7 +156,7 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
         game = new MainGame(activePlayers);
         for (ActivePlayer activePlayer : activePlayers) {
             if (!TextUtils.isEmpty(activePlayer.getTelephoneNumber())) {
-                SMSUtils.sendSMS(activePlayer.getSithCard().getName(),
+                getView().sendSMS(activePlayer.getSithCard().getName(),
                         activePlayer.getTelephoneNumber());
             }
         }
@@ -296,6 +295,11 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
         }
     }
 
+    @Override
+    public void sendSMS(String text, String number) {
+        getView().sendSMS(text, number);
+    }
+
     public void onSpeakDone() {
         if (speakStack == null || speakStack.isEmpty()) {
             speakStack = null;
@@ -375,6 +379,8 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
         void playMusic(int musicType);
 
         void stopPlayingMusic();
+
+        void sendSMS(String text, String number);
 
     }
 }

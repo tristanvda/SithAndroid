@@ -157,37 +157,37 @@ public class DatabaseDefaults {
 
         players.add(Player.newBuilder()
                 .name("Tristan")
-                .telephoneNumber("0472018123")
+                .telephoneNumber("0483377495")
                 .build());
 
         players.add(Player.newBuilder()
                 .name("Wouter")
-                .telephoneNumber("0472018123")
+                .telephoneNumber("0483286052")
                 .build());
 
         players.add(Player.newBuilder()
                 .name("Gerry")
-                .telephoneNumber("0472018123")
+                .telephoneNumber("0473391236")
                 .build());
 
         players.add(Player.newBuilder()
                 .name("Timo")
-                .telephoneNumber("0472018123")
+                .telephoneNumber("0499176790")
                 .build());
 
         players.add(Player.newBuilder()
                 .name("Matthy")
-                .telephoneNumber("0472018123")
+                .telephoneNumber("0499318491")
                 .build());
 
         players.add(Player.newBuilder()
                 .name("Babs")
-                .telephoneNumber("0472018123")
+                .telephoneNumber("0497029096")
                 .build());
 
         players.add(Player.newBuilder()
                 .name("Pieter")
-                .telephoneNumber("0472018123")
+                .telephoneNumber("0478546890")
                 .build());
 
         return players;

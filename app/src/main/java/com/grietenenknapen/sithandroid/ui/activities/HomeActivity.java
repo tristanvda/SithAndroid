@@ -10,7 +10,6 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.TextView;
 
-import com.bugsnag.android.Bugsnag;
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.application.Settings;
 import com.grietenenknapen.sithandroid.ui.presenters.HomePresenter;
@@ -109,6 +108,11 @@ public class HomeActivity extends PresenterActivity<HomePresenter, HomePresenter
         getPresenter().onPlayersClicked();
     }
 
+    @OnClick(R.id.menuSettings)
+    public void onMenuSettingsClicked() {
+        getPresenter().onSettingsClicked();
+    }
+
     @Override
     public void goToPlayersScreen() {
         startActivity(new Intent(this, PlayerActivity.class));
@@ -132,6 +136,11 @@ public class HomeActivity extends PresenterActivity<HomePresenter, HomePresenter
     public void deleteSavedGame() {
         Settings.setSavedMainGame(this, null);
         Settings.setMainGameSaved(this, false);
+    }
+
+    @Override
+    public void goToSettingsScreen() {
+        startActivity(new Intent(this, SettingsActivity.class));
     }
 
     private void showResumeButton() {

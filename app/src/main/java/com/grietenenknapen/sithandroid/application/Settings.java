@@ -2,6 +2,7 @@ package com.grietenenknapen.sithandroid.application;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -11,6 +12,9 @@ public final class Settings {
     private final static String PREFERENCES_SAVES = "com.grietenenknapen.sithandroid.prefs.saves";
     private final static String SAVES_MAIN_GAME = "main_game_save";
     private final static String SAVES_MAIN_GAME_FLAG = "main_game_save_flag";
+    private final static String SETTING_MUSIC = "music";
+    private final static String SETTING_SMS = "sms";
+    private final static String SETTINGS_BATTERY_SAVING = "battery_saving";
     private static Gson GSON_INSTANCE;
 
     private Settings() {
@@ -25,7 +29,7 @@ public final class Settings {
     }
 
     public static MainGame getSavedMainGame(final Context context) {
-        SharedPreferences preferences = context.getSharedPreferences(SAVES_MAIN_GAME, Context.MODE_PRIVATE);
+        SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_SAVES, Context.MODE_PRIVATE);
         final String json = preferences.getString(SAVES_MAIN_GAME, null);
 
         try {
@@ -37,7 +41,7 @@ public final class Settings {
 
     public static void setSavedMainGame(final Context context,
                                         final MainGame mainGame) {
-        SharedPreferences preferences = context.getSharedPreferences(SAVES_MAIN_GAME, Context.MODE_PRIVATE);
+        SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_SAVES, Context.MODE_PRIVATE);
 
         String json = getGson().toJson(mainGame);
         preferences.edit().putString(SAVES_MAIN_GAME, json).apply();
@@ -45,16 +49,34 @@ public final class Settings {
 
 
     public static boolean isMainGameSaved(final Context context) {
-        SharedPreferences preferences = context.getSharedPreferences(SAVES_MAIN_GAME, Context.MODE_PRIVATE);
+        SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_SAVES, Context.MODE_PRIVATE);
 
         return preferences.getBoolean(SAVES_MAIN_GAME_FLAG, false);
     }
 
     public static void setMainGameSaved(final Context context,
                                         final boolean mainGameSaved) {
-        SharedPreferences preferences = context.getSharedPreferences(SAVES_MAIN_GAME, Context.MODE_PRIVATE);
+        SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_SAVES, Context.MODE_PRIVATE);
 
         preferences.edit().putBoolean(SAVES_MAIN_GAME_FLAG, mainGameSaved).apply();
 
+    }
+
+    public static boolean isMusicEnabled(final Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return preferences.getBoolean(SETTING_MUSIC, false);
+    }
+
+    public static boolean isSmsEnabled(final Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return preferences.getBoolean(SETTING_SMS, false);
+    }
+
+    public static boolean isBatterySavingMode(final Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return preferences.getBoolean(SETTINGS_BATTERY_SAVING, false);
     }
 }

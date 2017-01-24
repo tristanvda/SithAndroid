@@ -2,6 +2,7 @@ package com.grietenenknapen.sithandroid.util;
 
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.util.Log;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,6 +47,7 @@ public class MediaSoundPlayer {
     public void setSoundPlayListener(OnSoundPlayListener soundPlayListener, final String tag) {
         if (soundPlayListener == null) {
             soundPlayListenerMap.remove(tag);
+            Log.d("remove", tag);
         } else {
             soundPlayListenerMap.put(tag, soundPlayListener);
         }

@@ -41,4 +41,6 @@ public interface MainGameFlowCallBack extends GameFlowCallBack {
 
     void stopPlayingMusic();
 
+    void sendSMS(final String text, final String number);
+
 }

@@ -48,6 +48,7 @@ import com.grietenenknapen.sithandroid.util.ActivityUtils;
 import com.grietenenknapen.sithandroid.util.FragmentUtils;
 import com.grietenenknapen.sithandroid.util.MediaSoundPlayer;
 import com.grietenenknapen.sithandroid.util.ResourceUtils;
+import com.grietenenknapen.sithandroid.util.SMSUtils;
 import com.grietenenknapen.sithandroid.util.SithMusicPlayer;
 
 import java.util.ArrayList;
@@ -421,6 +422,11 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
     @Override
     public void stopPlayingMusic() {
         SithMusicPlayer.stopPlaying();
+    }
+
+    @Override
+    public void sendSMS(String text, String number) {
+        SMSUtils.sendSMS(this, text, number);
     }
 
     @Override

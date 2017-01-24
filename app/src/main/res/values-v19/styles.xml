@@ -7,7 +7,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColor">@color/yellow</item>
         <item name="android:windowBackground">@android:color/black</item>
-
+        <item name="preferenceTheme">@style/PreferenceTheme</item>
+        <item name="preferenceStyle">@style/PreferenceTheme</item>
         <!-- API 19 -->
 
         <item name="android:windowTranslucentStatus">true</item>

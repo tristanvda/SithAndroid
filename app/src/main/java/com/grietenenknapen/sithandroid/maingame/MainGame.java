@@ -21,8 +21,8 @@ public class MainGame implements Game, Parcelable {
     private int currentTurn = 0;
     private long gameStartTimeStamp;
     private List<ActivePlayer> activePlayers;
-    private List<ActivePlayer> deathList;
-    private Pair<ActivePlayer, ActivePlayer> lovers;
+    private List<Long> deathList;
+    private Pair<Long, Long> lovers;
     private boolean bobaMedPackUsed = false;
     private boolean bobaRocketUsed = false;
     private boolean rocketAlreadySelected = false;
@@ -35,6 +35,7 @@ public class MainGame implements Game, Parcelable {
 
     public MainGame(List<ActivePlayer> activePlayers) {
         this.activePlayers = activePlayers;
+        gameStartTimeStamp = System.currentTimeMillis();
         dayCycle = DayCycle.CYCLE_DAY;
         deathList = new ArrayList<>();
     }
@@ -72,15 +73,20 @@ public class MainGame implements Game, Parcelable {
     }
 
     public Pair<ActivePlayer, ActivePlayer> getLovers() {
-        return lovers;
+        return new Pair<>(getActivePlayer(lovers.first), getActivePlayer(lovers.second));
     }
 
     public List<ActivePlayer> getDeathList() {
-        return deathList;
+        final List<ActivePlayer> activeDeathList = new ArrayList<>();
+
+        for (Long deathPlayerId : this.deathList) {
+            activeDeathList.add(getActivePlayer(deathPlayerId));
+        }
+        return activeDeathList;
     }
 
     public void setLovers(Pair<ActivePlayer, ActivePlayer> lovers) {
-        this.lovers = lovers;
+        this.lovers = new Pair<>(lovers.first.getPlayerId(), lovers.second.getPlayerId());
     }
 
     @Override
@@ -122,8 +128,8 @@ public class MainGame implements Game, Parcelable {
 
         updateDeathListWithLovers();
 
-        for (ActivePlayer deathPlayer : deathList) {
-            deathPlayer.setAlive(false);
+        for (Long deathPlayerId : deathList) {
+            getActivePlayer(deathPlayerId).setAlive(false);
         }
     }
 
@@ -137,24 +143,24 @@ public class MainGame implements Game, Parcelable {
     }
 
     private void updateDeathListWithLovers() {
-        ActivePlayer loverPlayer = null;
+        Long loverPlayerId = null;
         if (lovers == null) {
             return;
         }
 
-        for (ActivePlayer deathPlayer : deathList) {
+        for (Long deathPlayerId : deathList) {
 
-            if (deathPlayer.getPlayerId() == lovers.first.getPlayerId()) {
-                loverPlayer = lovers.second;
+            if (deathPlayerId.equals(lovers.first)) {
+                loverPlayerId = lovers.second;
             }
 
-            if (deathPlayer.getPlayerId() == lovers.second.getPlayerId()) {
-                loverPlayer = lovers.first;
+            if (deathPlayerId.equals(lovers.second)) {
+                loverPlayerId = lovers.first;
             }
         }
 
-        if (loverPlayer != null && !deathList.contains(loverPlayer)) {
-            deathList.add(loverPlayer);
+        if (loverPlayerId != null && !deathList.contains(loverPlayerId)) {
+            deathList.add(loverPlayerId);
         }
     }
 
@@ -179,7 +185,7 @@ public class MainGame implements Game, Parcelable {
         int toDelete = -1;
 
         for (int i = 0; i < deathList.size(); i++) {
-            if (playerId == deathList.get(i).getPlayerId()) {
+            if (playerId == deathList.get(i)) {
                 toDelete = i;
             }
         }
@@ -190,7 +196,7 @@ public class MainGame implements Game, Parcelable {
     }
 
     public void addToDeathList(long playerId) {
-        deathList.add(getActivePlayer(playerId));
+        deathList.add(playerId);
     }
 
     public ActivePlayer getActivePlayer(final long id) {
@@ -248,7 +254,7 @@ public class MainGame implements Game, Parcelable {
 
     public ActivePlayer getCurrentKilledPlayer() {
         if (deathList.size() > 0) {
-            return deathList.get(0);
+            return getActivePlayer(deathList.get(0));
         } else {
             return null;
         }
@@ -274,8 +280,8 @@ public class MainGame implements Game, Parcelable {
         }
 
         if (lovers != null
-                && lovers.first.isAlive()
-                && lovers.second.isAlive()
+                && getActivePlayer(lovers.first).isAlive()
+                && getActivePlayer(lovers.second).isAlive()
                 && aliveCount == 2) {
             setWinningTeam(GameTeam.LOVERS);
             return true;
@@ -302,6 +308,7 @@ public class MainGame implements Game, Parcelable {
         this.winningTeam = winningTeam;
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -314,8 +321,14 @@ public class MainGame implements Game, Parcelable {
         dest.writeInt(this.currentTurn);
         dest.writeLong(this.gameStartTimeStamp);
         dest.writeTypedList(this.activePlayers);
-        dest.writeTypedList(this.deathList);
+        dest.writeList(this.deathList);
+        dest.writeLong(lovers != null ? lovers.first : -1);
+        dest.writeLong(lovers != null ? lovers.second : -1);
+        dest.writeByte(this.bobaMedPackUsed ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.bobaRocketUsed ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.rocketAlreadySelected ? (byte) 1 : (byte) 0);
         dest.writeInt(this.dayCycle);
+        dest.writeInt(this.winningTeam);
     }
 
     @SuppressWarnings("ResourceType")
@@ -325,8 +338,18 @@ public class MainGame implements Game, Parcelable {
         this.currentTurn = in.readInt();
         this.gameStartTimeStamp = in.readLong();
         this.activePlayers = in.createTypedArrayList(ActivePlayer.CREATOR);
-        this.deathList = in.createTypedArrayList(ActivePlayer.CREATOR);
+        this.deathList = new ArrayList<>();
+        in.readList(this.deathList, Long.class.getClassLoader());
+        final long lover1 = in.readLong();
+        final long lover2 = in.readLong();
+        if (lover1 != -1 && lover2 != -1){
+            this.lovers = new Pair<>(lover1, lover2);
+        }
+        this.bobaMedPackUsed = in.readByte() != 0;
+        this.bobaRocketUsed = in.readByte() != 0;
+        this.rocketAlreadySelected = in.readByte() != 0;
         this.dayCycle = in.readInt();
+        this.winningTeam = in.readInt();
     }
 
     public static final Parcelable.Creator<MainGame> CREATOR = new Parcelable.Creator<MainGame>() {

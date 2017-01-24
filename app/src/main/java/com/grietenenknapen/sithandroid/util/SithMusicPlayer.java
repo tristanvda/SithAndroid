@@ -3,6 +3,8 @@ package com.grietenenknapen.sithandroid.util;
 
 import android.content.Context;
 
+import com.grietenenknapen.sithandroid.application.Settings;
+
 public class SithMusicPlayer {
 
     public static final int MUSIC_TYPE_HAN_SOLO = 0;
@@ -23,6 +25,10 @@ public class SithMusicPlayer {
     }
 
     public static void playMusic(final Context context, final int musicType) {
+
+        if (!Settings.isMusicEnabled(context)) {
+            return;
+        }
 
         String prefix = HAN_SOLO_PREFIX;
         int number = 1;

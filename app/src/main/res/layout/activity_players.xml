@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.grietenenknapen.sithandroid.ui.views.starview.StarView
+    <com.grietenenknapen.sithandroid.ui.views.SithStarView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:ignore="UnusedAttribute" />

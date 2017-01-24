@@ -45,6 +45,10 @@ public class HomePresenter extends Presenter<HomePresenter.View> {
         getView().goToPlayersScreen();
     }
 
+    public void onSettingsClicked() {
+        getView().goToSettingsScreen();
+    }
+
     public interface View extends PresenterView {
         void goToPlayersScreen();
 
@@ -53,5 +57,7 @@ public class HomePresenter extends Presenter<HomePresenter.View> {
         void updateStartResumeScreen();
 
         void deleteSavedGame();
+
+        void goToSettingsScreen();
     }
 }

@@ -26,7 +26,6 @@ import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 import com.grietenenknapen.sithandroid.model.game.GameCardType;
 import com.grietenenknapen.sithandroid.model.game.GameSide;
 import com.grietenenknapen.sithandroid.model.game.GameTeam;
-import com.grietenenknapen.sithandroid.util.SMSUtils;
 import com.grietenenknapen.sithandroid.util.SithMusicPlayer;
 
 import java.util.ArrayList;
@@ -71,7 +70,7 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
             case 5:
                 return new KyloRenUseCase(this, cardIsActive(GameCardType.KYLO_REN), cardsInGameAndKilled(GameCardType.KYLO_REN));
             case 6:
-                if (mainGame.getAlivePlayersLightSide().size() > 0){
+                if (mainGame.getAlivePlayersLightSide().size() > 0) {
                     return new SithUseCase(this, cardIsActive(GameCardType.SITH), cardsInGameAndKilled(GameCardType.SITH));
                 } else {
                     return new SkipUseCase(this, true, false);
@@ -175,8 +174,10 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
         List<ActivePlayer> players = mainGame.findPlayersByType(GameCardType.HAN_SOLO);
 
         if (players.size() > 0) {
-            ActivePlayer hanSolo = players.get(0);
+            final ActivePlayer hanSolo = players.get(0);
             hanSolo.setSithCard(sithCard);
+            hanSolo.setTeam(GameTeam.getInitialTeamFromCardType(sithCard.getCardType()));
+            hanSolo.setSide(GameSide.getSideFromCardType(sithCard.getCardType()));
         }
     }
 
@@ -201,13 +202,20 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
 
         if (!TextUtils.isEmpty(lover1.getTelephoneNumber())) {
             //TODO: resources
-            SMSUtils.sendSMS("Verbonden door BB8!", lover1.getTelephoneNumber());
+            uiListener.sendSMS("Verbonden door BB8!", lover1.getTelephoneNumber());
         }
 
         if (!TextUtils.isEmpty(lover2.getTelephoneNumber())) {
             //TODO: resources
-            SMSUtils.sendSMS("Verbonden door BB8!", lover2.getTelephoneNumber());
+            uiListener.sendSMS("Verbonden door BB8!", lover2.getTelephoneNumber());
         }
+    }
+
+    @Override
+    public void useMedPack() {
+        ActivePlayer activePlayer = mainGame.getCurrentKilledPlayer();
+        mainGame.deleteFromDeathList(activePlayer.getPlayerId());
+        mainGame.setBobaMedPackUsed(true);
     }
 
     @Override
@@ -228,19 +236,12 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
 
     @Override
     public void playSithMusic() {
-        uiListener.playMusic(SithMusicPlayer.MUSIC_TYPE_BOBA_FETT);
+        uiListener.playMusic(SithMusicPlayer.MUSIC_TYPE_SITH);
     }
 
     @Override
     public void playMazKanataMusic() {
         uiListener.playMusic(SithMusicPlayer.MUSIC_TYPE_MAZ_KANATA);
-    }
-
-    @Override
-    public void useMedPack() {
-        ActivePlayer activePlayer = mainGame.getCurrentKilledPlayer();
-        mainGame.deleteFromDeathList(activePlayer.getPlayerId());
-        mainGame.setBobaMedPackUsed(true);
     }
 
     @Override

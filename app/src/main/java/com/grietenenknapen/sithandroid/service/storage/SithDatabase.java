@@ -43,7 +43,7 @@ public class SithDatabase extends DatabaseManager<SithDatabase.DbHelper> {
     public static class DbHelper extends SQLiteOpenHelper {
 
         private static final String DATABASE_NAME = "sithDatabase.db";
-        private static final int DATABASE_VERSION = 1;
+        private static final int DATABASE_VERSION = 2;
 
         static {
             // register our models
@@ -76,6 +76,7 @@ public class SithDatabase extends DatabaseManager<SithDatabase.DbHelper> {
             cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardObiWanKenobi());
             cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardRey());
             cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardTheEmperor());
+            cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardGeneralGrievous());
 
             List<Player> defaultPlayers = DatabaseDefaults.generateBros();
 
@@ -87,6 +88,11 @@ public class SithDatabase extends DatabaseManager<SithDatabase.DbHelper> {
         @Override
         public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
             cupboard().withDatabase(sqLiteDatabase).upgradeTables();
+
+            switch (i1) {
+                case 2:
+                    cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardGeneralGrievous());
+            }
         }
     }
 }

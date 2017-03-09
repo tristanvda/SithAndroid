@@ -10,6 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.TextView;
 
+import com.github.clans.fab.FloatingActionMenu;
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.application.Settings;
 import com.grietenenknapen.sithandroid.ui.presenters.HomePresenter;
@@ -30,6 +31,8 @@ public class HomeActivity extends PresenterActivity<HomePresenter, HomePresenter
     TextView menuStart;
     @BindView(R.id.menuResume)
     TextView menuResume;
+    @BindView(R.id.fab)
+    FloatingActionMenu fab;
 
     private boolean permissionGiven;
 
@@ -97,9 +100,19 @@ public class HomeActivity extends PresenterActivity<HomePresenter, HomePresenter
     @Override
     protected void onResume() {
         super.onResume();
+        fab.close(false);
         if (permissionGiven) {
             getPresenter().handleStartOrResumeGameClicked();
             permissionGiven = false;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (fab.isOpened()) {
+            fab.close(true);
+        } else {
+            super.onBackPressed();
         }
     }
 

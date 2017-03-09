@@ -31,7 +31,9 @@ public interface MainGameFlowCallBack extends GameFlowCallBack {
 
     void speak(int soundResId, int stringResId, GameUseCase useCase);
 
-    void stackAndSpeak(String soundResStringId);
+    void stackAndSpeak(int soundResSId);
+
+    void stackAndSpeak(String soundResSId);
 
     void saveGame(MainGame game);
 
@@ -41,6 +43,6 @@ public interface MainGameFlowCallBack extends GameFlowCallBack {
 
     void stopPlayingMusic();
 
-    void sendSMS(final String text, final String number);
+    void sendSMS(int stringResId, String number);
 
 }

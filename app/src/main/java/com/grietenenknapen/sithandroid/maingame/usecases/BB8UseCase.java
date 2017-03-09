@@ -32,17 +32,21 @@ public class BB8UseCase extends GameUseCasePairId<BB8UseCase.CallBack> {
                 break;
             case 3:
                 flowManagerListener.stopPlayingMusic();
-                flowManagerListener.speak(R.raw.basis5_bb8geliefdenkijkenelkaarliefdevolindeogen,
-                        R.string.basis5_bb8_geliefden_kijken_elkaar_liefdevol_in_de_ogen, this);
+                flowManagerListener.speak(R.raw.basis5_1_bb8magteruggaanslapen,
+                        R.string.basis5_1_bb8_mag_terug_gaan_slapen, this);
                 break;
             case 4:
+                flowManagerListener.speak(R.raw.basis5_2_bb8geliefdenkijkenelkaarliefdevolindeogen,
+                        R.string.basis5_2_bb8_geliefden_kijken_elkaar_liefdevol_in_de_ogen, this);
+                break;
+            case 5:
                 flowManagerListener.playBB8Music();
                 flowManagerListener.showDelay(DELAY_LOVERS, this);
                 break;
-            case 5:
+            case 6:
                 flowManagerListener.stopPlayingMusic();
-                flowManagerListener.speak(R.raw.basis6_bb8magteruggaanslapen,
-                        R.string.basis6_bb8_mag_terug_gaan_slapen, this);
+                flowManagerListener.speak(R.raw.basis6_degeliefdenmogenteruggaanslapen,
+                        R.string.basis6_de_geliefden_mogen_terug_gaan_slapen, this);
                 break;
         }
     }
@@ -56,7 +60,7 @@ public class BB8UseCase extends GameUseCasePairId<BB8UseCase.CallBack> {
 
     @Override
     public boolean finishUseCase(int step) {
-        return super.finishUseCase(step) || (round > 1 && step >= 1) || step > 5;
+        return super.finishUseCase(step) || (round > 1 && step >= 1) || step > 6;
     }
 
     public interface CallBack extends UseCaseCallBack {

@@ -22,7 +22,7 @@ public class SithCard implements Parcelable {
     @GameCardType.CardType
     private Integer cardType;
 
-    public SithCard(){
+    public SithCard() {
     }
 
     private SithCard(Builder builder) {
@@ -50,7 +50,6 @@ public class SithCard implements Parcelable {
         builder.cardType = copy.cardType;
         return builder;
     }
-
 
     public long getId() {
         return _id;

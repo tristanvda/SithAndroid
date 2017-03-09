@@ -30,6 +30,13 @@
             android:summaryOn="@string/sms_summary_on"
             android:title="@string/sms_title" />
 
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="random_comments"
+            android:summaryOff="@string/random_comments_mode_off"
+            android:summaryOn="@string/random_comments_mode_on"
+            android:title="@string/random_comments_title" />
+
     </android.support.v7.preference.PreferenceCategory>
 
     <android.support.v7.preference.PreferenceCategory

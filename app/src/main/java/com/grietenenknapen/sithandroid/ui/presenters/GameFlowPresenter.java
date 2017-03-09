@@ -2,9 +2,12 @@ package com.grietenenknapen.sithandroid.ui.presenters;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.text.TextUtils;
 
 import com.grietenenknapen.sithandroid.R;
+import com.grietenenknapen.sithandroid.application.Settings;
 import com.grietenenknapen.sithandroid.game.flowmanager.GameFlowManager;
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
@@ -14,6 +17,7 @@ import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseY
 import com.grietenenknapen.sithandroid.maingame.MainGame;
 import com.grietenenknapen.sithandroid.maingame.MainGameFlowCallBack;
 import com.grietenenknapen.sithandroid.maingame.MainGameFlowManager;
+import com.grietenenknapen.sithandroid.maingame.MainGameRandomFlowManager;
 import com.grietenenknapen.sithandroid.maingame.usecases.GameUseCaseCard;
 import com.grietenenknapen.sithandroid.model.database.Player;
 import com.grietenenknapen.sithandroid.model.database.SithCard;
@@ -56,10 +60,33 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
     private List<SithCard> sithCards;
     private MainGame game;
     private GameFlowManager<MainGameFlowCallBack> gameFlowManager;
-    private Queue<String> speakStack;
+    private List<Pair<Integer, Integer>> randomResourceList;
+    private Queue<Integer> speakStack;
+    private boolean playRandomComments;
 
-    public GameFlowPresenter(PlayerService playerService, SithCardService sithCardService, MainGame mainGame) {
+    public GameFlowPresenter(final PlayerService playerService,
+                             final SithCardService sithCardService,
+                             final MainGame mainGame) {
+
         this.playerService = playerService;
+        init(sithCardService, mainGame, false);
+    }
+
+    public GameFlowPresenter(final PlayerService playerService,
+                             final SithCardService sithCardService,
+                             final MainGame mainGame,
+                             final List<Pair<Integer, Integer>> randomResourceList) {
+
+        this.playerService = playerService;
+        this.randomResourceList = randomResourceList;
+        init(sithCardService, mainGame, true);
+    }
+
+    private void init(final SithCardService sithCardService,
+                      final MainGame mainGame,
+                      final boolean playRandomComments) {
+
+        this.playRandomComments = playRandomComments;
 
         if (mainGame != null) {
             status = STATUS_GAME;
@@ -85,6 +112,7 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
         });
     }
 
+
     public void setStatus(@GameStatus int status) {
         this.status = status;
     }
@@ -101,7 +129,11 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
             return;
         }
         if (gameFlowManager == null) {
-            gameFlowManager = new MainGameFlowManager(game, sithCards);
+            if (playRandomComments) {
+                gameFlowManager = new MainGameRandomFlowManager(game, sithCards, randomResourceList);
+            } else {
+                gameFlowManager = new MainGameFlowManager(game, sithCards);
+            }
         }
         if (!gameFlowManager.isAttached()) {
             gameFlowManager.attach(this);
@@ -128,7 +160,7 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
         }
     }
 
-    public void onPlayerSelected(List<Player> players) {
+    public void onPlayerSelected(final List<Player> players) {
         if (status == STATUS_KILL_PLAYERS) {
             game.killPlayers(players);
             for (Player player : players) {
@@ -188,13 +220,13 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
         gameFlowManager.startNewRound();
     }
 
-    public void killPlayerSelected(List<ActivePlayer> activePlayers) {
+    public void killPlayerSelected(final List<ActivePlayer> activePlayers) {
         List<Player> players = getPlayersList(activePlayers);
         getView().showKillPlayersScreen(players);
     }
 
     @NonNull
-    private List<Player> getPlayersList(List<ActivePlayer> activePlayers) {
+    private List<Player> getPlayersList(final List<ActivePlayer> activePlayers) {
         List<Player> players = new ArrayList<>();
         for (ActivePlayer activePlayer : activePlayers) {
             Player player = Player.newBuilder()
@@ -257,13 +289,20 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
     }
 
     @Override
-    public void stackAndSpeak(final String soundResStringId) {
+    public void stackAndSpeak(final int soundResId) {
         if (speakStack == null) {
             speakStack = new LinkedList<>();
-            speakStack.add(soundResStringId);
+            speakStack.add(soundResId);
             handleStackSpeak();
         } else {
-            speakStack.add(soundResStringId);
+            speakStack.add(soundResId);
+        }
+    }
+
+    @Override
+    public void stackAndSpeak(final String soundResSId) {
+        if (getView() != null) {
+            stackAndSpeak(getView().getRawResourceId(soundResSId));
         }
     }
 
@@ -296,8 +335,8 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
     }
 
     @Override
-    public void sendSMS(String text, String number) {
-        getView().sendSMS(text, number);
+    public void sendSMS(final int stringResId, String number) {
+        getView().sendSMS(stringResId, number);
     }
 
     public void onSpeakDone() {
@@ -310,8 +349,8 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
 
     private void handleStackSpeak() {
         if (speakStack != null) {
-            String resId = speakStack.poll();
-            if (resId != null) {
+            final int resId = speakStack.poll();
+            if (getView() != null) {
                 getView().speak(resId);
             }
         }
@@ -360,7 +399,7 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
 
         void goToDayScreen(MainGame game);
 
-        void speak(String soundResStringId);
+        void speak(int soundResId);
 
         void showExitDialog();
 
@@ -380,7 +419,11 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
 
         void stopPlayingMusic();
 
+        void sendSMS(final int stringResId, String number);
+
         void sendSMS(String text, String number);
+
+        int getRawResourceId(String resourceName);
 
     }
 }

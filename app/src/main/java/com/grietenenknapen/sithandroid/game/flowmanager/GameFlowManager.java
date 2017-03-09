@@ -118,7 +118,7 @@ public abstract class GameFlowManager<U extends GameFlowCallBack> implements Use
         }
     };
 
-    private void proceedToNextTurn() {
+    protected void proceedToNextTurn() {
         game.nextTurn();
         currentUseCase = getCurrentUseCase(game.getCurrentTurn());
         currentUseCase.onSetupUseCase(game.getCurrentRound());

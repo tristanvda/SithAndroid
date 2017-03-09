@@ -51,6 +51,7 @@ card_obi_wan.png
 card_rey.png
 card_the_emperor.png
 card_yoda.png
+card_general_grievous.png
 day_background.png
 
 #Raw resources
@@ -64,8 +65,9 @@ basis1_intro.wav
 basis2_hansolowordtwakker.wav
 basis3_hansolomagteruggaanlslapen.wav
 basis4_bb8wordtwakker.wav
-basis5_bb8geliefdenkijkenelkaarliefdevolindeogen.wav
-basis6_bb8magteruggaanslapen.wav
+basis5_1_bb8magteruggaanslapen.wav
+basis5_2_bb8geliefdenkijkenelkaarliefdevolindeogen.wav
+basis6_degeliefdenmogenteruggaanslapen.wav
 basis7_mazkanatawordtwakker.wav
 basis8_mazkanatamagteruggaanslapen.wav
 basis9_sithwordenwakker.wav
@@ -85,6 +87,7 @@ chewbacca.wav
 darth_maul.wav
 darth_vader.wav
 finn.wav
+general_grievous.wav
 han_solo_1.mp3
 han_solo_2.mp3
 han_solo_3.mp3
@@ -110,6 +113,14 @@ sith_5.mp3
 sith_6.mp3
 the_emperor.wav
 yoda.wav
+```
+If you want to add random comments to the 'random-comment-flow' just add sound files to the raw folder, starting with "random_comment_", followed by the name of the file.
+Example:
+
+```
+random_comment_1.wav
+random_comment_2.wav
+
 ```
 
 ## References

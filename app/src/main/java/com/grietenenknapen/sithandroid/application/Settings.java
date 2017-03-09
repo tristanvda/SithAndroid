@@ -15,6 +15,8 @@ public final class Settings {
     private final static String SETTING_MUSIC = "music";
     private final static String SETTING_SMS = "sms";
     private final static String SETTINGS_BATTERY_SAVING = "battery_saving";
+    private final static String RANDOM_COMMENTS = "random_comments";
+
     private static Gson GSON_INSTANCE;
 
     private Settings() {
@@ -78,5 +80,11 @@ public final class Settings {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
         return preferences.getBoolean(SETTINGS_BATTERY_SAVING, false);
+    }
+
+    public static boolean isRandomComments(final Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return preferences.getBoolean(RANDOM_COMMENTS, false);
     }
 }

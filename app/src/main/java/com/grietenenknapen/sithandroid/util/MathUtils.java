@@ -1,9 +1,8 @@
 package com.grietenenknapen.sithandroid.util;
 
-
 import java.util.Random;
 
-public class MathUtils {
+public final class MathUtils {
 
     private MathUtils() {
 
@@ -11,6 +10,6 @@ public class MathUtils {
 
     public static int generateRandomInteger(final int min, final int max) {
         final Random r = new Random();
-        return r.nextInt(max - min) + min;
+        return r.nextInt(max + 1 - min) + min;
     }
 }

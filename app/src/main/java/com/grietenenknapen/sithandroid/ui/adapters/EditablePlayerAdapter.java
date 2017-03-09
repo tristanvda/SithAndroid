@@ -21,12 +21,12 @@ public class EditablePlayerAdapter extends PlayerAdapter {
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    protected ViewHolder onCustomCreateViewHolder(final ViewGroup parent, final int viewType) {
         if (viewType == VIEW_TYPE_ADD) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             return new ViewHolder(inflater.inflate(R.layout.list_item_player_add, parent, false));
         }
-        return super.onCreateViewHolder(parent, viewType);
+        return super.onCustomCreateViewHolder(parent, viewType);
     }
 
     @Override

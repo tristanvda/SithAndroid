@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.util.Pair;
 import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -51,6 +52,7 @@ import com.grietenenknapen.sithandroid.util.ResourceUtils;
 import com.grietenenknapen.sithandroid.util.SMSUtils;
 import com.grietenenknapen.sithandroid.util.SithMusicPlayer;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +64,7 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
         DayFragment.CallBack, GameOverFragment.Callback,
         GameFragmentCallback {
     private static final String PRESENTER_TAG = "game_flow_presenter";
+    private static final String RANDOM_COMMENT_PREFIX = "random_comment";
 
     @BindView(R.id.activityLayout)
     RelativeLayout activityLayout;
@@ -124,8 +127,13 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
             mainGame = null;
         }
 
-        return new GameFlowPresenterFactory(((SithApplication) getApplicationContext()).getPlayerService(),
-                ((SithApplication) getApplicationContext()).getSithCardService(), mainGame);
+        if (Settings.isRandomComments(this)) {
+            return new GameFlowPresenterFactory(((SithApplication) getApplicationContext()).getPlayerService(),
+                    ((SithApplication) getApplicationContext()).getSithCardService(), mainGame, getRandomResourceList());
+        } else {
+            return new GameFlowPresenterFactory(((SithApplication) getApplicationContext()).getPlayerService(),
+                    ((SithApplication) getApplicationContext()).getSithCardService(), mainGame);
+        }
     }
 
     @Override
@@ -133,7 +141,7 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
         return this;
     }
 
-    private <T extends GameFlowFragment> boolean isNewTask(FlowDetails flowDetails, Fragment fragment, Class<T> tClass) {
+    private <T extends GameFlowFragment> boolean isNewTask(final FlowDetails flowDetails, final Fragment fragment, final Class<T> tClass) {
         return fragment == null
                 || !(tClass.isInstance(fragment))
                 || !fragment.isRemoving()
@@ -244,7 +252,7 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
     }
 
     @Override
-    public void goToUserCardSelectionScreen(List<SithCard> availableSithCards, GameUseCaseCard useCase, FlowDetails flowDetails) {
+    public void goToUserCardSelectionScreen(final List<SithCard> availableSithCards, final GameUseCaseCard useCase, final FlowDetails flowDetails) {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
         android.support.v4.app.FragmentManager fm = this.getSupportFragmentManager();
 
@@ -263,7 +271,7 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
     }
 
     @Override
-    public void goToUserCardPeekScreen(List<ActivePlayer> activePlayers, long delay, GameUseCase useCase, FlowDetails flowDetails) {
+    public void goToUserCardPeekScreen(final List<ActivePlayer> activePlayers, final long delay, GameUseCase useCase, final FlowDetails flowDetails) {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
         android.support.v4.app.FragmentManager fm = this.getSupportFragmentManager();
 
@@ -282,7 +290,7 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
     }
 
     @Override
-    public void goToSpeakScreen(int soundResId, int stringResId, GameUseCase useCase, FlowDetails flowDetails) {
+    public void goToSpeakScreen(final int soundResId, final int stringResId, final GameUseCase useCase, final FlowDetails flowDetails) {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
         android.support.v4.app.FragmentManager fm = this.getSupportFragmentManager();
 
@@ -301,7 +309,7 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
     }
 
     @Override
-    public void goTotUserPairPlayerSelection(List<Player> players, GameUseCasePairId useCase, FlowDetails flowDetails) {
+    public void goTotUserPairPlayerSelection(final List<Player> players, final GameUseCasePairId useCase, final FlowDetails flowDetails) {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
         android.support.v4.app.FragmentManager fm = this.getSupportFragmentManager();
 
@@ -320,21 +328,21 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
     }
 
     @Override
-    public void showSelectPlayersScreen(List<Player> players) {
+    public void showSelectPlayersScreen(final List<Player> players) {
         Bundle bundle = PlayerSelectFragment.createArguments(new ArrayList<>(players), 30);
         FragmentUtils.replaceOrAddFragment(this, PlayerSelectFragment.class, R.id.container,
                 PlayerSelectFragment.class.getName(), FragmentUtils.ANIMATE_NONE, bundle, false);
     }
 
     @Override
-    public void showKillPlayersScreen(List<Player> activePlayers) {
+    public void showKillPlayersScreen(final List<Player> activePlayers) {
         Bundle bundle = PlayerKillFragment.createArguments(new ArrayList<>(activePlayers));
         FragmentUtils.replaceOrAddFragment(this, PlayerKillFragment.class, R.id.container,
                 PlayerKillFragment.class.getName(), FragmentUtils.ANIMATE_SLIDE_LEFT, bundle, true);
     }
 
     @Override
-    public void goToShuffleScreen(List<Player> players) {
+    public void goToShuffleScreen(final List<Player> players) {
         final int animation = getSupportFragmentManager().findFragmentById(R.id.container) != null ?
                 FragmentUtils.ANIMATE_SLIDE_LEFT : FragmentUtils.ANIMATE_NONE;
         Bundle bundle = CardShuffleFragment.createArguments(new ArrayList<>(players));
@@ -354,10 +362,9 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
     }
 
     @Override
-    public void speak(String soundResStringId) {
-        int resId = ResourceUtils.getResIdFromResString(this, soundResStringId, ResourceUtils.RES_TYPE_RAW);
-        if (resId != 0) {
-            MediaSoundPlayer.playSoundFile(this, resId, PRESENTER_TAG);
+    public void speak(final int soundResId) {
+        if (soundResId != 0) {
+            MediaSoundPlayer.playSoundFile(this, soundResId, PRESENTER_TAG);
         } else {
             getPresenter().onSpeakDone();
         }
@@ -381,14 +388,14 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
     }
 
     @Override
-    public void showGameOver(List<ActivePlayer> players, @GameTeam.Team int winningTeam) {
+    public void showGameOver(final List<ActivePlayer> players, @GameTeam.Team final int winningTeam) {
         FragmentUtils.replaceOrAddFragment(this, GameOverFragment.class, R.id.container,
                 GameOverFragment.class.getName(), FragmentUtils.ANIMATE_SLIDE_LEFT,
                 GameOverFragment.createArguments((ArrayList<ActivePlayer>) players, winningTeam), false);
     }
 
     @Override
-    public void showError(int stringId) {
+    public void showError(final int stringId) {
         ActivityUtils.showSnackBar(activityLayout, getString(stringId));
     }
 
@@ -403,7 +410,7 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
     }
 
     @Override
-    public void saveGame(MainGame mainGame) {
+    public void saveGame(final MainGame mainGame) {
         Settings.setSavedMainGame(this, mainGame);
         Settings.setMainGameSaved(this, true);
     }
@@ -415,7 +422,7 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
     }
 
     @Override
-    public void playMusic(int musicType) {
+    public void playMusic(final int musicType) {
         SithMusicPlayer.playMusic(this, musicType);
     }
 
@@ -425,8 +432,38 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
     }
 
     @Override
-    public void sendSMS(String text, String number) {
+    public void sendSMS(final int stringResId, final String number) {
+        SMSUtils.sendSMS(this, getString(stringResId), number);
+    }
+
+    @Override
+    public void sendSMS(final String text, final String number) {
         SMSUtils.sendSMS(this, text, number);
+    }
+
+    private List<Pair<Integer, Integer>> getRandomResourceList() {
+        final Field[] fields = R.raw.class.getFields();
+        final List<Pair<Integer, Integer>> resourceList = new ArrayList<>();
+
+        for (Field field : fields) {
+            final String name = field.getName();
+            if (name.startsWith(RANDOM_COMMENT_PREFIX)) {
+                final int stringResId = ResourceUtils.getResIdFromResString(this, name, ResourceUtils.RES_TYPE_STRING);
+                try {
+                    final Pair<Integer, Integer> pair = new Pair<>(field.getInt(field), stringResId);
+                    resourceList.add(pair);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return resourceList;
+    }
+
+    @Override
+    public int getRawResourceId(final String resourceName) {
+        return ResourceUtils.getResIdFromResString(this, resourceName, ResourceUtils.RES_TYPE_RAW);
     }
 
     @Override
@@ -437,12 +474,12 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
     }
 
     @Override
-    public void onPlayersSelected(List<Player> players) {
+    public void onPlayersSelected(final List<Player> players) {
         getPresenter().onPlayerSelected(players);
     }
 
     @Override
-    public void onCardsShuffled(List<ActivePlayer> activePlayers) {
+    public void onCardsShuffled(final List<ActivePlayer> activePlayers) {
         getPresenter().onCardsShuffled(activePlayers);
     }
 
@@ -452,12 +489,12 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
     }
 
     @Override
-    public void onKillPlayerSelected(List<ActivePlayer> activePlayers) {
+    public void onKillPlayerSelected(final List<ActivePlayer> activePlayers) {
         presenter.killPlayerSelected(activePlayers);
     }
 
     @Override
-    public void onGamePlayersSelected(List<ActivePlayer> alivePlayers, List<ActivePlayer> killedPlayers) {
+    public void onGamePlayersSelected(final List<ActivePlayer> alivePlayers, final List<ActivePlayer> killedPlayers) {
         FragmentUtils.replaceOrAddFragment(this, GamePlayersFragment.class, R.id.container,
                 GamePlayersFragment.class.getName(), FragmentUtils.ANIMATE_SLIDE_LEFT,
                 GamePlayersFragment.createArguments((ArrayList<ActivePlayer>) alivePlayers,
@@ -474,18 +511,33 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
         private final PlayerService playerService;
         private final SithCardService sithCardService;
         private final MainGame mainGame;
+        private List<Pair<Integer, Integer>> randomResourceList;
 
-        public GameFlowPresenterFactory(PlayerService playerService,
-                                        SithCardService sithCardService,
-                                        MainGame mainGame) {
+        public GameFlowPresenterFactory(final PlayerService playerService,
+                                        final SithCardService sithCardService,
+                                        final MainGame mainGame) {
             this.playerService = playerService;
             this.sithCardService = sithCardService;
             this.mainGame = mainGame;
         }
 
+        public GameFlowPresenterFactory(final PlayerService playerService,
+                                        final SithCardService sithCardService,
+                                        final MainGame mainGame,
+                                        final List<Pair<Integer, Integer>> randomResourceList) {
+            this.playerService = playerService;
+            this.sithCardService = sithCardService;
+            this.mainGame = mainGame;
+            this.randomResourceList = randomResourceList;
+        }
+
         @Override
         public GameFlowPresenter createPresenter() {
-            return new GameFlowPresenter(playerService, sithCardService, mainGame);
+            if (randomResourceList != null) {
+                return new GameFlowPresenter(playerService, sithCardService, mainGame, randomResourceList);
+            } else {
+                return new GameFlowPresenter(playerService, sithCardService, mainGame);
+            }
         }
     }
 }

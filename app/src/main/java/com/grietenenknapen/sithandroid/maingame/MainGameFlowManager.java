@@ -44,13 +44,14 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
     private static final int TURN_COUNT = 10;
     private static final int DELAY_PEAK = 3 * 1000;
 
-    private static final String RAW_SOUND_BEHALVE = "behalve";
-    private static final String RAW_SOUND_COUNCIL_AWAKES = "basis16_dejedicouncilontwaakt";
+    private static final int RAW_SOUND_BEHALVE = R.raw.behalve;
+    private static final int RAW_SOUND_COUNCIL_AWAKES = R.raw.basis16_dejedicouncilontwaakt;
 
     private final MainGame mainGame;
     private final List<SithCard> sithCards;
 
-    public MainGameFlowManager(MainGame game, List<SithCard> sithCards) {
+    public MainGameFlowManager(MainGame game,
+                               List<SithCard> sithCards) {
         super(game);
         mainGame = game;
         this.sithCards = sithCards;
@@ -202,12 +203,12 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
 
         if (!TextUtils.isEmpty(lover1.getTelephoneNumber())) {
             //TODO: resources
-            uiListener.sendSMS("Verbonden door BB8!", lover1.getTelephoneNumber());
+            uiListener.sendSMS(R.string.linked_by_BB8, lover1.getTelephoneNumber());
         }
 
         if (!TextUtils.isEmpty(lover2.getTelephoneNumber())) {
             //TODO: resources
-            uiListener.sendSMS("Verbonden door BB8!", lover2.getTelephoneNumber());
+            uiListener.sendSMS(R.string.linked_by_BB8, lover2.getTelephoneNumber());
         }
     }
 

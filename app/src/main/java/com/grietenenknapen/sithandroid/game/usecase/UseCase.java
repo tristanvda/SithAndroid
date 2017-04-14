@@ -1,7 +1,7 @@
 package com.grietenenknapen.sithandroid.game.usecase;
 
 
-public interface UseCase<T> {
+public interface UseCase {
 
     /**
      * this is the setup method of the UseCase
@@ -30,16 +30,6 @@ public interface UseCase<T> {
      * @param step the current step of the Use Case
      */
     void onExecuteStep(final int step);
-
-
-    /**
-     * Same function as onExecuteStep, but provides data to the Use Case
-     * Mind that the step parameter should not be cached in the UseCase, as it will be provided by
-     * the flow manager every time
-     *
-     * @param step the current step of the Use Case
-     */
-    void onExecuteStep(int step, T stepData);
 
     /**
      * Return true if the Use Case has finished it's job and the flowmanger should continue to the next turn

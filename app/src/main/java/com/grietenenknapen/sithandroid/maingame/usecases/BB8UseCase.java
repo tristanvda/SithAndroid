@@ -5,9 +5,9 @@ import android.support.v4.util.Pair;
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.flowmanager.UseCaseCallBack;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCasePairId;
+import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCasePairId;
 
-public class BB8UseCase extends GameUseCasePairId<BB8UseCase.CallBack> {
+public class BB8UseCase extends GameUseCase<BB8UseCase.CallBack> implements UseCasePairId {
     private static final long DELAY_LOVERS = 10 * 1000;
 
     public BB8UseCase(CallBack flowManagerListener, boolean active, boolean skip) {
@@ -52,10 +52,11 @@ public class BB8UseCase extends GameUseCasePairId<BB8UseCase.CallBack> {
     }
 
     @Override
-    protected void onUseCaseExecuteStep(int step, Pair<Long, Long> stepData) {
+    public void onExecuteStep(int step, Pair<Long, Long> stepData) {
         if (step == 2 && stepData != null) {
             flowManagerListener.linkTwoLovers(stepData.first, stepData.second);
         }
+        this.handleExecuteStep();
     }
 
     @Override
@@ -65,7 +66,7 @@ public class BB8UseCase extends GameUseCasePairId<BB8UseCase.CallBack> {
 
     public interface CallBack extends UseCaseCallBack {
 
-        void requestUserPairPlayerSelection(GameUseCasePairId useCase);
+        void requestUserPairPlayerSelection(UseCasePairId useCase);
 
         void showDelay(long delay, GameUseCase gameUseCase);
 

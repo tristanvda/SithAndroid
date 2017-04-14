@@ -2,6 +2,7 @@ package com.grietenenknapen.sithandroid.util;
 
 import android.content.Context;
 import android.telephony.SmsManager;
+import android.text.TextUtils;
 
 import com.grietenenknapen.sithandroid.application.Settings;
 
@@ -9,7 +10,7 @@ public class SMSUtils {
 
     public static void sendSMS(Context context, final String text, final String number) {
 
-        if (!Settings.isSmsEnabled(context)) {
+        if (!Settings.isSmsEnabled(context) || TextUtils.isEmpty(number)) {
             return;
         }
         new Thread(new Runnable() {

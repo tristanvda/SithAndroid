@@ -23,6 +23,7 @@
         android:layout_above="@+id/listButton"
         android:layout_below="@id/listTitle"
         android:layout_centerHorizontal="true"
+        android:clipChildren="false"
         android:clipToPadding="false"
         android:requiresFadingEdge="horizontal|vertical" />
 

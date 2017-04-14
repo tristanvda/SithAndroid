@@ -13,7 +13,6 @@ public abstract class GameFlowManager<U extends GameFlowCallBack> implements Use
     protected GameUseCase currentUseCase;
     private Handler handler = new Handler();
     private boolean started;
-    private boolean gameRunning;
     protected U uiListener;
 
     public GameFlowManager(Game game) {
@@ -27,7 +26,6 @@ public abstract class GameFlowManager<U extends GameFlowCallBack> implements Use
             checkGameStatus();
             processStep();
         }
-        gameRunning = true;
     }
 
     /**
@@ -44,10 +42,9 @@ public abstract class GameFlowManager<U extends GameFlowCallBack> implements Use
     }
 
     /**
-     * Call this method only once to attach the flowManager to the UI
-     * Preferably this method can be called during the attach call of the presenter
+     * Call this method to detach the the FlowManager when it's not needed anymore
      */
-    public void onDetach() {
+    public void detach() {
         this.uiListener = null;
     }
 
@@ -58,10 +55,6 @@ public abstract class GameFlowManager<U extends GameFlowCallBack> implements Use
      */
     public boolean isStarted() {
         return started;
-    }
-
-    public boolean isGameRunning() {
-        return gameRunning;
     }
 
     public boolean isAttached() {
@@ -108,7 +101,6 @@ public abstract class GameFlowManager<U extends GameFlowCallBack> implements Use
         } else {
             currentUseCase.onPrepareStep(game.getCurrentStep());
         }
-
     }
 
     private Runnable runnableNextTurn = new Runnable() {
@@ -130,15 +122,12 @@ public abstract class GameFlowManager<U extends GameFlowCallBack> implements Use
             currentUseCase = getCurrentUseCase(game.getCurrentTurn());
             currentUseCase.onSetupUseCase(game.getCurrentRound());
             started = true;
-            uiListener.roundStatusChanged(started, false);
+            uiListener.roundStatusChanged(true, false);
         } else {
             started = false;
-            uiListener.roundStatusChanged(started, false);
+            uiListener.roundStatusChanged(false, false);
         }
-        gameRunning = true;
     }
-
-    //TODO: ENDING THE USE CASEEEEEEEEEEEEEEEEEEEE!!!!!
 
     protected abstract void onRoundEnd();
 

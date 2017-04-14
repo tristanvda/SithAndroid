@@ -3,9 +3,9 @@ package com.grietenenknapen.sithandroid.maingame.usecases;
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.flowmanager.UseCaseCallBack;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseId;
+import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseId;
 
-public class SithUseCase extends GameUseCaseId<SithUseCase.CallBack> {
+public class SithUseCase extends GameUseCase<SithUseCase.CallBack> implements UseCaseId {
 
     public SithUseCase(CallBack flowManagerListener, boolean active, boolean skip) {
         super(flowManagerListener, active, skip);
@@ -35,10 +35,11 @@ public class SithUseCase extends GameUseCaseId<SithUseCase.CallBack> {
     }
 
     @Override
-    protected void onUseCaseExecuteStep(final int step, final Long stepData) {
-        if (step == 2 && stepData != null) {
+    public void onExecuteStep(final int step, final long stepData) {
+        if (step == 2) {
             flowManagerListener.markUserAsDeath(stepData);
         }
+        this.handleExecuteStep();
     }
 
     @Override
@@ -48,7 +49,7 @@ public class SithUseCase extends GameUseCaseId<SithUseCase.CallBack> {
 
     public interface CallBack extends UseCaseCallBack {
 
-        void requestUserPlayerSelectionSith(GameUseCaseId useCase);
+        void requestUserPlayerSelectionSith(UseCaseId useCase);
 
         void speak(int soundResId, int stringResId, GameUseCase gameUseCase);
 

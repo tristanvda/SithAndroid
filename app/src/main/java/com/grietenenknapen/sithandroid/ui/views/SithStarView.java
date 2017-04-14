@@ -22,6 +22,11 @@ public class SithStarView extends StarView {
 
     @Override
     protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
+
+        if (isInEditMode()){
+            return;
+        }
+
         super.onVisibilityChanged(changedView, visibility);
 
         if (visibility == View.VISIBLE) {

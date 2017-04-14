@@ -3,13 +3,11 @@ package com.grietenenknapen.sithandroid.ui.fragments.gameflow;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.util.Pair;
 import android.view.View;
 
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseId;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseYesNoId;
+import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseId;
 import com.grietenenknapen.sithandroid.model.database.Player;
 import com.grietenenknapen.sithandroid.ui.PresenterFactory;
 import com.grietenenknapen.sithandroid.ui.adapters.SelectPlayerAdapter;
@@ -21,23 +19,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SelectPlayerSingleGameFlowFragment extends PlayerSelectFragment
-        implements GameFlowFragment<GameUseCaseId> {
+        implements GameFlowFragment<UseCaseId> {
     private static final String PRESENTER_TAG = "select_player_single_presenter";
     private static final String KEY_FLOW_DETAIL = "key:flow_details";
 
-    private GameUseCaseId gameUseCase;
+    private UseCaseId gameUseCase;
     private FlowDetails flowDetails;
 
-    public static SelectPlayerSingleGameFlowFragment createInstance(final FlowDetails flowDetails,
-                                                                    final ArrayList<Player> players) {
+    public static Bundle createStartBundle(final FlowDetails flowDetails,
+                                           final ArrayList<Player> players) {
+
         final Bundle bundle = new Bundle();
         bundle.putParcelable(KEY_FLOW_DETAIL, flowDetails);
         bundle.putParcelableArrayList(KEY_PLAYERS, players);
         bundle.putInt(KEY_SELECTION_MAX, 1);
 
-        SelectPlayerSingleGameFlowFragment fragment = new SelectPlayerSingleGameFlowFragment();
-        fragment.setArguments(bundle);
-        return fragment;
+        return bundle;
     }
 
     @Override
@@ -98,7 +95,7 @@ public class SelectPlayerSingleGameFlowFragment extends PlayerSelectFragment
     }
 
     @Override
-    public void setUseCase(GameUseCaseId useCase) {
+    public void setUseCase(UseCaseId useCase) {
         this.gameUseCase = useCase;
     }
 

@@ -3,7 +3,7 @@ package com.grietenenknapen.sithandroid.maingame.usecases;
 import com.grietenenknapen.sithandroid.game.flowmanager.UseCaseCallBack;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
 
-public final class RandomCommentUseCase extends GameUseCase<Void, RandomCommentUseCase.CallBack> {
+public final class RandomCommentUseCase extends GameUseCase<RandomCommentUseCase.CallBack> {
     private final int resSoundId;
     private final int resStringId;
 
@@ -28,14 +28,8 @@ public final class RandomCommentUseCase extends GameUseCase<Void, RandomCommentU
         return step > 1;
     }
 
-    @Override
-    protected void onUseCaseExecuteStep(final int step, final Void stepData) {
-
-    }
-
     public interface CallBack extends UseCaseCallBack {
 
         void speak(int soundResId, int stringResId, GameUseCase gameUseCase);
-
     }
 }

@@ -1,6 +1,5 @@
 package com.grietenenknapen.sithandroid.ui.fragments.gameflow;
 
-
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -14,11 +13,10 @@ import android.widget.TextView;
 
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
-import com.grietenenknapen.sithandroid.maingame.usecases.GameUseCaseCard;
+import com.grietenenknapen.sithandroid.maingame.usecases.UseCaseCard;
 import com.grietenenknapen.sithandroid.model.database.SithCard;
 import com.grietenenknapen.sithandroid.ui.CallbackPresenterFragment;
 import com.grietenenknapen.sithandroid.ui.PresenterFactory;
-import com.grietenenknapen.sithandroid.ui.PresenterFragment;
 import com.grietenenknapen.sithandroid.ui.adapters.CardAdapter;
 import com.grietenenknapen.sithandroid.ui.helper.ItemOffsetDecoration;
 import com.grietenenknapen.sithandroid.ui.presenters.GameFlowPresenter;
@@ -33,7 +31,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class SithCardSelectGameFlowFragment extends CallbackPresenterFragment<SithCardSelectGameFlowPresenter, SithCardSelectGameFlowPresenter.View, GameFragmentCallback>
-        implements SithCardSelectGameFlowPresenter.View, GameFlowFragment<GameUseCaseCard> {
+        implements SithCardSelectGameFlowPresenter.View, GameFlowFragment<UseCaseCard> {
 
     private static final String PRESENTER_TAG = "sith_card_select_presenter";
     private static final String KEY_FLOW_DETAIL = "key:flow_details";
@@ -48,23 +46,22 @@ public class SithCardSelectGameFlowFragment extends CallbackPresenterFragment<Si
     ImageButton nextButton;
 
     private CardAdapter adapter;
-    private GameUseCaseCard gameUseCase;
+    private UseCaseCard gameUseCase;
     private FlowDetails flowDetails;
 
 
-    public static SithCardSelectGameFlowFragment createInstance(final FlowDetails flowDetails,
-                                                                final ArrayList<SithCard> sithCards) {
+    public static Bundle createStartBundle(final FlowDetails flowDetails,
+                                           final ArrayList<SithCard> sithCards) {
+
         final Bundle bundle = new Bundle();
         bundle.putParcelable(KEY_FLOW_DETAIL, flowDetails);
         bundle.putParcelableArrayList(KEY_SITH_CARDS, sithCards);
 
-        SithCardSelectGameFlowFragment fragment = new SithCardSelectGameFlowFragment();
-        fragment.setArguments(bundle);
-        return fragment;
+        return bundle;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         flowDetails = getArguments().getParcelable(KEY_FLOW_DETAIL);
         getPresenter().setGameUseCase(gameUseCase);
@@ -72,13 +69,13 @@ public class SithCardSelectGameFlowFragment extends CallbackPresenterFragment<Si
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable final Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_list, container, false);
         return v;
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(final View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         initLayout();
@@ -97,7 +94,7 @@ public class SithCardSelectGameFlowFragment extends CallbackPresenterFragment<Si
     }
 
     @Override
-    public void showSithCards(List<SithCard> sithCards) {
+    public void showSithCards(final List<SithCard> sithCards) {
         adapter = new CardAdapter(getContext(), sithCards, ResourceUtils.getDefaultCardItemSize(getActivity().getWindowManager()));
         adapter.setMaxItemSelection(1);
         adapter.setOnCardSelectListener(new CardAdapter.OnCardSelectListener() {
@@ -112,7 +109,7 @@ public class SithCardSelectGameFlowFragment extends CallbackPresenterFragment<Si
     }
 
     @Override
-    public void showSelectedSithCard(SithCard selectedCard) {
+    public void showSelectedSithCard(final SithCard selectedCard) {
         adapter.selectSithCard(selectedCard);
     }
 
@@ -137,7 +134,8 @@ public class SithCardSelectGameFlowFragment extends CallbackPresenterFragment<Si
         if (flowDetails != null) {
             return PRESENTER_TAG + flowDetails.getRound() + flowDetails.getStep() + flowDetails.getTurn();
         }
-        return PRESENTER_TAG;    }
+        return PRESENTER_TAG;
+    }
 
     @Override
     protected PresenterFactory<SithCardSelectGameFlowPresenter> getPresenterFactory() {
@@ -151,12 +149,12 @@ public class SithCardSelectGameFlowFragment extends CallbackPresenterFragment<Si
     }
 
     @Override
-    public void setUseCase(GameUseCaseCard useCase) {
+    public void setUseCase(final UseCaseCard useCase) {
         this.gameUseCase = useCase;
     }
 
     @Override
-    public boolean isNewTask(FlowDetails flowDetails) {
+    public boolean isNewTask(final FlowDetails flowDetails) {
         return !this.flowDetails.equals(flowDetails);
     }
 

@@ -1,14 +1,12 @@
 package com.grietenenknapen.sithandroid.maingame.usecases;
 
-import android.util.Pair;
-
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.flowmanager.UseCaseCallBack;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseYesNoId;
+import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseId;
+import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseYesNo;
 
-public class BobaFettUseCase extends GameUseCaseYesNoId<BobaFettUseCase.CallBack> {
-
+public class BobaFettUseCase extends GameUseCase<BobaFettUseCase.CallBack> implements UseCaseYesNo, UseCaseId {
 
     private boolean rocketAlreadySelected = false;
 
@@ -71,24 +69,29 @@ public class BobaFettUseCase extends GameUseCaseYesNoId<BobaFettUseCase.CallBack
     }
 
     @Override
-    protected void onUseCaseExecuteStep(int step, Pair<Boolean, Long> stepData) {
-        if (step == 2 && stepData != null && stepData.first) {
+    public void onExecuteStep(int step, boolean stepData) {
+        if (step == 2 && stepData) {
             flowManagerListener.useMedPack();
-        } else if (step == 4 && stepData != null && stepData.first) {
+        } else if (step == 4 && stepData) {
             rocketAlreadySelected = true;
-            flowManagerListener.setRockedAlreadySelected(rocketAlreadySelected);
-        } else if (step == 5 && stepData != null) {
-            flowManagerListener.useRockedLauncher(stepData.second);
+            flowManagerListener.setRockedAlreadySelected(true);
         }
+        this.handleExecuteStep();
+    }
+
+    @Override
+    public void onExecuteStep(final int step, final long stepData) {
+        flowManagerListener.useRockedLauncher(stepData);
+        this.handleExecuteStep();
     }
 
     public interface CallBack extends UseCaseCallBack {
 
-        void requestYesNoAnswerRocket(GameUseCaseYesNoId useCase, final int titleResId);
+        void requestYesNoAnswerRocket(UseCaseYesNo useCase, final int titleResId);
 
-        void showKilledPlayerMedPackYesNo(GameUseCaseYesNoId useCase);
+        void showKilledPlayerMedPackYesNo(UseCaseYesNo useCase);
 
-        void requestUserPlayerRocketSelection(GameUseCaseYesNoId useCase);
+        void requestUserPlayerRocketSelection(UseCaseId useCase);
 
         void speak(int soundResId, int stringResId, GameUseCase gameUseCase);
 

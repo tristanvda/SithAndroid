@@ -2,23 +2,21 @@ package com.grietenenknapen.sithandroid.ui.presenters;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 import android.text.TextUtils;
 
 import com.grietenenknapen.sithandroid.R;
-import com.grietenenknapen.sithandroid.application.Settings;
 import com.grietenenknapen.sithandroid.game.flowmanager.GameFlowManager;
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseId;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCasePairId;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseYesNoId;
+import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseId;
+import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCasePairId;
+import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseYesNo;
 import com.grietenenknapen.sithandroid.maingame.MainGame;
 import com.grietenenknapen.sithandroid.maingame.MainGameFlowCallBack;
 import com.grietenenknapen.sithandroid.maingame.MainGameFlowManager;
 import com.grietenenknapen.sithandroid.maingame.MainGameRandomFlowManager;
-import com.grietenenknapen.sithandroid.maingame.usecases.GameUseCaseCard;
+import com.grietenenknapen.sithandroid.maingame.usecases.UseCaseCard;
 import com.grietenenknapen.sithandroid.model.database.Player;
 import com.grietenenknapen.sithandroid.model.database.SithCard;
 import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
@@ -204,15 +202,10 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
         return false;
     }
 
-    public FlowDetails getFlowDetails() {
-        if (game != null) {
-            game.getFlowDetails();
-        }
-        return null;
-    }
-
     public void quitGame() {
-        //TODO: remove the cached game data
+        if (gameFlowManager != null) {
+            gameFlowManager.detach();
+        }
         getView().closeScreen();
     }
 
@@ -241,7 +234,7 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
     }
 
     @Override
-    public void requestUserPairPlayerSelection(final List<ActivePlayer> activePlayers, final GameUseCasePairId useCase) {
+    public void requestUserPairPlayerSelection(final List<ActivePlayer> activePlayers, final UseCasePairId useCase) {
         List<Player> players = getPlayersList(activePlayers);
         getView().goTotUserPairPlayerSelection(players, useCase, game.getFlowDetails());
     }
@@ -252,29 +245,23 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
     }
 
     @Override
-    public void requestYesNoAnswer(final boolean disableYes, final GameUseCaseYesNoId useCase, final int titleResId) {
+    public void requestYesNoAnswer(final boolean disableYes, final UseCaseYesNo useCase, final int titleResId) {
         getView().goToYesNoScreen(disableYes, useCase, game.getFlowDetails(), titleResId);
     }
 
     @Override
-    public void showKilledPlayerYesNo(final ActivePlayer activePlayer, final boolean disableYes, final int titleResId, final GameUseCaseYesNoId useCase) {
-        getView().goToKilledPlayerYesNoScreen(activePlayer, disableYes, titleResId, useCase, game.getFlowDetails());
+    public void showPlayerYesNo(final ActivePlayer activePlayer, final boolean disableYes, final int titleResId, final UseCaseYesNo useCase) {
+        getView().goToPlayerYesNoScreen(activePlayer, disableYes, titleResId, useCase, game.getFlowDetails());
     }
 
     @Override
-    public void requestUserPlayerSelection(final List<ActivePlayer> activePlayers, final GameUseCaseId useCase) {
+    public void requestUserPlayerSelection(final List<ActivePlayer> activePlayers, final UseCaseId useCase) {
         List<Player> players = getPlayersList(activePlayers);
         getView().goToUserPlayerSelectionScreen(players, useCase, game.getFlowDetails());
     }
 
     @Override
-    public void requestUserPlayerSelection(final List<ActivePlayer> activePlayers, final GameUseCaseYesNoId useCase) {
-        List<Player> players = getPlayersList(activePlayers);
-        getView().goToUserPlayerSelectionScreen(players, useCase, game.getFlowDetails());
-    }
-
-    @Override
-    public void requestUserCardSelection(final List<SithCard> availableSithCards, final GameUseCaseCard useCase) {
+    public void requestUserCardSelection(final List<SithCard> availableSithCards, final UseCaseCard useCase) {
         getView().goToUserCardSelectionScreen(availableSithCards, useCase, game.getFlowDetails());
     }
 
@@ -375,21 +362,19 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
 
         void goToDelayScreen(long delay, GameUseCase gameUseCase, FlowDetails flowDetails);
 
-        void goToYesNoScreen(boolean disableYes, GameUseCaseYesNoId useCase, FlowDetails flowDetails, int titleResId);
+        void goToYesNoScreen(boolean disableYes, UseCaseYesNo useCase, FlowDetails flowDetails, int titleResId);
 
-        void goToKilledPlayerYesNoScreen(ActivePlayer activePlayer, boolean disableYes, int titleResId, GameUseCaseYesNoId useCase, FlowDetails flowDetails);
+        void goToPlayerYesNoScreen(ActivePlayer activePlayer, boolean disableYes, int titleResId, UseCaseYesNo useCase, FlowDetails flowDetails);
 
-        void goToUserPlayerSelectionScreen(List<Player> activePlayers, GameUseCaseId useCase, FlowDetails flowDetails);
+        void goToUserPlayerSelectionScreen(List<Player> activePlayers, UseCaseId useCase, FlowDetails flowDetails);
 
-        void goToUserPlayerSelectionScreen(List<Player> activePlayers, GameUseCaseYesNoId useCase, FlowDetails flowDetails);
-
-        void goToUserCardSelectionScreen(List<SithCard> availableSithCards, GameUseCaseCard useCase, FlowDetails flowDetails);
+        void goToUserCardSelectionScreen(List<SithCard> availableSithCards, UseCaseCard useCase, FlowDetails flowDetails);
 
         void goToUserCardPeekScreen(List<ActivePlayer> players, long delay, GameUseCase useCase, FlowDetails flowDetails);
 
         void goToSpeakScreen(int soundResId, int stringResId, GameUseCase useCase, FlowDetails flowDetails);
 
-        void goTotUserPairPlayerSelection(List<Player> players, GameUseCasePairId useCase, FlowDetails flowDetails);
+        void goTotUserPairPlayerSelection(List<Player> players, UseCasePairId useCase, FlowDetails flowDetails);
 
         void showSelectPlayersScreen(List<Player> players);
 
@@ -424,6 +409,5 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
         void sendSMS(String text, String number);
 
         int getRawResourceId(String resourceName);
-
     }
 }

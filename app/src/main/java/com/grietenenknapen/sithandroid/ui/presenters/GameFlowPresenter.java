@@ -164,7 +164,7 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
             for (Player player : players) {
                 game.addToDeathList(player.getId());
             }
-            if (game.checkGameOver()) {
+            if (game.isGameOver()) {
                 getView().deleteSavedGame();
                 goToGameOverFragment();
             } else {

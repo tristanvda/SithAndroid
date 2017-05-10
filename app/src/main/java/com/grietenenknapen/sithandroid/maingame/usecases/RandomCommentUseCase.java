@@ -25,7 +25,7 @@ public final class RandomCommentUseCase extends GameUseCase<RandomCommentUseCase
 
     @Override
     public boolean finishUseCase(final int step) {
-        return step > 1;
+        return super.finishUseCase(step) ||  step > 1;
     }
 
     public interface CallBack extends UseCaseCallBack {

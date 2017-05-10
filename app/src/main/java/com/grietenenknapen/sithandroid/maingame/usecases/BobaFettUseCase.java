@@ -12,8 +12,8 @@ public class BobaFettUseCase extends GameUseCase<BobaFettUseCase.CallBack> imple
 
     public BobaFettUseCase(CallBack flowManagerListener,
                            boolean active,
-                           boolean rockedAlreadySelected,
-                           boolean skip) {
+                           boolean skip,
+                           boolean rockedAlreadySelected) {
         super(flowManagerListener, active, skip);
         this.rocketAlreadySelected = rockedAlreadySelected;
     }
@@ -41,7 +41,7 @@ public class BobaFettUseCase extends GameUseCase<BobaFettUseCase.CallBack> imple
                 if (!active) {
                     flowManagerListener.skipStepDelay(delayLong);
                 } else {
-                    flowManagerListener.requestYesNoAnswerRocket(this, R.string.boba_fett_use_rocket_launcher);
+                    flowManagerListener.requestYesNoAnswerRocket(this);
                 }
                 break;
             case 5:
@@ -87,7 +87,7 @@ public class BobaFettUseCase extends GameUseCase<BobaFettUseCase.CallBack> imple
 
     public interface CallBack extends UseCaseCallBack {
 
-        void requestYesNoAnswerRocket(UseCaseYesNo useCase, final int titleResId);
+        void requestYesNoAnswerRocket(UseCaseYesNo useCase);
 
         void showKilledPlayerMedPackYesNo(UseCaseYesNo useCase);
 

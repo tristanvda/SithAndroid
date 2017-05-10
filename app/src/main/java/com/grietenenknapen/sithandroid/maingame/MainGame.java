@@ -23,9 +23,10 @@ public class MainGame implements Game, Parcelable {
     private List<ActivePlayer> activePlayers;
     private List<Long> deathList;
     private Pair<Long, Long> lovers;
-    private boolean bobaMedPackUsed = false;
-    private boolean bobaRocketUsed = false;
-    private boolean rocketAlreadySelected = false;
+    private boolean bobaMedPackUsed;
+    private boolean bobaRocketUsed;
+    private boolean rocketAlreadySelected;
+    private boolean gameOver;
 
     @DayCycle.Cycle
     private int dayCycle;
@@ -131,6 +132,7 @@ public class MainGame implements Game, Parcelable {
         for (Long deathPlayerId : deathList) {
             getActivePlayer(deathPlayerId).setAlive(false);
         }
+        gameOver = checkGameOver();
     }
 
     public void killPlayers(List<Player> players) {
@@ -140,6 +142,7 @@ public class MainGame implements Game, Parcelable {
                 activePlayer.setAlive(false);
             }
         }
+        gameOver = checkGameOver();
     }
 
     private void updateDeathListWithLovers() {
@@ -167,6 +170,11 @@ public class MainGame implements Game, Parcelable {
     @Override
     public void nextRound() {
         currentNight++;
+    }
+
+    @Override
+    public boolean isGameOver() {
+        return gameOver;
     }
 
     @Override
@@ -260,7 +268,7 @@ public class MainGame implements Game, Parcelable {
         }
     }
 
-    public boolean checkGameOver() {
+    private boolean checkGameOver() {
         int jediSideCount = 0;
         int sithSideCount = 0;
         int aliveCount = 0;
@@ -269,7 +277,6 @@ public class MainGame implements Game, Parcelable {
             if (!activePlayer.isAlive()) {
                 continue;
             }
-
             aliveCount++;
 
             if (activePlayer.getSide() == GameSide.SITH) {
@@ -283,10 +290,10 @@ public class MainGame implements Game, Parcelable {
                 && getActivePlayer(lovers.first).isAlive()
                 && getActivePlayer(lovers.second).isAlive()
                 && aliveCount == 2) {
+
             setWinningTeam(GameTeam.LOVERS);
             return true;
         } else {
-
             if (jediSideCount == 0) {
                 setWinningTeam(GameTeam.SITH);
                 return true;
@@ -294,7 +301,6 @@ public class MainGame implements Game, Parcelable {
                 setWinningTeam(GameTeam.JEDI);
                 return true;
             }
-
             return false;
         }
     }
@@ -307,7 +313,6 @@ public class MainGame implements Game, Parcelable {
     public void setWinningTeam(@GameTeam.Team int winningTeam) {
         this.winningTeam = winningTeam;
     }
-
 
     @Override
     public int describeContents() {
@@ -342,7 +347,7 @@ public class MainGame implements Game, Parcelable {
         in.readList(this.deathList, Long.class.getClassLoader());
         final long lover1 = in.readLong();
         final long lover2 = in.readLong();
-        if (lover1 != -1 && lover2 != -1){
+        if (lover1 != -1 && lover2 != -1) {
             this.lovers = new Pair<>(lover1, lover2);
         }
         this.bobaMedPackUsed = in.readByte() != 0;

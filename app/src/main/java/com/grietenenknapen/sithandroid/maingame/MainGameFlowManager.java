@@ -82,8 +82,8 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
             case 9:
                 return new ChewBaccaUseCase(this, cardIsActive(GameCardType.CHEWBACCA), cardsInGameAndKilled(GameCardType.CHEWBACCA));
             case 10:
-                return new BobaFettUseCase(this, cardIsActive(GameCardType.BOBA_FETT),
-                        mainGame.isRocketAlreadySelected(), cardsInGameAndKilled(GameCardType.BOBA_FETT));
+                return new BobaFettUseCase(this, cardIsActive(GameCardType.BOBA_FETT), cardsInGameAndKilled(GameCardType.BOBA_FETT),
+                        mainGame.isRocketAlreadySelected());
             default:
                 return new SkipUseCase(this);
         }
@@ -112,7 +112,7 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
 
     @Override
     protected boolean isGameOver() {
-        return mainGame.checkGameOver();
+        return mainGame.isGameOver();
     }
 
     private boolean cardIsActive(@GameCardType.CardType int type) {
@@ -275,8 +275,8 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
     }
 
     @Override
-    public void requestYesNoAnswerRocket(final UseCaseYesNo useCase, final int titleResId) {
-        uiListener.requestYesNoAnswer(mainGame.isBobaRocketUsed(), useCase, titleResId);
+    public void requestYesNoAnswerRocket(final UseCaseYesNo useCase) {
+        uiListener.requestYesNoAnswer(mainGame.isBobaRocketUsed(), useCase, R.string.boba_fett_use_rocket_launcher);
     }
 
     @Override

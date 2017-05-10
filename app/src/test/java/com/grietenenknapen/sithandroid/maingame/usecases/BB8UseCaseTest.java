@@ -3,24 +3,29 @@ package com.grietenenknapen.sithandroid.maingame.usecases;
 import android.support.v4.util.Pair;
 
 import com.grietenenknapen.sithandroid.R;
+import com.grietenenknapen.sithandroid.maingame.MainGameFlowCallBack;
 
 import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 public class BB8UseCaseTest {
     private BB8UseCase bb8UseCase;
+
+    @Mock
     private BB8UseCase.CallBack callBack;
 
     @Before
     public void setUp() {
-        callBack = Mockito.mock(BB8UseCase.CallBack.class);
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    public void testBB8RoundOne_active() {
+    public void testBB8_RoundOne_Active() {
         bb8UseCase = new BB8UseCase(callBack, true, false);
 
         bb8UseCase.onSetupUseCase(1);
@@ -33,7 +38,6 @@ public class BB8UseCaseTest {
         Assert.assertEquals(bb8UseCase.finishUseCase(2), false);
         bb8UseCase.onPrepareStep(2);
         Mockito.verify(callBack).requestUserPairPlayerSelection(bb8UseCase);
-        Mockito.verify(callBack).playBB8Music();
         bb8UseCase.onExecuteStep(2, new Pair<>(1L, 2L));
         Mockito.verify(callBack).linkTwoLovers(1L, 2L);
 
@@ -59,12 +63,14 @@ public class BB8UseCaseTest {
         bb8UseCase.onExecuteStep(6);
 
         Assert.assertEquals(bb8UseCase.finishUseCase(7), true);
+        Mockito.verify(callBack, Mockito.times(2)).playBB8Music();
+        Mockito.verify(callBack, Mockito.times(2)).stopPlayingMusic();
 
         Mockito.verify(callBack, Mockito.times(6)).nextStep(Mockito.anyInt());
     }
 
     @Test
-    public void testBB8RoundOne_not_active() {
+    public void testBB8_RoundOne_NotActive() {
         bb8UseCase = new BB8UseCase(callBack, false, false);
 
         bb8UseCase.onSetupUseCase(1);
@@ -77,14 +83,12 @@ public class BB8UseCaseTest {
         Assert.assertEquals(bb8UseCase.finishUseCase(2), false);
         bb8UseCase.onPrepareStep(2);
         Mockito.verify(callBack).skipStepDelay(Mockito.anyLong());
-        Mockito.verify(callBack).playBB8Music();
         bb8UseCase.onExecuteStep(2, new Pair<>(1L, 2L));
         Mockito.verify(callBack).linkTwoLovers(1L, 2L);
 
         Assert.assertEquals(bb8UseCase.finishUseCase(3), false);
         bb8UseCase.onPrepareStep(3);
         Mockito.verify(callBack).speak(R.raw.basis5_1_bb8magteruggaanslapen, R.string.basis5_1_bb8_mag_terug_gaan_slapen, bb8UseCase);
-        Mockito.verify(callBack).stopPlayingMusic();
         bb8UseCase.onExecuteStep(3);
 
         Assert.assertEquals(bb8UseCase.finishUseCase(4), false);
@@ -103,12 +107,14 @@ public class BB8UseCaseTest {
         bb8UseCase.onExecuteStep(6);
 
         Assert.assertEquals(bb8UseCase.finishUseCase(7), true);
+        Mockito.verify(callBack, Mockito.times(2)).playBB8Music();
+        Mockito.verify(callBack, Mockito.times(2)).stopPlayingMusic();
 
         Mockito.verify(callBack, Mockito.times(6)).nextStep(Mockito.anyInt());
     }
 
     @Test
-    public void testBB8RoundOne_skip() {
+    public void testBB8_RoundOne_Skip() {
         bb8UseCase = new BB8UseCase(callBack, true, true);
 
         bb8UseCase.onSetupUseCase(1);
@@ -117,7 +123,7 @@ public class BB8UseCaseTest {
 
 
     @Test
-    public void testBB8RoundTwo_active() {
+    public void testBB8_RoundTwo_Active() {
         bb8UseCase = new BB8UseCase(callBack, true, false);
 
         bb8UseCase.onSetupUseCase(2);

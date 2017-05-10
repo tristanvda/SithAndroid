@@ -52,7 +52,7 @@ public class PlayedGameServiceStorageTest {
     public void setUp() {
         final List<SithCard> sithCards = new ArrayList<>();
         sithCards.add(SithCard.newBuilder()
-                ._id(1l)
+                ._id(1L)
                 .cardType(GameCardType.BB8)
                 .imageResId("test" )
                 .build());
@@ -60,7 +60,7 @@ public class PlayedGameServiceStorageTest {
 
         final List<GamePlayer> gamePlayers = new ArrayList<>();
         gamePlayers.add(GamePlayer.newBuilder()
-                ._id(1l)
+                ._id(1L)
                 .player(Player.newBuilder().build())
                 .side(GameSide.JEDI)
                 .sithCards(sithCards)
@@ -76,7 +76,7 @@ public class PlayedGameServiceStorageTest {
                 .build());
 
         newPlayedGame = PlayedGame.newBuilder()
-                ._id(1l)
+                ._id(1L)
                 .rounds(1)
                 .startTime(1)
                 .stopTime(1)

@@ -3,7 +3,6 @@ package com.grietenenknapen.sithandroid.ui.activities;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.util.Pair;
 import android.widget.RelativeLayout;
 
@@ -14,11 +13,11 @@ import com.grietenenknapen.sithandroid.application.Settings;
 import com.grietenenknapen.sithandroid.application.SithApplication;
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseId;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCasePairId;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseYesNoId;
+import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseId;
+import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCasePairId;
+import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseYesNo;
 import com.grietenenknapen.sithandroid.maingame.MainGame;
-import com.grietenenknapen.sithandroid.maingame.usecases.GameUseCaseCard;
+import com.grietenenknapen.sithandroid.maingame.usecases.UseCaseCard;
 import com.grietenenknapen.sithandroid.model.database.Player;
 import com.grietenenknapen.sithandroid.model.database.SithCard;
 import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
@@ -32,9 +31,7 @@ import com.grietenenknapen.sithandroid.ui.fragments.GamePlayersFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.PlayerKillFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.PlayerSelectFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.gameflow.DelayGameFlowFragment;
-import com.grietenenknapen.sithandroid.ui.fragments.gameflow.GameFlowFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.gameflow.GameFragmentCallback;
-import com.grietenenknapen.sithandroid.ui.fragments.gameflow.SelectPLayerBobaGameFlowFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.gameflow.SelectPlayerPairGameFlowFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.gameflow.SelectPlayerSingleGameFlowFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.gameflow.ShowPlayerYesNoGameFlowFragment;
@@ -141,210 +138,86 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
         return this;
     }
 
-    private <T extends GameFlowFragment> boolean isNewTask(final FlowDetails flowDetails, final Fragment fragment, final Class<T> tClass) {
-        return fragment == null
-                || !(tClass.isInstance(fragment))
-                || !fragment.isRemoving()
-                || ((GameFlowFragment) fragment).isNewTask(flowDetails);
-    }
 
-    private int getFragmentAnimation(Fragment oldFragment) {
+    private int getFragmentAnimation() {
+        final Fragment oldFragment = getSupportFragmentManager().findFragmentById(R.id.container);
         if (oldFragment != null && oldFragment instanceof DayFragment) {
-            return FragmentUtils.ANIMATE_SLIDE_DOWN;
+            return FragmentUtils.Animation.ANIMATE_SLIDE_DOWN;
         } else {
-            return FragmentUtils.ANIMATE_SLIDE_LEFT;
+            return FragmentUtils.Animation.ANIMATE_SLIDE_LEFT;
         }
     }
 
     @Override
-    public void goToDelayScreen(long delay, GameUseCase gameUseCase, FlowDetails flowDetails) {
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
-        android.support.v4.app.FragmentManager fm = this.getSupportFragmentManager();
-
-        FragmentTransaction ft = fm.beginTransaction();
-        if (isNewTask(flowDetails, fragment, DelayGameFlowFragment.class)) {
-            Fragment newFragment = DelayGameFlowFragment.createInstance(flowDetails, delay);
-            ((DelayGameFlowFragment) newFragment).setUseCase(gameUseCase);
-            FragmentUtils.setAnimation(ft, getFragmentAnimation(fragment));
-            ft.replace(R.id.container, newFragment).commit();
-        } else {
-            if (fragment.isDetached()) {
-                ((DelayGameFlowFragment) fragment).setUseCase(gameUseCase);
-                ft.attach(fragment).commit();
-            }
-        }
+    public void goToDelayScreen(final long delay, final GameUseCase gameUseCase, final FlowDetails flowDetails) {
+        FragmentUtils.handleGameFlowFragmentTransaction(this, DelayGameFlowFragment.class, R.id.container,
+                DelayGameFlowFragment.createStartBundle(flowDetails, delay), flowDetails, gameUseCase, getFragmentAnimation());
     }
 
     @Override
-    public void goToYesNoScreen(final boolean disableYes, final GameUseCaseYesNoId useCase, final FlowDetails flowDetails, final int titleResId) {
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
-        android.support.v4.app.FragmentManager fm = this.getSupportFragmentManager();
+    public void goToYesNoScreen(final boolean disableYes, final UseCaseYesNo gameUseCase,
+                                final FlowDetails flowDetails, final int titleResId) {
 
-        FragmentTransaction ft = fm.beginTransaction();
-        if (isNewTask(flowDetails, fragment, YesNoGameFlowFragment.class)) {
-            Fragment newFragment = YesNoGameFlowFragment.createInstance(flowDetails, disableYes, getString(titleResId));
-            ((YesNoGameFlowFragment) newFragment).setUseCase(useCase);
-            FragmentUtils.setAnimation(ft, getFragmentAnimation(fragment));
-            ft.replace(R.id.container, newFragment).commit();
-        } else {
-            if (fragment.isDetached()) {
-                ((YesNoGameFlowFragment) fragment).setUseCase(useCase);
-                ft.attach(fragment).commit();
-            }
-        }
+        FragmentUtils.handleGameFlowFragmentTransaction(this, YesNoGameFlowFragment.class, R.id.container,
+                YesNoGameFlowFragment.createStartBundle(flowDetails, disableYes, getString(titleResId)), flowDetails, gameUseCase, getFragmentAnimation());
     }
 
     @Override
-    public void goToKilledPlayerYesNoScreen(final ActivePlayer activePlayer, final boolean disableYes, final int titleResId, final GameUseCaseYesNoId useCase, final FlowDetails flowDetails) {
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
-        android.support.v4.app.FragmentManager fm = this.getSupportFragmentManager();
+    public void goToPlayerYesNoScreen(final ActivePlayer activePlayer, final boolean disableYes,
+                                            final int titleResId, final UseCaseYesNo gameUseCase, final FlowDetails flowDetails) {
 
-        FragmentTransaction ft = fm.beginTransaction();
-        if (isNewTask(flowDetails, fragment, ShowPlayerYesNoGameFlowFragment.class)) {
-            Fragment newFragment = ShowPlayerYesNoGameFlowFragment.createInstance(flowDetails, activePlayer, getString(titleResId), disableYes);
-            ((ShowPlayerYesNoGameFlowFragment) newFragment).setUseCase(useCase);
-            FragmentUtils.setAnimation(ft, getFragmentAnimation(fragment));
-            ft.replace(R.id.container, newFragment).commit();
-        } else {
-            if (fragment.isDetached()) {
-                ((ShowPlayerYesNoGameFlowFragment) fragment).setUseCase(useCase);
-                ft.attach(fragment).commit();
-            }
-        }
+        FragmentUtils.handleGameFlowFragmentTransaction(this, ShowPlayerYesNoGameFlowFragment.class, R.id.container,
+                ShowPlayerYesNoGameFlowFragment.createStartBundle(flowDetails, activePlayer, getString(titleResId), disableYes), flowDetails, gameUseCase, getFragmentAnimation());
     }
 
     @Override
-    public void goToUserPlayerSelectionScreen(final List<Player> activePlayers, final GameUseCaseId useCase, final FlowDetails flowDetails) {
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
-        android.support.v4.app.FragmentManager fm = this.getSupportFragmentManager();
-
-        FragmentTransaction ft = fm.beginTransaction();
-        if (isNewTask(flowDetails, fragment, SelectPlayerSingleGameFlowFragment.class)) {
-            Fragment newFragment = SelectPlayerSingleGameFlowFragment.createInstance(flowDetails, (ArrayList<Player>) activePlayers);
-            ((SelectPlayerSingleGameFlowFragment) newFragment).setUseCase(useCase);
-            FragmentUtils.setAnimation(ft, getFragmentAnimation(fragment));
-            ft.replace(R.id.container, newFragment).commit();
-        } else {
-            if (fragment.isDetached()) {
-                ((SelectPlayerSingleGameFlowFragment) fragment).setUseCase(useCase);
-                ft.attach(fragment).commit();
-            }
-        }
+    public void goToUserPlayerSelectionScreen(final List<Player> activePlayers, final UseCaseId useCase, final FlowDetails flowDetails) {
+        FragmentUtils.handleGameFlowFragmentTransaction(this, SelectPlayerSingleGameFlowFragment.class, R.id.container,
+                SelectPlayerSingleGameFlowFragment.createStartBundle(flowDetails, (ArrayList<Player>) activePlayers), flowDetails, useCase, getFragmentAnimation());
     }
 
     @Override
-    public void goToUserPlayerSelectionScreen(List<Player> activePlayers, GameUseCaseYesNoId useCase, FlowDetails flowDetails) {
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
-        android.support.v4.app.FragmentManager fm = this.getSupportFragmentManager();
-
-        FragmentTransaction ft = fm.beginTransaction();
-        if (isNewTask(flowDetails, fragment, SelectPLayerBobaGameFlowFragment.class)) {
-            Fragment newFragment = SelectPLayerBobaGameFlowFragment.createInstance(flowDetails, (ArrayList<Player>) activePlayers);
-            ((SelectPLayerBobaGameFlowFragment) newFragment).setUseCase(useCase);
-            FragmentUtils.setAnimation(ft, getFragmentAnimation(fragment));
-            ft.replace(R.id.container, newFragment).commit();
-        } else {
-            if (fragment.isDetached()) {
-                ((SelectPLayerBobaGameFlowFragment) fragment).setUseCase(useCase);
-                ft.attach(fragment).commit();
-            }
-        }
-    }
-
-    @Override
-    public void goToUserCardSelectionScreen(final List<SithCard> availableSithCards, final GameUseCaseCard useCase, final FlowDetails flowDetails) {
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
-        android.support.v4.app.FragmentManager fm = this.getSupportFragmentManager();
-
-        FragmentTransaction ft = fm.beginTransaction();
-        if (isNewTask(flowDetails, fragment, SithCardSelectGameFlowFragment.class)) {
-            Fragment newFragment = SithCardSelectGameFlowFragment.createInstance(flowDetails, (ArrayList<SithCard>) availableSithCards);
-            ((SithCardSelectGameFlowFragment) newFragment).setUseCase(useCase);
-            FragmentUtils.setAnimation(ft, getFragmentAnimation(fragment));
-            ft.replace(R.id.container, newFragment).commit();
-        } else {
-            if (fragment.isDetached()) {
-                ((SithCardSelectGameFlowFragment) fragment).setUseCase(useCase);
-                ft.attach(fragment).commit();
-            }
-        }
+    public void goToUserCardSelectionScreen(final List<SithCard> availableSithCards, final UseCaseCard useCase, final FlowDetails flowDetails) {
+        FragmentUtils.handleGameFlowFragmentTransaction(this, SithCardSelectGameFlowFragment.class, R.id.container,
+                SithCardSelectGameFlowFragment.createStartBundle(flowDetails, (ArrayList<SithCard>) availableSithCards), flowDetails, useCase, getFragmentAnimation());
     }
 
     @Override
     public void goToUserCardPeekScreen(final List<ActivePlayer> activePlayers, final long delay, GameUseCase useCase, final FlowDetails flowDetails) {
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
-        android.support.v4.app.FragmentManager fm = this.getSupportFragmentManager();
-
-        FragmentTransaction ft = fm.beginTransaction();
-        if (isNewTask(flowDetails, fragment, UserCardPeekGameFlowFragment.class)) {
-            Fragment newFragment = UserCardPeekGameFlowFragment.createInstance(flowDetails, (ArrayList<ActivePlayer>) activePlayers);
-            ((UserCardPeekGameFlowFragment) newFragment).setUseCase(useCase);
-            FragmentUtils.setAnimation(ft, getFragmentAnimation(fragment));
-            ft.replace(R.id.container, newFragment).commit();
-        } else {
-            if (fragment.isDetached()) {
-                ((UserCardPeekGameFlowFragment) fragment).setUseCase(useCase);
-                ft.attach(fragment).commit();
-            }
-        }
+        FragmentUtils.handleGameFlowFragmentTransaction(this, UserCardPeekGameFlowFragment.class, R.id.container,
+                UserCardPeekGameFlowFragment.createStartBundle(flowDetails, (ArrayList<ActivePlayer>) activePlayers), flowDetails, useCase, getFragmentAnimation());
     }
 
     @Override
     public void goToSpeakScreen(final int soundResId, final int stringResId, final GameUseCase useCase, final FlowDetails flowDetails) {
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
-        android.support.v4.app.FragmentManager fm = this.getSupportFragmentManager();
-
-        FragmentTransaction ft = fm.beginTransaction();
-        if (isNewTask(flowDetails, fragment, SpeakGameFlowFragment.class)) {
-            Fragment newFragment = SpeakGameFlowFragment.createInstance(flowDetails, soundResId, stringResId);
-            ((SpeakGameFlowFragment) newFragment).setUseCase(useCase);
-            FragmentUtils.setAnimation(ft, getFragmentAnimation(fragment));
-            ft.replace(R.id.container, newFragment).commit();
-        } else {
-            if (fragment.isDetached()) {
-                ((SpeakGameFlowFragment) fragment).setUseCase(useCase);
-                ft.attach(fragment).commit();
-            }
-        }
+        FragmentUtils.handleGameFlowFragmentTransaction(this, SpeakGameFlowFragment.class, R.id.container,
+                SpeakGameFlowFragment.createStartBundle(flowDetails, soundResId, stringResId), flowDetails, useCase, getFragmentAnimation());
     }
 
     @Override
-    public void goTotUserPairPlayerSelection(final List<Player> players, final GameUseCasePairId useCase, final FlowDetails flowDetails) {
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
-        android.support.v4.app.FragmentManager fm = this.getSupportFragmentManager();
-
-        FragmentTransaction ft = fm.beginTransaction();
-        if (isNewTask(flowDetails, fragment, SpeakGameFlowFragment.class)) {
-            Fragment newFragment = SelectPlayerPairGameFlowFragment.createInstance(flowDetails, (ArrayList<Player>) players);
-            ((SelectPlayerPairGameFlowFragment) newFragment).setUseCase(useCase);
-            FragmentUtils.setAnimation(ft, getFragmentAnimation(fragment));
-            ft.replace(R.id.container, newFragment).commit();
-        } else {
-            if (fragment.isDetached()) {
-                ((SelectPlayerPairGameFlowFragment) fragment).setUseCase(useCase);
-                ft.attach(fragment).commit();
-            }
-        }
+    public void goTotUserPairPlayerSelection(final List<Player> players, final UseCasePairId useCase, final FlowDetails flowDetails) {
+        FragmentUtils.handleGameFlowFragmentTransaction(this, SelectPlayerPairGameFlowFragment.class, R.id.container,
+                SelectPlayerPairGameFlowFragment.createStartBundle(flowDetails, (ArrayList<Player>) players), flowDetails, useCase, getFragmentAnimation());
     }
 
     @Override
     public void showSelectPlayersScreen(final List<Player> players) {
         Bundle bundle = PlayerSelectFragment.createArguments(new ArrayList<>(players), 30);
         FragmentUtils.replaceOrAddFragment(this, PlayerSelectFragment.class, R.id.container,
-                PlayerSelectFragment.class.getName(), FragmentUtils.ANIMATE_NONE, bundle, false);
+                PlayerSelectFragment.class.getName(), FragmentUtils.Animation.ANIMATE_NONE, bundle, false);
     }
 
     @Override
     public void showKillPlayersScreen(final List<Player> activePlayers) {
         Bundle bundle = PlayerKillFragment.createArguments(new ArrayList<>(activePlayers));
         FragmentUtils.replaceOrAddFragment(this, PlayerKillFragment.class, R.id.container,
-                PlayerKillFragment.class.getName(), FragmentUtils.ANIMATE_SLIDE_LEFT, bundle, true);
+                PlayerKillFragment.class.getName(), FragmentUtils.Animation.ANIMATE_SLIDE_LEFT, bundle, true);
     }
 
     @Override
     public void goToShuffleScreen(final List<Player> players) {
         final int animation = getSupportFragmentManager().findFragmentById(R.id.container) != null ?
-                FragmentUtils.ANIMATE_SLIDE_LEFT : FragmentUtils.ANIMATE_NONE;
+                FragmentUtils.Animation.ANIMATE_SLIDE_LEFT : FragmentUtils.Animation.ANIMATE_NONE;
         Bundle bundle = CardShuffleFragment.createArguments(new ArrayList<>(players));
         FragmentUtils.replaceOrAddFragment(this, CardShuffleFragment.class, R.id.container,
                 CardShuffleFragment.class.getName(), animation, bundle, true);
@@ -355,7 +228,7 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
         //FragmentUtils.clearFragmentBackStack(getSupportFragmentManager());
 
         final int animation = getSupportFragmentManager().findFragmentById(R.id.container) != null ?
-                FragmentUtils.ANIMATE_SLIDE_UP : FragmentUtils.ANIMATE_NONE;
+                FragmentUtils.Animation.ANIMATE_SLIDE_UP : FragmentUtils.Animation.ANIMATE_NONE;
         Bundle bundle = DayFragment.createArguments(game);
         FragmentUtils.replaceOrAddFragment(this, DayFragment.class, R.id.container,
                 DayFragment.class.getName(), animation, bundle, false);
@@ -390,7 +263,7 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
     @Override
     public void showGameOver(final List<ActivePlayer> players, @GameTeam.Team final int winningTeam) {
         FragmentUtils.replaceOrAddFragment(this, GameOverFragment.class, R.id.container,
-                GameOverFragment.class.getName(), FragmentUtils.ANIMATE_SLIDE_LEFT,
+                GameOverFragment.class.getName(), FragmentUtils.Animation.ANIMATE_SLIDE_LEFT,
                 GameOverFragment.createArguments((ArrayList<ActivePlayer>) players, winningTeam), false);
     }
 
@@ -496,7 +369,7 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
     @Override
     public void onGamePlayersSelected(final List<ActivePlayer> alivePlayers, final List<ActivePlayer> killedPlayers) {
         FragmentUtils.replaceOrAddFragment(this, GamePlayersFragment.class, R.id.container,
-                GamePlayersFragment.class.getName(), FragmentUtils.ANIMATE_SLIDE_LEFT,
+                GamePlayersFragment.class.getName(), FragmentUtils.Animation.ANIMATE_SLIDE_LEFT,
                 GamePlayersFragment.createArguments((ArrayList<ActivePlayer>) alivePlayers,
                         (ArrayList<ActivePlayer>) killedPlayers), true);
 
@@ -513,18 +386,18 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
         private final MainGame mainGame;
         private List<Pair<Integer, Integer>> randomResourceList;
 
-        public GameFlowPresenterFactory(final PlayerService playerService,
-                                        final SithCardService sithCardService,
-                                        final MainGame mainGame) {
+        GameFlowPresenterFactory(final PlayerService playerService,
+                                 final SithCardService sithCardService,
+                                 final MainGame mainGame) {
             this.playerService = playerService;
             this.sithCardService = sithCardService;
             this.mainGame = mainGame;
         }
 
-        public GameFlowPresenterFactory(final PlayerService playerService,
-                                        final SithCardService sithCardService,
-                                        final MainGame mainGame,
-                                        final List<Pair<Integer, Integer>> randomResourceList) {
+        GameFlowPresenterFactory(final PlayerService playerService,
+                                 final SithCardService sithCardService,
+                                 final MainGame mainGame,
+                                 final List<Pair<Integer, Integer>> randomResourceList) {
             this.playerService = playerService;
             this.sithCardService = sithCardService;
             this.mainGame = mainGame;

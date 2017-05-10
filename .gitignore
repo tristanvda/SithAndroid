@@ -2,6 +2,9 @@
 *.apk
 *.ap_
 
+#bat files
+*.bat
+
 # files for the dex VM
 *.dex
 

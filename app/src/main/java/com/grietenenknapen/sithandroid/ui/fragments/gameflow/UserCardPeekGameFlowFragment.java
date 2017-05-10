@@ -49,15 +49,14 @@ public class UserCardPeekGameFlowFragment extends CallbackPresenterFragment<User
     private GameUseCase gameUseCase;
     private FlowDetails flowDetails;
 
-    public static UserCardPeekGameFlowFragment createInstance(final FlowDetails flowDetails,
-                                                               final ArrayList<ActivePlayer> activePlayers) {
+    public static Bundle createStartBundle(final FlowDetails flowDetails,
+                                           final ArrayList<ActivePlayer> activePlayers) {
+
         final Bundle bundle = new Bundle();
         bundle.putParcelable(KEY_FLOW_DETAIL, flowDetails);
         bundle.putParcelableArrayList(KEY_PLAYERS, activePlayers);
 
-        UserCardPeekGameFlowFragment fragment = new UserCardPeekGameFlowFragment();
-        fragment.setArguments(bundle);
-        return fragment;
+        return bundle;
     }
 
     @Override
@@ -131,7 +130,8 @@ public class UserCardPeekGameFlowFragment extends CallbackPresenterFragment<User
         if (flowDetails != null) {
             return PRESENTER_TAG + flowDetails.getRound() + flowDetails.getStep() + flowDetails.getTurn();
         }
-        return PRESENTER_TAG;    }
+        return PRESENTER_TAG;
+    }
 
     @OnClick(R.id.listButton)
     public void listButtonClicked() {

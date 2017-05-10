@@ -5,7 +5,7 @@ import com.grietenenknapen.sithandroid.game.flowmanager.UseCaseCallBack;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
 import com.grietenenknapen.sithandroid.model.database.SithCard;
 
-public class HanSoloUseCase extends GameUseCaseCard<HanSoloUseCase.CallBack> {
+public class HanSoloUseCase extends GameUseCase<HanSoloUseCase.CallBack> implements UseCaseCard {
 
     public HanSoloUseCase(CallBack flowManagerListener, boolean active, boolean skip) {
         super(flowManagerListener, active, skip);
@@ -36,10 +36,11 @@ public class HanSoloUseCase extends GameUseCaseCard<HanSoloUseCase.CallBack> {
     }
 
     @Override
-    protected void onUseCaseExecuteStep(final int step, final SithCard stepData) {
+    public void onExecuteStep(final int step, final SithCard stepData) {
         if (step == 2 && stepData != null) {
             flowManagerListener.switchHanSoloUserCard(stepData);
         }
+        this.handleExecuteStep();
     }
 
     @Override
@@ -49,7 +50,7 @@ public class HanSoloUseCase extends GameUseCaseCard<HanSoloUseCase.CallBack> {
 
     public interface CallBack extends UseCaseCallBack {
 
-        void requestUserCardSelection(GameUseCaseCard useCase);
+        void requestUserCardSelection(UseCaseCard useCase);
 
         void speak(int soundResId, int stringResId, GameUseCase gameUseCase);
 

@@ -37,14 +37,14 @@ public class DelayGameFlowFragment extends CallbackPresenterFragment<DelayGameFl
     @BindView(R.id.delayText)
     TextView delayText;
 
-    public static DelayGameFlowFragment createInstance(final FlowDetails flowDetails, final long delay) {
+    public static Bundle createStartBundle(final FlowDetails flowDetails,
+                                           final long delay) {
+
         final Bundle bundle = new Bundle();
         bundle.putParcelable(KEY_FLOW_DETAIL, flowDetails);
         bundle.putLong(KEY_FLOW_DELAY, delay);
 
-        DelayGameFlowFragment fragment = new DelayGameFlowFragment();
-        fragment.setArguments(bundle);
-        return fragment;
+        return bundle;
     }
 
     @Override

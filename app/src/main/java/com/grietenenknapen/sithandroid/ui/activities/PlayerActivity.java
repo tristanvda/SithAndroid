@@ -1,5 +1,6 @@
 package com.grietenenknapen.sithandroid.ui.activities;
 
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,7 +10,9 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -28,6 +31,7 @@ import com.grietenenknapen.sithandroid.ui.views.AnimGridLayoutManager;
 import com.grietenenknapen.sithandroid.util.ActivityUtils;
 import com.grietenenknapen.sithandroid.util.FontCache;
 import com.grietenenknapen.sithandroid.util.ItemClickSupport;
+import com.grietenenknapen.sithandroid.util.KeyboardUtil;
 import com.grietenenknapen.sithandroid.util.ResourceUtils;
 
 import java.util.List;
@@ -100,8 +104,6 @@ public class PlayerActivity extends PresenterActivity<PlayerPresenter, PlayerPre
     }
 
     private void initLayout() {
-        Typeface starWars = FontCache.get("fonts/Starjedi.ttf", this);
-
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         bottomSheetBehavior.setPeekHeight(0);
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -109,6 +111,7 @@ public class PlayerActivity extends PresenterActivity<PlayerPresenter, PlayerPre
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     presenter.cancelCurrentAction();
+                    KeyboardUtil.hideKeyboard(PlayerActivity.this);
                 }
             }
 
@@ -165,6 +168,12 @@ public class PlayerActivity extends PresenterActivity<PlayerPresenter, PlayerPre
 
     }
 
+    private void restartKeyboard(EditText editText) {
+        InputMethodManager imm = (InputMethodManager)
+                getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.restartInput(editText);
+    }
+
     @Override
     public void displayPlayers(List<Player> players) {
         adapter = new EditablePlayerAdapter(ResourceUtils.getDefaultCardItemSize(getWindowManager()));
@@ -186,7 +195,7 @@ public class PlayerActivity extends PresenterActivity<PlayerPresenter, PlayerPre
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-
+            KeyboardUtil.showKeyboard(PlayerActivity.this, playerNameEditText);
         }
     }
 
@@ -198,9 +207,10 @@ public class PlayerActivity extends PresenterActivity<PlayerPresenter, PlayerPre
             playerNameEditText.setText("");
         } else {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            playerNameEditText.requestFocus();
             playerPhoneEditText.setText(player.getTelephoneNumber());
             playerNameEditText.setText(player.getName());
+            playerNameEditText.setSelection(playerNameEditText.getText().length());
+            KeyboardUtil.showKeyboard(PlayerActivity.this, playerNameEditText);
         }
     }
 
@@ -217,7 +227,9 @@ public class PlayerActivity extends PresenterActivity<PlayerPresenter, PlayerPre
 
     @Override
     public void hideSaveButton() {
+        playerPhoneEditText.setImeOptions(EditorInfo.IME_ACTION_NONE);
         conFirmButton.setVisibility(View.GONE);
+        restartKeyboard(playerPhoneEditText);
     }
 
     @Override
@@ -232,7 +244,9 @@ public class PlayerActivity extends PresenterActivity<PlayerPresenter, PlayerPre
 
     @Override
     public void showSaveButton() {
+        playerPhoneEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
         conFirmButton.setVisibility(View.VISIBLE);
+        restartKeyboard(playerPhoneEditText);
     }
 
     @Override

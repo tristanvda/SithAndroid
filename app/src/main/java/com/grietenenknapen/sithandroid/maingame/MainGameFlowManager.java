@@ -6,13 +6,12 @@ import android.text.TextUtils;
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.flowmanager.GameFlowManager;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseId;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCasePairId;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseYesNoId;
+import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseId;
+import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCasePairId;
+import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseYesNo;
 import com.grietenenknapen.sithandroid.maingame.usecases.BB8UseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.BobaFettUseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.ChewBaccaUseCase;
-import com.grietenenknapen.sithandroid.maingame.usecases.GameUseCaseCard;
 import com.grietenenknapen.sithandroid.maingame.usecases.HanSoloUseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.IntroUseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.JediUseCase;
@@ -21,6 +20,7 @@ import com.grietenenknapen.sithandroid.maingame.usecases.MazKanataUseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.PeepingFinnUseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.SithUseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.SkipUseCase;
+import com.grietenenknapen.sithandroid.maingame.usecases.UseCaseCard;
 import com.grietenenknapen.sithandroid.model.database.SithCard;
 import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 import com.grietenenknapen.sithandroid.model.game.GameCardType;
@@ -38,7 +38,6 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
         MazKanataUseCase.CallBack,
         SithUseCase.CallBack,
         KyloRenUseCase.CallBack,
-        SkipUseCase.CallBack,
         IntroUseCase.CallBack {
 
     private static final int TURN_COUNT = 10;
@@ -83,8 +82,8 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
             case 9:
                 return new ChewBaccaUseCase(this, cardIsActive(GameCardType.CHEWBACCA), cardsInGameAndKilled(GameCardType.CHEWBACCA));
             case 10:
-                return new BobaFettUseCase(this, cardIsActive(GameCardType.BOBA_FETT),
-                        mainGame.isRocketAlreadySelected(), cardsInGameAndKilled(GameCardType.BOBA_FETT));
+                return new BobaFettUseCase(this, cardIsActive(GameCardType.BOBA_FETT), cardsInGameAndKilled(GameCardType.BOBA_FETT),
+                        mainGame.isRocketAlreadySelected());
             default:
                 return new SkipUseCase(this);
         }
@@ -113,7 +112,7 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
 
     @Override
     protected boolean isGameOver() {
-        return mainGame.checkGameOver();
+        return mainGame.isGameOver();
     }
 
     private boolean cardIsActive(@GameCardType.CardType int type) {
@@ -261,7 +260,7 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
     }
 
     @Override
-    public void requestUserPairPlayerSelection(final GameUseCasePairId useCase) {
+    public void requestUserPairPlayerSelection(final UseCasePairId useCase) {
         uiListener.requestUserPairPlayerSelection(mainGame.getAlivePlayers(), useCase);
     }
 
@@ -276,18 +275,18 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
     }
 
     @Override
-    public void requestYesNoAnswerRocket(final GameUseCaseYesNoId useCase, final int titleResId) {
-        uiListener.requestYesNoAnswer(mainGame.isBobaRocketUsed(), useCase, titleResId);
+    public void requestYesNoAnswerRocket(final UseCaseYesNo useCase) {
+        uiListener.requestYesNoAnswer(mainGame.isBobaRocketUsed(), useCase, R.string.boba_fett_use_rocket_launcher);
     }
 
     @Override
-    public void showKilledPlayerMedPackYesNo(GameUseCaseYesNoId useCase) {
-        uiListener.showKilledPlayerYesNo(mainGame.getCurrentKilledPlayer(),
+    public void showKilledPlayerMedPackYesNo(UseCaseYesNo useCase) {
+        uiListener.showPlayerYesNo(mainGame.getCurrentKilledPlayer(),
                 mainGame.isBobaMedPackUsed(), R.string.boba_fett_use_med_pack, useCase);
     }
 
     @Override
-    public void requestUserPlayerRocketSelection(final GameUseCaseYesNoId useCase) {
+    public void requestUserPlayerRocketSelection(final UseCaseId useCase) {
 
         final List<ActivePlayer> killAblePlayers = new ArrayList<>();
         final ActivePlayer bobaFettPlayer = mainGame.findPlayersByType(GameCardType.BOBA_FETT).get(0);
@@ -303,7 +302,7 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
     }
 
     @Override
-    public void requestUserCardSelection(final GameUseCaseCard useCase) {
+    public void requestUserCardSelection(final UseCaseCard useCase) {
         List<ActivePlayer> activePlayers = mainGame.getAlivePlayers();
 
         List<SithCard> availableSithCards = new ArrayList<>();
@@ -328,7 +327,7 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
     }
 
     @Override
-    public void requestUserPlayerSelectionSith(final GameUseCaseId useCase) {
+    public void requestUserPlayerSelectionSith(final UseCaseId useCase) {
         uiListener.requestUserPlayerSelection(mainGame.getAlivePlayersLightSide(), useCase);
     }
 }

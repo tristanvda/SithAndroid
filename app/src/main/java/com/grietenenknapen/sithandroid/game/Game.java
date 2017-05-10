@@ -31,7 +31,7 @@ public interface Game {
     boolean isRoundActive();
 
     /**
-     * Before each round the game shuould to a setup to prepare for the next round
+     * Before each round the game should to a setup to prepare for the next round
      * This means that variables, that are round-related will be reset or set
      */
     void setupNewRound();
@@ -58,5 +58,12 @@ public interface Game {
      * Increase next sround
      */
     void nextRound();
+
+
+    /**
+     * check if "game over" or not
+     * @return boolean indicating if "game over"
+     */
+    boolean isGameOver();
 
 }

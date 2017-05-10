@@ -1,6 +1,5 @@
 package com.grietenenknapen.sithandroid.ui.fragments.gameflow;
 
-
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,10 +10,9 @@ import android.widget.TextView;
 
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseYesNoId;
+import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseYesNo;
 import com.grietenenknapen.sithandroid.ui.CallbackPresenterFragment;
 import com.grietenenknapen.sithandroid.ui.PresenterFactory;
-import com.grietenenknapen.sithandroid.ui.PresenterFragment;
 import com.grietenenknapen.sithandroid.ui.presenters.GameFlowPresenter;
 import com.grietenenknapen.sithandroid.ui.presenters.gameflow.YesNoGameFlowPresenter;
 import com.grietenenknapen.sithandroid.util.FontCache;
@@ -24,7 +22,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class YesNoGameFlowFragment extends CallbackPresenterFragment<YesNoGameFlowPresenter, YesNoGameFlowPresenter.View, GameFragmentCallback>
-        implements YesNoGameFlowPresenter.View, GameFlowFragment<GameUseCaseYesNoId> {
+        implements YesNoGameFlowPresenter.View, GameFlowFragment<UseCaseYesNo> {
 
     private static final String PRESENTER_TAG = "yes_no_id_flow_presenter";
     private static final String KEY_FLOW_DETAIL = "key:flow_details";
@@ -32,7 +30,7 @@ public class YesNoGameFlowFragment extends CallbackPresenterFragment<YesNoGameFl
     private static final String KEY_FLOW_HIDE_YES = "key:hideYes";
 
     private FlowDetails flowDetails;
-    private GameUseCaseYesNoId gameUseCaseYesNoId;
+    private UseCaseYesNo gameUseCaseYesNoId;
 
     @BindView(R.id.menuYes)
     TextView menuYes;
@@ -41,15 +39,16 @@ public class YesNoGameFlowFragment extends CallbackPresenterFragment<YesNoGameFl
     @BindView(R.id.yesNoTitle)
     TextView title;
 
-    public static YesNoGameFlowFragment createInstance(final FlowDetails flowDetails, final boolean hideYes, final String title) {
+    public static Bundle createStartBundle(final FlowDetails flowDetails,
+                                           final boolean hideYes,
+                                           final String title) {
+
         final Bundle bundle = new Bundle();
         bundle.putParcelable(KEY_FLOW_DETAIL, flowDetails);
         bundle.putBoolean(KEY_FLOW_HIDE_YES, hideYes);
         bundle.putString(KEY_TITLE, title);
 
-        YesNoGameFlowFragment fragment = new YesNoGameFlowFragment();
-        fragment.setArguments(bundle);
-        return fragment;
+        return bundle;
     }
 
     @Override
@@ -67,7 +66,7 @@ public class YesNoGameFlowFragment extends CallbackPresenterFragment<YesNoGameFl
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(final View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         initLayout();
@@ -108,12 +107,12 @@ public class YesNoGameFlowFragment extends CallbackPresenterFragment<YesNoGameFl
     }
 
     @Override
-    public void setUseCase(GameUseCaseYesNoId useCase) {
+    public void setUseCase(UseCaseYesNo useCase) {
         this.gameUseCaseYesNoId = useCase;
     }
 
     @Override
-    public boolean isNewTask(FlowDetails flowDetails) {
+    public boolean isNewTask(final FlowDetails flowDetails) {
         return !this.flowDetails.equals(flowDetails);
     }
 

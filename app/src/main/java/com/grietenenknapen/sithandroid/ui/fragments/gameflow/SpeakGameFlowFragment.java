@@ -38,16 +38,16 @@ public class SpeakGameFlowFragment extends CallbackPresenterFragment<SpeakGameFl
     @BindView(R.id.speakText)
     TextView speakText;
 
-    public static SpeakGameFlowFragment createInstance(final FlowDetails flowDetails, final int speakSoundId,
-                                                       final int speakTextId) {
+    public static Bundle createStartBundle(final FlowDetails flowDetails,
+                                           final int speakSoundId,
+                                           final int speakTextId) {
+
         final Bundle bundle = new Bundle();
         bundle.putParcelable(KEY_FLOW_DETAIL, flowDetails);
         bundle.putInt(KEY_FLOW_SPEAK_SOUND_ID, speakSoundId);
         bundle.putInt(KEY_FLOW_SPEAK_TEXT_ID, speakTextId);
 
-        SpeakGameFlowFragment fragment = new SpeakGameFlowFragment();
-        fragment.setArguments(bundle);
-        return fragment;
+        return bundle;
     }
 
     @Override
@@ -82,7 +82,7 @@ public class SpeakGameFlowFragment extends CallbackPresenterFragment<SpeakGameFl
     public void onResume() {
         super.onResume();
         MediaSoundPlayer.setMediaSoundPlayListener(new MediaSoundPlayer.OnSoundPlayListener() {
-                @Override
+            @Override
             public void onSoundPlayDone() {
                 getPresenter().soundPlayDone();
             }

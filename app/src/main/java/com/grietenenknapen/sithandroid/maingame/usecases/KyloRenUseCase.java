@@ -3,9 +3,8 @@ package com.grietenenknapen.sithandroid.maingame.usecases;
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.flowmanager.UseCaseCallBack;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseVoid;
 
-public class KyloRenUseCase extends GameUseCaseVoid<KyloRenUseCase.CallBack> {
+public class KyloRenUseCase extends GameUseCase<KyloRenUseCase.CallBack> {
 
     public KyloRenUseCase(CallBack flowManagerListener, boolean active, boolean skip) {
         super(flowManagerListener, active, skip);
@@ -18,10 +17,11 @@ public class KyloRenUseCase extends GameUseCaseVoid<KyloRenUseCase.CallBack> {
     }
 
     @Override
-    protected void onUseCaseExecuteStep(int step, Void stepData) {
+    public void onExecuteStep(final int step) {
         if (active) {
             flowManagerListener.turnKyloRenToDarkSide();
         }
+        this.handleExecuteStep();
     }
 
     @Override

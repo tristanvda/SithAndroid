@@ -1,26 +1,21 @@
 package com.grietenenknapen.sithandroid.maingame.usecases;
 
 import com.grietenenknapen.sithandroid.game.flowmanager.UseCaseCallBack;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseVoid;
+import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
 
-public class SkipUseCase extends GameUseCaseVoid<SkipUseCase.CallBack> {
+public class SkipUseCase extends GameUseCase<UseCaseCallBack> {
 
-    public SkipUseCase(CallBack flowManagerListener) {
+    public SkipUseCase(UseCaseCallBack flowManagerListener) {
         super(flowManagerListener, false, false);
     }
 
-    public SkipUseCase(CallBack flowManagerListener, boolean active, boolean skip) {
+    public SkipUseCase(UseCaseCallBack flowManagerListener, boolean active, boolean skip) {
         super(flowManagerListener, active, skip);
     }
 
     @Override
     public void onPrepareStep(int step) {
-
-    }
-
-    @Override
-    protected void onUseCaseExecuteStep(int step, Void stepData) {
-
+        //Do nothing
     }
 
     @Override
@@ -28,7 +23,4 @@ public class SkipUseCase extends GameUseCaseVoid<SkipUseCase.CallBack> {
         return true;
     }
 
-    public interface CallBack extends UseCaseCallBack {
-
-    }
 }

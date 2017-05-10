@@ -3,7 +3,7 @@ package com.grietenenknapen.sithandroid.game.usecase;
 import com.grietenenknapen.sithandroid.game.flowmanager.UseCaseCallBack;
 import com.grietenenknapen.sithandroid.util.MathUtils;
 
-public abstract class GameUseCase<T, L extends UseCaseCallBack> implements UseCase<T> {
+public abstract class GameUseCase<L extends UseCaseCallBack> implements UseCase {
     private static final int NEXT_STEP_DELAY = 0;
     private static final int DELAY_LONG_MIN = 8;
     private static final int DELAY_LONG_MAX = 12;
@@ -34,15 +34,8 @@ public abstract class GameUseCase<T, L extends UseCaseCallBack> implements UseCa
     }
 
     @Override
-    public void onExecuteStep(final int step, final T stepData) {
-        this.onUseCaseExecuteStep(step, stepData);
-        flowManagerListener.nextStep(NEXT_STEP_DELAY);
-    }
-
-    @Override
     public void onExecuteStep(final int step) {
-        this.onUseCaseExecuteStep(step, null);
-        flowManagerListener.nextStep(NEXT_STEP_DELAY);
+        this.handleExecuteStep();
     }
 
     @Override
@@ -50,6 +43,8 @@ public abstract class GameUseCase<T, L extends UseCaseCallBack> implements UseCa
         return skip;
     }
 
-    protected abstract void onUseCaseExecuteStep(int step, T stepData);
+    protected void handleExecuteStep() {
+        flowManagerListener.nextStep(NEXT_STEP_DELAY);
+    }
 
 }

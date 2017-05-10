@@ -3,10 +3,11 @@ package com.grietenenknapen.sithandroid.maingame.usecases;
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.flowmanager.UseCaseCallBack;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseId;
+import com.grietenenknapen.sithandroid.game.usecase.UseCase;
+import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseId;
 
 
-public class MazKanataUseCase extends GameUseCaseId<MazKanataUseCase.CallBack> {
+public class MazKanataUseCase extends GameUseCase<MazKanataUseCase.CallBack> implements UseCaseId {
 
     public MazKanataUseCase(CallBack flowManagerListener, boolean active, boolean skip) {
         super(flowManagerListener, active, skip);
@@ -36,8 +37,9 @@ public class MazKanataUseCase extends GameUseCaseId<MazKanataUseCase.CallBack> {
     }
 
     @Override
-    protected void onUseCaseExecuteStep(final int step, final Long stepData) {
-
+    public void onExecuteStep(final int step, final long stepData) {
+        //Might want to use the id here later
+        this.handleExecuteStep();
     }
 
     @Override

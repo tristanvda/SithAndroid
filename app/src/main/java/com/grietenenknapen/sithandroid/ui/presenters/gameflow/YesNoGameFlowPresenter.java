@@ -1,14 +1,12 @@
 package com.grietenenknapen.sithandroid.ui.presenters.gameflow;
 
-import android.util.Pair;
-
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.GameUseCaseYesNoId;
+import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseYesNo;
 import com.grietenenknapen.sithandroid.ui.Presenter;
 import com.grietenenknapen.sithandroid.ui.PresenterView;
 
 public class YesNoGameFlowPresenter extends Presenter<YesNoGameFlowPresenter.View> {
-    private GameUseCaseYesNoId gameUseCaseYesNo;
+    private UseCaseYesNo gameUseCaseYesNo;
     private final FlowDetails flowDetails;
     private final boolean hideYes;
 
@@ -24,12 +22,12 @@ public class YesNoGameFlowPresenter extends Presenter<YesNoGameFlowPresenter.Vie
         }
     }
 
-    public void setGameUseCaseYesNo(GameUseCaseYesNoId gameUseCaseYesNo){
+    public void setGameUseCaseYesNo(UseCaseYesNo gameUseCaseYesNo) {
         this.gameUseCaseYesNo = gameUseCaseYesNo;
     }
 
     public void onAnswerClicked(boolean yesClicked) {
-        gameUseCaseYesNo.onExecuteStep(flowDetails.getStep(), new Pair<>(yesClicked, 0L));
+        gameUseCaseYesNo.onExecuteStep(flowDetails.getStep(), yesClicked);
     }
 
     public interface View extends PresenterView {

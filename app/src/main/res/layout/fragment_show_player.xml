@@ -9,14 +9,15 @@
 
     <TextView
         android:id="@+id/showPlayerTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:textStyle="bold"
         android:clickable="true"
+        android:gravity="center"
         android:textAppearance="?android:textAppearanceLarge"
-        android:textColor="@color/color_yellow_selector" />
+        android:textColor="@color/color_yellow_selector"
+        android:textStyle="bold" />
 
     <FrameLayout
         android:layout_width="@dimen/card_size"

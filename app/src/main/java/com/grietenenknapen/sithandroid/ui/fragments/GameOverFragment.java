@@ -17,7 +17,8 @@ import android.widget.TextView;
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 import com.grietenenknapen.sithandroid.model.game.GameTeam;
-import com.grietenenknapen.sithandroid.ui.fragments.gameflow.GameFragmentCallback;
+import com.grietenenknapen.sithandroid.ui.CallbackFragment;
+import com.grietenenknapen.sithandroid.ui.fragments.gameflow.GameFlowActivity;
 import com.grietenenknapen.sithandroid.ui.presenters.GameFlowPresenter;
 import com.grietenenknapen.sithandroid.util.FontCache;
 
@@ -28,10 +29,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class GameOverFragment extends Fragment {
+public class GameOverFragment extends CallbackFragment<GameOverFragment.Callback> {
     private static final String KEY_PLAYERS = "key:players";
     private static final String WINNING_TEAM = "key:winning_team";
-
 
     @BindView(R.id.gameOverText)
     TextView gameOverText;
@@ -42,29 +42,15 @@ public class GameOverFragment extends Fragment {
     @BindView(R.id.gameOverWinningTeam)
     TextView gameOverWinningTeamText;
 
-    private GameOverFragment.Callback callback;
-
     @GameTeam.Team
     private int winningTeam;
 
-    public static Bundle createArguments(final ArrayList<ActivePlayer> players, int winningTeam) {
+    public static Bundle createArguments(final List<ActivePlayer> players, int winningTeam) {
         final Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(KEY_PLAYERS, players);
+        bundle.putParcelableArrayList(KEY_PLAYERS, new ArrayList<>(players));
         bundle.putInt(WINNING_TEAM, winningTeam);
 
         return bundle;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        this.callback = (Callback) context;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        this.callback = null;
     }
 
     @SuppressWarnings("ResourceType")
@@ -77,8 +63,7 @@ public class GameOverFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View v = inflater.inflate(R.layout.fragment_game_over, container, false);
-        return v;
+        return inflater.inflate(R.layout.fragment_game_over, container, false);
     }
 
     @Override
@@ -86,6 +71,11 @@ public class GameOverFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         initLayout();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         callback.setGameStatus(GameFlowPresenter.STATUS_GAME_OVER);
     }
 
@@ -101,7 +91,7 @@ public class GameOverFragment extends Fragment {
 
         for (ActivePlayer player : players) {
             if (player.getTeam() == winningTeam)
-            stringBuilder.append(player.getName());
+                stringBuilder.append(player.getName());
             stringBuilder.append("\n");
         }
 
@@ -141,7 +131,7 @@ public class GameOverFragment extends Fragment {
         }
     }
 
-    public interface Callback extends GameFragmentCallback {
+    public interface Callback extends GameFlowActivity {
         void closeGame();
     }
 }

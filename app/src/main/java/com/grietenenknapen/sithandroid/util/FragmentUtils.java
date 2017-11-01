@@ -55,7 +55,7 @@ public class FragmentUtils {
                                             final String tag,
                                             final boolean addToBackStack) {
 
-        handleFragmentTransaction(activity, fClass, containerId, tag, ANIMATE_NONE, null, addToBackStack);
+        handleFragmentTransaction(activity, fClass, containerId, tag, addToBackStack, ANIMATE_NONE, null);
     }
 
     /**
@@ -71,10 +71,10 @@ public class FragmentUtils {
                                             final Class<? extends Fragment> fClass,
                                             final int containerId,
                                             final String tag,
-                                            final int animation,
-                                            final boolean addToBackStack) {
+                                            final boolean addToBackStack,
+                                            @Animation final int animation) {
 
-        handleFragmentTransaction(activity, fClass, containerId, tag, animation, null, addToBackStack);
+        handleFragmentTransaction(activity, fClass, containerId, tag, addToBackStack, animation, null);
     }
 
     /**
@@ -91,11 +91,11 @@ public class FragmentUtils {
                                             final Class<? extends Fragment> fClass,
                                             final int containerId,
                                             final String tag,
+                                            final boolean addToBackStack,
                                             final int animation,
-                                            final Bundle args,
-                                            final boolean addToBackStack) {
+                                            final Bundle args) {
 
-        handleFragmentTransaction(activity, fClass, containerId, tag, animation, args, addToBackStack);
+        handleFragmentTransaction(activity, fClass, containerId, tag, addToBackStack, animation, args);
     }
 
 
@@ -103,9 +103,9 @@ public class FragmentUtils {
                                                   final Class<? extends Fragment> fClass,
                                                   final int containerId,
                                                   final String tag,
+                                                  final boolean addToBackStack,
                                                   final int animation,
-                                                  final Bundle args,
-                                                  final boolean addToBackStack) {
+                                                  final Bundle args) {
 
         // Initialize fragment transaction
         final FragmentManager fm = activity.getSupportFragmentManager();
@@ -134,13 +134,12 @@ public class FragmentUtils {
     }
 
     @SuppressWarnings("unchecked")
-    public static <U extends UseCase, T extends Fragment & GameFlowFragment<U>>
+    public static <T extends Fragment & GameFlowFragment>
     void handleGameFlowFragmentTransaction(final AppCompatActivity activity,
                                            final Class<T> fClass,
                                            final int containerId,
                                            final Bundle bundle,
                                            final FlowDetails flowDetails,
-                                           final U gameUseCase,
                                            final int fragmentAnimation) {
 
         final FragmentManager fm = activity.getSupportFragmentManager();
@@ -150,12 +149,10 @@ public class FragmentUtils {
         if (isNewTask(flowDetails, fragment, fClass)) {
             final Fragment newFragment = Fragment.instantiate(activity, fClass.getName());
             newFragment.setArguments(bundle);
-            ((T) newFragment).setUseCase(gameUseCase);
             FragmentUtils.setAnimation(ft, fragmentAnimation);
             ft.replace(containerId, newFragment).commit();
         } else {
             if (fragment.isDetached()) {
-                ((T) fragment).setUseCase(gameUseCase);
                 ft.attach(fragment).commit();
             }
         }

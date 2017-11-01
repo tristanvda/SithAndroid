@@ -1,7 +1,7 @@
 package com.grietenenknapen.sithandroid.ui.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
@@ -19,9 +19,8 @@ import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 import com.grietenenknapen.sithandroid.service.SithCardService;
 import com.grietenenknapen.sithandroid.ui.CallbackPresenterFragment;
 import com.grietenenknapen.sithandroid.ui.PresenterFactory;
-import com.grietenenknapen.sithandroid.ui.PresenterFragment;
 import com.grietenenknapen.sithandroid.ui.adapters.PlayerCardAdapter;
-import com.grietenenknapen.sithandroid.ui.fragments.gameflow.GameFragmentCallback;
+import com.grietenenknapen.sithandroid.ui.fragments.gameflow.GameFlowActivity;
 import com.grietenenknapen.sithandroid.ui.helper.ItemOffsetDecoration;
 import com.grietenenknapen.sithandroid.ui.presenters.CardShufflePresenter;
 import com.grietenenknapen.sithandroid.ui.presenters.GameFlowPresenter;
@@ -49,17 +48,16 @@ public class CardShuffleFragment extends CallbackPresenterFragment<CardShufflePr
 
     private PlayerCardAdapter adapter;
 
-    public static Bundle createArguments(final ArrayList<Player> players) {
+    public static Bundle createArguments(final List<Player> players) {
         final Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(KEY_PLAYERS, players);
+        bundle.putParcelableArrayList(KEY_PLAYERS, new ArrayList<>(players));
         return bundle;
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View v = inflater.inflate(R.layout.fragment_list, container, false);
-        return v;
+        return inflater.inflate(R.layout.fragment_list, container, false);
     }
 
     @Override
@@ -67,6 +65,11 @@ public class CardShuffleFragment extends CallbackPresenterFragment<CardShufflePr
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         initLayout();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         callback.setGameStatus(GameFlowPresenter.STATUS_SHUFFLE);
     }
 
@@ -99,7 +102,7 @@ public class CardShuffleFragment extends CallbackPresenterFragment<CardShufflePr
 
     @Override
     public void showActivePlayers(List<ActivePlayer> activePlayers) {
-        adapter = new PlayerCardAdapter(getActivity(), activePlayers, ResourceUtils.getDefaultCardItemSize(getActivity().getWindowManager()));
+        adapter = new PlayerCardAdapter(activePlayers, ResourceUtils.getDefaultCardItemSize(getActivity().getWindowManager()));
         playerRecyclerView.setAdapter(adapter);
     }
 
@@ -113,7 +116,7 @@ public class CardShuffleFragment extends CallbackPresenterFragment<CardShufflePr
         getPresenter().onNextClicked();
     }
 
-    public interface Callback extends GameFragmentCallback {
+    public interface Callback extends GameFlowActivity{
         void onCardsShuffled(List<ActivePlayer> activePlayers);
     }
 

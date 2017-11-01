@@ -18,13 +18,13 @@ public class TitlePlayerCardAdapter extends PlayerCardAdapter implements TitleGr
 
     private String title;
 
-    public TitlePlayerCardAdapter(Activity context, List<ActivePlayer> activePlayers, final String title, final int cardSize) {
-        super(context, activePlayers, cardSize);
+    public TitlePlayerCardAdapter(final List<ActivePlayer> activePlayers, final String title, final int cardSize) {
+        super(activePlayers, cardSize);
         this.title = title;
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
         if (viewType == VIEW_TYPE_TITLE) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             return new TitleViewHolder(inflater.inflate(R.layout.list_item_title, parent, false));
@@ -33,7 +33,7 @@ public class TitlePlayerCardAdapter extends PlayerCardAdapter implements TitleGr
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         if (holder.getItemViewType() == VIEW_TYPE_TITLE) {
             ((TitleViewHolder) holder).onBind(title);
         } else {
@@ -42,7 +42,7 @@ public class TitlePlayerCardAdapter extends PlayerCardAdapter implements TitleGr
     }
 
     @Override
-    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+    public void onItemClicked(final RecyclerView recyclerView, final int position, final View v) {
         if (getItemViewType(position) == VIEW_TYPE_TITLE) {
             return;
         }
@@ -50,7 +50,7 @@ public class TitlePlayerCardAdapter extends PlayerCardAdapter implements TitleGr
     }
 
     @Override
-    public int getItemViewType(int position) {
+    public int getItemViewType(final int position) {
         if (position == 0) {
             return VIEW_TYPE_TITLE;
         }
@@ -58,7 +58,7 @@ public class TitlePlayerCardAdapter extends PlayerCardAdapter implements TitleGr
     }
 
     @Override
-    public long getItemId(int position) {
+    public long getItemId(final int position) {
         return super.getItemId(position - 1);
     }
 
@@ -68,7 +68,7 @@ public class TitlePlayerCardAdapter extends PlayerCardAdapter implements TitleGr
     }
 
     @Override
-    public boolean isHeader(int position) {
+    public boolean isHeader(final int position) {
         return position == 0;
     }
 

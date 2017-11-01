@@ -1,7 +1,7 @@
 package com.grietenenknapen.sithandroid.ui.presenters.gameflow;
 
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseYesNo;
+import com.grietenenknapen.sithandroid.game.usecase.type.UseCaseYesNo;
 import com.grietenenknapen.sithandroid.ui.Presenter;
 import com.grietenenknapen.sithandroid.ui.PresenterView;
 

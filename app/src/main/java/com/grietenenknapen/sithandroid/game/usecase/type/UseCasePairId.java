@@ -1,7 +1,6 @@
-package com.grietenenknapen.sithandroid.game.usecase.usecasetemplate;
+package com.grietenenknapen.sithandroid.game.usecase.type;
 
 import android.support.v4.util.Pair;
-
 import com.grietenenknapen.sithandroid.game.usecase.UseCase;
 
 public interface UseCasePairId extends UseCase {

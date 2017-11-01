@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+                                                android:layout_width="match_parent"
+                                                android:layout_height="match_parent">
 
     <android.support.v7.preference.PreferenceCategory android:title="@string/general">
 
@@ -10,7 +10,7 @@
             android:key="battery_saving"
             android:summaryOff="@string/battery_saving_mode_off"
             android:summaryOn="@string/battery_saving_mode_on"
-            android:title="@string/battery_saving_mode_title" />
+            android:title="@string/battery_saving_mode_title"/>
 
     </android.support.v7.preference.PreferenceCategory>
 
@@ -21,21 +21,21 @@
             android:key="music"
             android:summaryOff="@string/music_summary_off"
             android:summaryOn="@string/music_summary_on"
-            android:title="@string/music_title" />
+            android:title="@string/music_title"/>
 
         <android.support.v7.preference.SwitchPreferenceCompat
             android:defaultValue="true"
             android:key="sms"
             android:summaryOff="@string/sms_summary_off"
             android:summaryOn="@string/sms_summary_on"
-            android:title="@string/sms_title" />
+            android:title="@string/sms_title"/>
 
         <android.support.v7.preference.SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="random_comments"
             android:summaryOff="@string/random_comments_mode_off"
             android:summaryOn="@string/random_comments_mode_on"
-            android:title="@string/random_comments_title" />
+            android:title="@string/random_comments_title"/>
 
     </android.support.v7.preference.PreferenceCategory>
 
@@ -46,7 +46,7 @@
             android:enabled="false"
             android:key="app_description"
             android:summary="@string/description_summary"
-            android:title="@string/description_title" />
+            android:title="@string/description_title"/>
     </android.support.v7.preference.PreferenceCategory>
 
 </android.support.v7.preference.PreferenceScreen>

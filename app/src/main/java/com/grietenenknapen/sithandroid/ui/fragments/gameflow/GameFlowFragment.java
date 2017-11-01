@@ -1,12 +1,9 @@
 package com.grietenenknapen.sithandroid.ui.fragments.gameflow;
 
-
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
-import com.grietenenknapen.sithandroid.game.usecase.UseCase;
 
-public interface GameFlowFragment<T extends UseCase> {
-
-    void setUseCase(T useCase);
+public interface GameFlowFragment {
 
     boolean isNewTask(FlowDetails flowDetails);
+
 }

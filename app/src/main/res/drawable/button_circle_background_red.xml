@@ -4,14 +4,21 @@
     <item android:state_pressed="true">
         <shape android:shape="oval">
 
-            <solid android:color="@color/red" />
+            <solid android:color="@color/red"/>
+
+        </shape>
+    </item>
+    <item android:state_enabled="false">
+        <shape android:shape="oval">
+
+            <solid android:color="@color/grey"/>
 
         </shape>
     </item>
     <item>
         <shape android:shape="oval">
 
-            <solid android:color="@color/card_red" />
+            <solid android:color="@color/card_red"/>
 
         </shape>
     </item>

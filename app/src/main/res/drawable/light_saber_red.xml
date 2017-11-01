@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="512dp"
+        android:height="512dp"
+        android:viewportHeight="512"
+        android:viewportWidth="512">
+    <path
+        android:name="path3756"
+        android:fillColor="#ee3044"
+        android:pathData="M 237.352 0.369 C 231.375 0.198 226.381 5.09 226.221 11.293 L 218.59 285.265 L 255.957 269.638 L 247.868 11.251 C 247.674 5.365 243.097 0.552 237.352 0.369"
+        android:strokeWidth="0.7494064"/>
+    <path
+        android:name="polygon3758"
+        android:fillColor="#959595"
+        android:pathData="M 204.517 305.942 L 204.568 333.399 L 197.958 333.408 L 197.984 347.14 L 204.589 347.113 L 204.636 374.573 L 270.688 374.419 L 270.64 346.971 L 277.248 346.953 L 277.214 333.227 L 270.619 333.245 L 270.521 278.341 Z"
+        android:strokeWidth="0.748943385"/>
+    <path
+        android:name="polygon3760"
+        android:fillColor="#959595"
+        android:pathData="M 204.827 484.361 L 218.04 484.34 L 217.872 388.263 L 204.655 388.29 Z"
+        android:strokeWidth="0.748943385"/>
+    <path
+        android:name="polygon3762"
+        android:fillColor="#959595"
+        android:pathData="M 231.248 484.298 L 244.46 484.278 L 244.291 388.204 L 231.081 388.233 Z"
+        android:strokeWidth="0.748943385"/>
+    <path
+        android:name="polygon3764"
+        android:fillColor="#959595"
+        android:pathData="M 270.714 388.139 L 257.502 388.172 L 257.669 484.248 L 270.881 484.216 Z"
+        android:strokeWidth="0.748943385"/>
+    <path
+        android:name="polygon3766"
+        android:fillColor="#959595"
+        android:pathData="M 264.294 497.961 L 211.455 498.07 L 211.482 511.802 L 264.324 511.678 Z"
+        android:strokeWidth="0.748943385"/>
+</vector>

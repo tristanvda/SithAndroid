@@ -1,6 +1,5 @@
 package com.grietenenknapen.sithandroid.ui.adapters;
 
-
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -13,30 +12,28 @@ import com.bumptech.glide.Glide;
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.model.database.SithCard;
 import com.grietenenknapen.sithandroid.model.game.GameCardType;
+import com.grietenenknapen.sithandroid.ui.views.SithCardView;
 import com.grietenenknapen.sithandroid.util.ItemClickSupport;
 import com.grietenenknapen.sithandroid.util.ResourceUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class CardAdapter extends BaseGridAdapter<CardAdapter.ViewHolder> implements ItemClickSupport.OnItemClickListener {
     public static final int SELECTION_LIMIT_NONE = -1;
 
-    private Context context;
     private int maxItemSelection;
     private final List<SithCard> sithCards;
     private final List<Integer> selectedPositions;
     private OnCardSelectListener onCardSelectListener;
 
-    public CardAdapter(final Context context, final List<SithCard> sithCards, final int cardSize) {
+    public CardAdapter(final List<SithCard> sithCards, final int cardSize) {
         super(cardSize);
         this.sithCards = sithCards;
-        this.context = context;
         selectedPositions = new ArrayList<>();
     }
 
-    public void selectSithCard(SithCard sithCard) {
+    public void selectSithCard(final SithCard sithCard) {
         final int position = sithCards.indexOf(sithCard);
         if (position > -1) {
             if (selectedPositions.contains(position)) {
@@ -47,7 +44,7 @@ public class CardAdapter extends BaseGridAdapter<CardAdapter.ViewHolder> impleme
         }
     }
 
-    public void setOnCardSelectListener(CardAdapter.OnCardSelectListener onCardSelectListener) {
+    public void setOnCardSelectListener(final CardAdapter.OnCardSelectListener onCardSelectListener) {
         this.onCardSelectListener = onCardSelectListener;
     }
 
@@ -59,36 +56,36 @@ public class CardAdapter extends BaseGridAdapter<CardAdapter.ViewHolder> impleme
         return selectedCards;
     }
 
-    public void setMaxItemSelection(int maxSelectItems) {
+    public void setMaxItemSelection(final int maxSelectItems) {
         this.maxItemSelection = maxSelectItems;
     }
 
     @Override
-    protected CardAdapter.ViewHolder onCustomCreateViewHolder(ViewGroup parent, int viewType) {
+    protected CardAdapter.ViewHolder onCustomCreateViewHolder(final ViewGroup parent, final int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         return new CardAdapter.ViewHolder(layoutInflater.inflate(R.layout.list_item_sith_card, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(CardAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final CardAdapter.ViewHolder holder, final int position) {
         holder.onBind(sithCards.get(position));
         holder.itemView.setSelected(selectedPositions.contains(position));
     }
 
     @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+    public void onAttachedToRecyclerView(final RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(this);
     }
 
     @Override
-    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+    public void onDetachedFromRecyclerView(final RecyclerView recyclerView) {
         super.onDetachedFromRecyclerView(recyclerView);
         ItemClickSupport.removeFrom(recyclerView);
     }
 
     @Override
-    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+    public void onItemClicked(final RecyclerView recyclerView, final int position, final View v) {
         if (selectedPositions.contains(position)) {
             v.setSelected(false);
             selectedPositions.remove(Integer.valueOf(position));
@@ -121,37 +118,15 @@ public class CardAdapter extends BaseGridAdapter<CardAdapter.ViewHolder> impleme
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        private final ImageView cardImage;
-        private final View cardColorLeft;
-        private final View cardColorRight;
+        private final SithCardView sithCardView;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(final View itemView) {
             super(itemView);
-            cardImage = (ImageView) itemView.findViewById(R.id.sithCardImage);
-            cardColorLeft = itemView.findViewById(R.id.sithCardLeftColorView);
-            cardColorRight = itemView.findViewById(R.id.sithCardRightColorView);
+            sithCardView = (SithCardView) itemView.findViewById(R.id.sithCard);
         }
 
-        void onBind(SithCard sithCard) {
-
-            final int drawableResId = ResourceUtils.getResIdFromResString(context,
-                    sithCard.getImageResId(),
-                    ResourceUtils.RES_TYPE_DRAWABLE);
-
-            final int colorResId = ResourceUtils.getResIdFromResString(context,
-                    sithCard.getColorResId(), ResourceUtils.RES_TYPE_COLOR);
-
-            Glide.with(context)
-                    .load(drawableResId)
-                    .fitCenter()
-                    .into(cardImage);
-            cardColorLeft.setBackgroundColor(ContextCompat.getColor(context, colorResId));
-            if (sithCard.getCardType() == GameCardType.KYLO_REN) {
-                cardColorRight.setBackgroundColor(ContextCompat.getColor(context, R.color.card_red));
-            } else {
-                cardColorRight.setBackgroundColor(ContextCompat.getColor(context, colorResId));
-            }
-
+        void onBind(final SithCard sithCard) {
+            sithCardView.setSithCard(sithCard);
         }
     }
 

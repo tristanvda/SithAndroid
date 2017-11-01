@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/listLayout"
-    android:layout_margin="@dimen/margin_default"
-    android:fitsSystemWindows="true">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/listLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true">
 
     <TextView
         android:id="@+id/listTitle"
@@ -12,20 +12,24 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginBottom="@dimen/margin_small"
-        android:textStyle="bold"
+        android:layout_marginLeft="@dimen/margin_default"
+        android:layout_marginRight="@dimen/margin_default"
         android:gravity="center_horizontal"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textStyle="bold"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/listRecyclerView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/listButton"
+        android:layout_alignWithParentIfMissing="true"
         android:layout_below="@id/listTitle"
         android:layout_centerHorizontal="true"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:requiresFadingEdge="horizontal|vertical" />
+        android:overScrollMode="never"
+        android:requiresFadingEdge="horizontal|vertical"/>
 
     <ImageButton
         android:id="@+id/listButton"
@@ -34,6 +38,23 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:background="@drawable/button_circle_background"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <TextView
+        android:id="@+id/emptyText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:visibility="gone"/>
+
+    <com.grietenenknapen.sithandroid.ui.views.LightSaberLoadingView
+        android:id="@+id/saberLoadingView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        app:saberColor="random"/>
 
 </RelativeLayout>

@@ -11,7 +11,7 @@ public abstract class BaseGridAdapter<V extends RecyclerView.ViewHolder> extends
     }
 
     @Override
-    public V onCreateViewHolder(ViewGroup parent, int viewType) {
+    public V onCreateViewHolder(final ViewGroup parent, final int viewType) {
         V viewHolder = onCustomCreateViewHolder(parent, viewType);
 
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(

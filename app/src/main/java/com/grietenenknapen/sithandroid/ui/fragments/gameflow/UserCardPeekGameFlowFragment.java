@@ -14,10 +14,11 @@ import android.widget.TextView;
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
+import com.grietenenknapen.sithandroid.game.usecase.UseCase;
 import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 import com.grietenenknapen.sithandroid.ui.CallbackPresenterFragment;
 import com.grietenenknapen.sithandroid.ui.PresenterFactory;
-import com.grietenenknapen.sithandroid.ui.PresenterFragment;
+import com.grietenenknapen.sithandroid.ui.activities.MainGameFlowActivity;
 import com.grietenenknapen.sithandroid.ui.adapters.PlayerCardAdapter;
 import com.grietenenknapen.sithandroid.ui.helper.ItemOffsetDecoration;
 import com.grietenenknapen.sithandroid.ui.presenters.GameFlowPresenter;
@@ -31,8 +32,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class UserCardPeekGameFlowFragment extends CallbackPresenterFragment<UserCardPeekGameFlowPresenter, UserCardPeekGameFlowPresenter.View, GameFragmentCallback>
-        implements UserCardPeekGameFlowPresenter.View, GameFlowFragment<GameUseCase> {
+public class UserCardPeekGameFlowFragment extends CallbackPresenterFragment<UserCardPeekGameFlowPresenter, UserCardPeekGameFlowPresenter.View, GameFlowActivity>
+        implements UserCardPeekGameFlowPresenter.View, GameFlowFragment {
     private static final String PRESENTER_TAG = "user_card_peek_presenter";
     private static final String KEY_FLOW_DETAIL = "key:flow_details";
 
@@ -46,15 +47,14 @@ public class UserCardPeekGameFlowFragment extends CallbackPresenterFragment<User
     ImageButton nextButton;
 
     private PlayerCardAdapter adapter;
-    private GameUseCase gameUseCase;
     private FlowDetails flowDetails;
 
     public static Bundle createStartBundle(final FlowDetails flowDetails,
-                                           final ArrayList<ActivePlayer> activePlayers) {
+                                           final List<ActivePlayer> activePlayers) {
 
         final Bundle bundle = new Bundle();
         bundle.putParcelable(KEY_FLOW_DETAIL, flowDetails);
-        bundle.putParcelableArrayList(KEY_PLAYERS, activePlayers);
+        bundle.putParcelableArrayList(KEY_PLAYERS, new ArrayList<>(activePlayers));
 
         return bundle;
     }
@@ -63,14 +63,12 @@ public class UserCardPeekGameFlowFragment extends CallbackPresenterFragment<User
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         flowDetails = getArguments().getParcelable(KEY_FLOW_DETAIL);
-        getPresenter().setGameUseCase(gameUseCase);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View v = inflater.inflate(R.layout.fragment_list, container, false);
-        return v;
+        return inflater.inflate(R.layout.fragment_list, container, false);
     }
 
     @Override
@@ -78,7 +76,14 @@ public class UserCardPeekGameFlowFragment extends CallbackPresenterFragment<User
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         initLayout();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         callback.setGameStatus(GameFlowPresenter.STATUS_GAME);
+        final UseCase gameUseCase = callback.getCurrentGameUseCase();
+        getPresenter().setGameUseCase(gameUseCase);
     }
 
     private void initLayout() {
@@ -94,7 +99,7 @@ public class UserCardPeekGameFlowFragment extends CallbackPresenterFragment<User
 
     @Override
     public void showActivePlayers(List<ActivePlayer> activePlayers) {
-        adapter = new PlayerCardAdapter(getActivity(), activePlayers, ResourceUtils.getDefaultCardItemSize(getActivity().getWindowManager()));
+        adapter = new PlayerCardAdapter(activePlayers, ResourceUtils.getDefaultCardItemSize(getActivity().getWindowManager()));
         adapter.setOnCardSelectListener(new PlayerCardAdapter.OnCardSelectListener() {
             @Override
             public void onCardSelected(ActivePlayer activePlayer) {
@@ -147,11 +152,6 @@ public class UserCardPeekGameFlowFragment extends CallbackPresenterFragment<User
     @Override
     protected UserCardPeekGameFlowPresenter.View getPresenterView() {
         return this;
-    }
-
-    @Override
-    public void setUseCase(GameUseCase useCase) {
-        this.gameUseCase = useCase;
     }
 
     @Override

@@ -1,15 +1,17 @@
 package com.grietenenknapen.sithandroid.ui.fragments.gameflow;
 
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
-import android.view.View;
 
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCasePairId;
+import com.grietenenknapen.sithandroid.game.usecase.type.UseCasePairId;
 import com.grietenenknapen.sithandroid.model.database.Player;
+import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 import com.grietenenknapen.sithandroid.ui.PresenterFactory;
 import com.grietenenknapen.sithandroid.ui.adapters.SelectPlayerAdapter;
 import com.grietenenknapen.sithandroid.ui.fragments.PlayerSelectFragment;
@@ -20,19 +22,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SelectPlayerPairGameFlowFragment extends PlayerSelectFragment
-        implements GameFlowFragment<UseCasePairId> {
+        implements GameFlowFragment {
     private static final String PRESENTER_TAG = "select_player_pair_presenter";
     private static final String KEY_FLOW_DETAIL = "key:flow_details";
 
     private UseCasePairId gameUseCase;
     private FlowDetails flowDetails;
 
-    public static Bundle createStartBundle(final FlowDetails flowDetails,
-                                           final ArrayList<Player> players) {
+    public static Bundle createStartBundleActive(final FlowDetails flowDetails,
+                                                 final List<ActivePlayer> players) {
 
         final Bundle bundle = new Bundle();
         bundle.putParcelable(KEY_FLOW_DETAIL, flowDetails);
-        bundle.putParcelableArrayList(KEY_PLAYERS, players);
+        bundle.putParcelableArrayList(KEY_PLAYERS, createPlayersList(players));
+        bundle.putInt(KEY_SELECTION_MAX, 2);
+
+        return bundle;
+    }
+
+    public static Bundle createStartBundle(final FlowDetails flowDetails,
+                                           final List<Player> players) {
+
+        final Bundle bundle = new Bundle();
+        bundle.putParcelable(KEY_FLOW_DETAIL, flowDetails);
+        bundle.putParcelableArrayList(KEY_PLAYERS, new ArrayList<>(players));
         bundle.putInt(KEY_SELECTION_MAX, 2);
 
         return bundle;
@@ -47,15 +60,16 @@ public class SelectPlayerPairGameFlowFragment extends PlayerSelectFragment
     }
 
     @Override
-    public void onViewCreated(final View view, @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        callback.setGameStatus(GameFlowPresenter.STATUS_GAME);
-    }
-
-    @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         flowDetails = getArguments().getParcelable(KEY_FLOW_DETAIL);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        callback.setGameStatus(GameFlowPresenter.STATUS_GAME);
+        gameUseCase = (UseCasePairId) callback.getCurrentGameUseCase();
     }
 
     @Override
@@ -99,12 +113,8 @@ public class SelectPlayerPairGameFlowFragment extends PlayerSelectFragment
     }
 
     @Override
-    public void setUseCase(final UseCasePairId useCase) {
-        this.gameUseCase = useCase;
-    }
-
-    @Override
     public boolean isNewTask(FlowDetails flowDetails) {
         return !this.flowDetails.equals(flowDetails);
     }
+
 }

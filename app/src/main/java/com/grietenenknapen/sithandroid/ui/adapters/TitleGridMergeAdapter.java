@@ -5,7 +5,7 @@ import com.grietenenknapen.sithandroid.ui.adapters.managers.TitleGridLayoutManag
 public class TitleGridMergeAdapter extends MergeRecyclerAdapter implements TitleGridLayoutManager.TitleGridRecyclerViewAdapter {
 
     @Override
-    public boolean isHeader(int position) {
+    public boolean isHeader(final int position) {
         final LocalAdapter localAdapter = getAdapterOffsetForItem(position);
 
         if (localAdapter.mAdapter instanceof TitleGridLayoutManager.TitleGridRecyclerViewAdapter) {

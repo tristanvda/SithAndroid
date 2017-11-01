@@ -3,9 +3,7 @@ package com.grietenenknapen.sithandroid.maingame.usecases;
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.flowmanager.UseCaseCallBack;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
-import com.grietenenknapen.sithandroid.game.usecase.UseCase;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseId;
-
+import com.grietenenknapen.sithandroid.game.usecase.type.UseCaseId;
 
 public class MazKanataUseCase extends GameUseCase<MazKanataUseCase.CallBack> implements UseCaseId {
 

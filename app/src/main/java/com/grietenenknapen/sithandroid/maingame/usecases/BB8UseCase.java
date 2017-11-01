@@ -5,7 +5,7 @@ import android.support.v4.util.Pair;
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.flowmanager.UseCaseCallBack;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCasePairId;
+import com.grietenenknapen.sithandroid.game.usecase.type.UseCasePairId;
 
 public class BB8UseCase extends GameUseCase<BB8UseCase.CallBack> implements UseCasePairId {
     private static final long DELAY_LOVERS = 10 * 1000;

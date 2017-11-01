@@ -1,8 +1,10 @@
 package com.grietenenknapen.sithandroid.ui.fragments;
 
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
@@ -15,10 +17,11 @@ import android.widget.TextView;
 
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.model.database.Player;
+import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 import com.grietenenknapen.sithandroid.ui.CallbackPresenterFragment;
 import com.grietenenknapen.sithandroid.ui.PresenterFactory;
 import com.grietenenknapen.sithandroid.ui.adapters.SelectPlayerAdapter;
-import com.grietenenknapen.sithandroid.ui.fragments.gameflow.GameFragmentCallback;
+import com.grietenenknapen.sithandroid.ui.fragments.gameflow.GameFlowActivity;
 import com.grietenenknapen.sithandroid.ui.helper.ItemOffsetDecoration;
 import com.grietenenknapen.sithandroid.ui.presenters.GameFlowPresenter;
 import com.grietenenknapen.sithandroid.ui.presenters.PlayerSelectPresenter;
@@ -31,11 +34,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class PlayerSelectFragment extends CallbackPresenterFragment<PlayerSelectPresenter, PlayerSelectPresenter.View, PlayerSelectFragment.Callback> implements PlayerSelectPresenter.View {
+public class PlayerSelectFragment extends CallbackPresenterFragment<PlayerSelectPresenter, PlayerSelectPresenter.View, PlayerSelectFragment.Callback>
+        implements PlayerSelectPresenter.View {
 
     private static final String PRESENTER_TAG = "player_select_presenter";
 
     protected static final String KEY_SELECTION_MAX = "key:selection_max";
+    protected static final String KEY_NEXT_BUTTON_IMAGE = "key:next_image";
+    protected static final String KEY_TITLE = "key:title";
     protected static final String KEY_PLAYERS = "key:players";
 
     @BindView(R.id.listTitle)
@@ -47,18 +53,49 @@ public class PlayerSelectFragment extends CallbackPresenterFragment<PlayerSelect
 
     private SelectPlayerAdapter adapter;
 
-    public static Bundle createArguments(final ArrayList<Player> players, final int maxSelection) {
+    public static Bundle createArguments(final List<Player> players, final int maxSelection) {
         final Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(KEY_PLAYERS, players);
+        bundle.putParcelableArrayList(KEY_PLAYERS, new ArrayList<>(players));
         bundle.putInt(KEY_SELECTION_MAX, maxSelection);
         return bundle;
+    }
+
+    public static Bundle createArguments(final List<Player> players, final int maxSelection, final String title) {
+        final Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(KEY_PLAYERS, new ArrayList<>(players));
+        bundle.putInt(KEY_SELECTION_MAX, maxSelection);
+        bundle.putString(KEY_TITLE, title);
+        return bundle;
+    }
+
+    public static Bundle createArguments(final List<Player> players, final int maxSelection, final String title, @DrawableRes final int nextIconRes) {
+        final Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(KEY_PLAYERS, new ArrayList<>(players));
+        bundle.putInt(KEY_SELECTION_MAX, maxSelection);
+        bundle.putString(KEY_TITLE, title);
+        bundle.putInt(KEY_NEXT_BUTTON_IMAGE, nextIconRes);
+        return bundle;
+    }
+
+    @NonNull
+    public static ArrayList<Player> createPlayersList(final List<ActivePlayer> activePlayers) {
+        ArrayList<Player> players = new ArrayList<>();
+        for (ActivePlayer activePlayer : activePlayers) {
+            Player player = Player.newBuilder()
+                    .name(activePlayer.getName())
+                    ._id(activePlayer.getPlayerId())
+                    .telephoneNumber(activePlayer.getTelephoneNumber())
+                    .build();
+            players.add(player);
+
+        }
+        return players;
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View v = inflater.inflate(R.layout.fragment_list, container, false);
-        return v;
+        return inflater.inflate(R.layout.fragment_list, container, false);
     }
 
     @Override
@@ -66,12 +103,26 @@ public class PlayerSelectFragment extends CallbackPresenterFragment<PlayerSelect
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         initLayout();
-        callback.setGameStatus(GameFlowPresenter.STATUS_GAME_OVER);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        callback.setGameStatus(GameFlowPresenter.STATUS_SELECT_PLAYERS);
     }
 
     protected void initLayout() {
-        titleTextView.setText(getString(R.string.select_players));
-        nextButton.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_shuffle));
+        if (getArguments() != null && getArguments().containsKey(KEY_TITLE)) {
+            titleTextView.setText(getArguments().getString(KEY_TITLE));
+        } else {
+            titleTextView.setText(getString(R.string.select_players));
+        }
+
+        if (getArguments() != null && getArguments().containsKey(KEY_NEXT_BUTTON_IMAGE)) {
+            nextButton.setImageDrawable(ContextCompat.getDrawable(getContext(), getArguments().getInt(KEY_NEXT_BUTTON_IMAGE)));
+        } else {
+            nextButton.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_shuffle));
+        }
 
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext().getApplicationContext(), 2);
         playerRecyclerView.setLayoutManager(layoutManager);
@@ -134,7 +185,7 @@ public class PlayerSelectFragment extends CallbackPresenterFragment<PlayerSelect
         }
     }
 
-    public interface Callback extends GameFragmentCallback {
+    public interface Callback extends GameFlowActivity {
         void onPlayersSelected(List<Player> players);
     }
 

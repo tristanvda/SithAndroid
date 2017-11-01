@@ -1,6 +1,5 @@
 package com.grietenenknapen.sithandroid.ui.presenters;
 
-import com.grietenenknapen.sithandroid.application.Settings;
 import com.grietenenknapen.sithandroid.ui.Presenter;
 import com.grietenenknapen.sithandroid.ui.PresenterView;
 

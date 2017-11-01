@@ -12,9 +12,9 @@ import android.widget.TextView;
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
+import com.grietenenknapen.sithandroid.game.usecase.UseCase;
 import com.grietenenknapen.sithandroid.ui.CallbackPresenterFragment;
 import com.grietenenknapen.sithandroid.ui.PresenterFactory;
-import com.grietenenknapen.sithandroid.ui.PresenterFragment;
 import com.grietenenknapen.sithandroid.ui.presenters.GameFlowPresenter;
 import com.grietenenknapen.sithandroid.ui.presenters.gameflow.DelayGameFlowPresenter;
 import com.grietenenknapen.sithandroid.util.FontCache;
@@ -22,8 +22,8 @@ import com.grietenenknapen.sithandroid.util.FontCache;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class DelayGameFlowFragment extends CallbackPresenterFragment<DelayGameFlowPresenter, DelayGameFlowPresenter.View, GameFragmentCallback>
-        implements DelayGameFlowPresenter.View, GameFlowFragment<GameUseCase> {
+public class DelayGameFlowFragment extends CallbackPresenterFragment<DelayGameFlowPresenter, DelayGameFlowPresenter.View, GameFlowActivity>
+        implements DelayGameFlowPresenter.View, GameFlowFragment {
     private static final int STATIC_SECOND = 1000;
 
     private static final String PRESENTER_TAG = "delay_game_flow_presenter";
@@ -31,7 +31,6 @@ public class DelayGameFlowFragment extends CallbackPresenterFragment<DelayGameFl
     private static final String KEY_FLOW_DELAY = "key:flow_delay";
 
     private FlowDetails flowDetails;
-    private GameUseCase gameUseCase;
     private CountDownTimer countDownTimer;
 
     @BindView(R.id.delayText)
@@ -51,14 +50,12 @@ public class DelayGameFlowFragment extends CallbackPresenterFragment<DelayGameFl
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         flowDetails = getArguments().getParcelable(KEY_FLOW_DETAIL);
-        getPresenter().setGameUseCase(gameUseCase);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View v = inflater.inflate(R.layout.fragment_delay, container, false);
-        return v;
+        return inflater.inflate(R.layout.fragment_delay, container, false);
     }
 
     @Override
@@ -66,7 +63,14 @@ public class DelayGameFlowFragment extends CallbackPresenterFragment<DelayGameFl
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         initLayout();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         callback.setGameStatus(GameFlowPresenter.STATUS_GAME);
+        final UseCase gameUseCase = callback.getCurrentGameUseCase();
+        getPresenter().setGameUseCase(gameUseCase);
     }
 
     private void initLayout() {
@@ -118,11 +122,6 @@ public class DelayGameFlowFragment extends CallbackPresenterFragment<DelayGameFl
     @Override
     protected DelayGameFlowPresenter.View getPresenterView() {
         return this;
-    }
-
-    @Override
-    public void setUseCase(GameUseCase useCase) {
-        this.gameUseCase = useCase;
     }
 
     @Override

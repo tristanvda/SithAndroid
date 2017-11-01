@@ -10,6 +10,6 @@ public final class MathUtils {
 
     public static int generateRandomInteger(final int min, final int max) {
         final Random r = new Random();
-        return r.nextInt(max + 1 - min) + min;
+        return r.nextInt((max - min) + 1) + min;
     }
 }

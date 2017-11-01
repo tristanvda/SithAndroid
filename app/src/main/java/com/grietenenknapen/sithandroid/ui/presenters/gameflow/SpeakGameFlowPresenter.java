@@ -4,6 +4,7 @@ import android.os.Handler;
 
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
+import com.grietenenknapen.sithandroid.game.usecase.UseCase;
 import com.grietenenknapen.sithandroid.ui.Presenter;
 import com.grietenenknapen.sithandroid.ui.PresenterView;
 
@@ -12,7 +13,7 @@ public class SpeakGameFlowPresenter extends Presenter<SpeakGameFlowPresenter.Vie
     private int speakTextId;
     private int speakSoundId;
     private final FlowDetails flowDetails;
-    private GameUseCase gameUseCase;
+    private UseCase gameUseCase;
     private boolean soundPlayed;
 
     public SpeakGameFlowPresenter(FlowDetails flowDetails,
@@ -44,7 +45,7 @@ public class SpeakGameFlowPresenter extends Presenter<SpeakGameFlowPresenter.Vie
         gameUseCase.onExecuteStep(flowDetails.getStep());
     }
 
-    public void setGameUseCase(GameUseCase gameUseCase) {
+    public void setGameUseCase(UseCase gameUseCase) {
         this.gameUseCase = gameUseCase;
     }
 

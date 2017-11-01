@@ -1,8 +1,6 @@
 package com.grietenenknapen.sithandroid.ui.fragments.gameflow;
 
 import android.graphics.Typeface;
-import android.media.MediaActionSound;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -13,11 +11,10 @@ import android.widget.TextView;
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
+import com.grietenenknapen.sithandroid.game.usecase.UseCase;
 import com.grietenenknapen.sithandroid.ui.CallbackPresenterFragment;
 import com.grietenenknapen.sithandroid.ui.PresenterFactory;
-import com.grietenenknapen.sithandroid.ui.PresenterFragment;
 import com.grietenenknapen.sithandroid.ui.presenters.GameFlowPresenter;
-import com.grietenenknapen.sithandroid.ui.presenters.gameflow.DelayGameFlowPresenter;
 import com.grietenenknapen.sithandroid.ui.presenters.gameflow.SpeakGameFlowPresenter;
 import com.grietenenknapen.sithandroid.util.FontCache;
 import com.grietenenknapen.sithandroid.util.MediaSoundPlayer;
@@ -25,15 +22,15 @@ import com.grietenenknapen.sithandroid.util.MediaSoundPlayer;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SpeakGameFlowFragment extends CallbackPresenterFragment<SpeakGameFlowPresenter, SpeakGameFlowPresenter.View, GameFragmentCallback>
-        implements SpeakGameFlowPresenter.View, GameFlowFragment<GameUseCase> {
+public class SpeakGameFlowFragment extends CallbackPresenterFragment<SpeakGameFlowPresenter, SpeakGameFlowPresenter.View, GameFlowActivity>
+        implements SpeakGameFlowPresenter.View, GameFlowFragment {
     private static final String PRESENTER_TAG = "speak_game_flow_presenter";
     private static final String KEY_FLOW_DETAIL = "key:flow_details";
     private static final String KEY_FLOW_SPEAK_TEXT_ID = "key:flow_speak_text_id";
     private static final String KEY_FLOW_SPEAK_SOUND_ID = "key:flow_speak_sound_id";
 
     private FlowDetails flowDetails;
-    private GameUseCase gameUseCase;
+    private UseCase gameUseCase;
 
     @BindView(R.id.speakText)
     TextView speakText;
@@ -54,7 +51,6 @@ public class SpeakGameFlowFragment extends CallbackPresenterFragment<SpeakGameFl
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         flowDetails = getArguments().getParcelable(KEY_FLOW_DETAIL);
-        getPresenter().setGameUseCase(gameUseCase);
     }
 
     @Nullable
@@ -69,7 +65,14 @@ public class SpeakGameFlowFragment extends CallbackPresenterFragment<SpeakGameFl
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         initLayout();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         callback.setGameStatus(GameFlowPresenter.STATUS_GAME);
+        gameUseCase = callback.getCurrentGameUseCase();
+        getPresenter().setGameUseCase(gameUseCase);
     }
 
     @Override
@@ -129,11 +132,6 @@ public class SpeakGameFlowFragment extends CallbackPresenterFragment<SpeakGameFl
     @Override
     protected SpeakGameFlowPresenter.View getPresenterView() {
         return this;
-    }
-
-    @Override
-    public void setUseCase(GameUseCase useCase) {
-        this.gameUseCase = useCase;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.grietenenknapen.sithandroid.game.usecase.usecasetemplate;
+package com.grietenenknapen.sithandroid.game.usecase.type;
 
 import com.grietenenknapen.sithandroid.game.usecase.UseCase;
 

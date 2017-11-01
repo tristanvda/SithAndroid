@@ -1,7 +1,7 @@
 package com.grietenenknapen.sithandroid.ui;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 public abstract class PresenterFragment<P extends Presenter<U>, U extends PresenterView>
@@ -12,24 +12,15 @@ public abstract class PresenterFragment<P extends Presenter<U>, U extends Presen
     private P presenter;
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         try {
-            presenterCache = ((PresenterActivity) context).getPresenterCache();
+            presenterCache = ((PresenterActivity) getContext()).getPresenterCache();
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must be a PresenterActivity");
+            throw new ClassCastException(getContext().toString() + " must be a PresenterActivity");
         }
-    }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         presenter = presenterCache.getPresenter(getPresenterTag(),
                 getPresenterFactory());
     }
@@ -57,6 +48,7 @@ public abstract class PresenterFragment<P extends Presenter<U>, U extends Presen
     public void onDestroy() {
         super.onDestroy();
         if (!isDestroyedBySystem) {
+            presenter.onPresenterDestroy();
             presenterCache.removePresenter(getPresenterTag());
         }
     }

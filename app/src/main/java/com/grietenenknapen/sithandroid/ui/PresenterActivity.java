@@ -6,12 +6,13 @@ import android.support.v7.app.AppCompatActivity;
 public abstract class PresenterActivity<P extends Presenter<U>, U extends PresenterView> extends AppCompatActivity {
     private PresenterCache presenterCache;
     protected P presenter;
+    private boolean isDestroyedBySystem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Object retainObject = getLastCustomNonConfigurationInstance();
+        final Object retainObject = getLastCustomNonConfigurationInstance();
 
         if (retainObject != null) {
             presenterCache = (PresenterCache) retainObject;
@@ -21,7 +22,6 @@ public abstract class PresenterActivity<P extends Presenter<U>, U extends Presen
 
         presenter = presenterCache.getPresenter(getPresenterTag(),
                 getPresenterFactory());
-
     }
 
     @Override
@@ -34,12 +34,21 @@ public abstract class PresenterActivity<P extends Presenter<U>, U extends Presen
     protected void onResume() {
         super.onResume();
         presenter.bindView(getPresenterView());
-
+        isDestroyedBySystem = false;
     }
 
     @Override
     public Object onRetainCustomNonConfigurationInstance() {
+        isDestroyedBySystem = true;
         return presenterCache;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (!isDestroyedBySystem) {
+            presenter.onPresenterDestroy();
+        }
     }
 
     protected P getPresenter() {

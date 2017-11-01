@@ -9,6 +9,13 @@
         <item name="preferenceStyle">@style/PreferenceTheme</item>
     </style>
 
+    <style name="ToolbarBarStyle" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="elevation">0dp</item>
+        <item name="titleTextStyle">@color/colorPrimary</item>
+        <item name="subtitleTextStyle">@color/colorPrimary</item>
+        <item name="colorControlNormal">@color/colorPrimary</item>
+    </style>
+
     <style name="TextAppearance.Big" parent="@android:style/TextAppearance">
         <item name="android:textSize">32sp</item>
         <item name="android:textColor">@color/yellow</item>

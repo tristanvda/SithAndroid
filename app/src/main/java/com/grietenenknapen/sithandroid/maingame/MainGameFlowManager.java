@@ -6,9 +6,9 @@ import android.text.TextUtils;
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.flowmanager.GameFlowManager;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseId;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCasePairId;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseYesNo;
+import com.grietenenknapen.sithandroid.game.usecase.type.UseCaseId;
+import com.grietenenknapen.sithandroid.game.usecase.type.UseCasePairId;
+import com.grietenenknapen.sithandroid.game.usecase.type.UseCaseYesNo;
 import com.grietenenknapen.sithandroid.maingame.usecases.BB8UseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.BobaFettUseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.ChewBaccaUseCase;
@@ -251,7 +251,7 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
 
     @Override
     public void skipStepDelay(long delay) {
-        uiListener.showDelay(delay, currentUseCase);
+        uiListener.showDelay(delay);
     }
 
     @Override
@@ -261,28 +261,28 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
 
     @Override
     public void requestUserPairPlayerSelection(final UseCasePairId useCase) {
-        uiListener.requestUserPairPlayerSelection(mainGame.getAlivePlayers(), useCase);
+        uiListener.requestUserPairPlayerSelection(mainGame.getAlivePlayers());
     }
 
     @Override
     public void showDelay(final long delay, final GameUseCase gameUseCase) {
-        uiListener.showDelay(delay, gameUseCase);
+        uiListener.showDelay(delay);
     }
 
     @Override
     public void speak(final int soundResId, final int stringResId, final GameUseCase gameUseCase) {
-        uiListener.speak(soundResId, stringResId, gameUseCase);
+        uiListener.speak(soundResId, stringResId);
     }
 
     @Override
     public void requestYesNoAnswerRocket(final UseCaseYesNo useCase) {
-        uiListener.requestYesNoAnswer(mainGame.isBobaRocketUsed(), useCase, R.string.boba_fett_use_rocket_launcher);
+        uiListener.requestYesNoAnswer(mainGame.isBobaRocketUsed(), R.string.boba_fett_use_rocket_launcher);
     }
 
     @Override
     public void showKilledPlayerMedPackYesNo(UseCaseYesNo useCase) {
         uiListener.showPlayerYesNo(mainGame.getCurrentKilledPlayer(),
-                mainGame.isBobaMedPackUsed(), R.string.boba_fett_use_med_pack, useCase);
+                mainGame.isBobaMedPackUsed(), R.string.boba_fett_use_med_pack);
     }
 
     @Override
@@ -298,7 +298,7 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
                 killAblePlayers.add(activePlayer);
             }
         }
-        uiListener.requestUserPlayerSelection(killAblePlayers, useCase);
+        uiListener.requestUserPlayerSelection(killAblePlayers);
     }
 
     @Override
@@ -318,16 +318,16 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
                 availableSithCards.add(sithCard);
             }
         }
-        uiListener.requestUserCardSelection(availableSithCards, useCase);
+        uiListener.requestUserCardSelection(availableSithCards);
     }
 
     @Override
     public void requestUserCardPeek(final GameUseCase gameUseCase) {
-        uiListener.requestUserCardPeek(mainGame.getAlivePlayers(), DELAY_PEAK / 2, gameUseCase);
+        uiListener.requestUserCardPeek(mainGame.getAlivePlayers(), DELAY_PEAK / 2);
     }
 
     @Override
     public void requestUserPlayerSelectionSith(final UseCaseId useCase) {
-        uiListener.requestUserPlayerSelection(mainGame.getAlivePlayersLightSide(), useCase);
+        uiListener.requestUserPlayerSelection(mainGame.getAlivePlayersLightSide());
     }
 }

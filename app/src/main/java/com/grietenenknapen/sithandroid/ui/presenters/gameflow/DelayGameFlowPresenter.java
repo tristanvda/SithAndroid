@@ -2,13 +2,14 @@ package com.grietenenknapen.sithandroid.ui.presenters.gameflow;
 
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
+import com.grietenenknapen.sithandroid.game.usecase.UseCase;
 import com.grietenenknapen.sithandroid.ui.Presenter;
 import com.grietenenknapen.sithandroid.ui.PresenterView;
 
 public class DelayGameFlowPresenter extends Presenter<DelayGameFlowPresenter.View> {
     private long delay;
     private final FlowDetails flowDetails;
-    private GameUseCase gameUseCase;
+    private UseCase gameUseCase;
 
     public DelayGameFlowPresenter(final FlowDetails flowDetails, final long delay) {
         this.delay = delay;
@@ -21,7 +22,7 @@ public class DelayGameFlowPresenter extends Presenter<DelayGameFlowPresenter.Vie
         getView().startTimer(delay);
     }
 
-    public void setGameUseCase(GameUseCase gameUseCase) {
+    public void setGameUseCase(UseCase gameUseCase) {
         this.gameUseCase = gameUseCase;
     }
 

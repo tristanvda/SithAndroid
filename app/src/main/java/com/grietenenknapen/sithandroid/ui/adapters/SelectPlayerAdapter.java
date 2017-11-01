@@ -34,7 +34,7 @@ public class SelectPlayerAdapter extends PlayerAdapter implements ItemClickSuppo
         return selectedPlayers;
     }
 
-    public void selectPlayer(Player player) {
+    public void selectPlayer(final Player player) {
         final int position = players.indexOf(player);
         if (position > -1) {
             if (selectedPositions.contains(position)) {
@@ -49,31 +49,31 @@ public class SelectPlayerAdapter extends PlayerAdapter implements ItemClickSuppo
         this.onPlayerSelectListener = onPlayerSelectListener;
     }
 
-    public void setMaxItemSelection(int maxItemSelection) {
+    public void setMaxItemSelection(final int maxItemSelection) {
         this.maxItemSelection = maxItemSelection;
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         super.onBindViewHolder(holder, position);
 
         holder.itemView.setSelected(selectedPositions.contains(position));
     }
 
     @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+    public void onAttachedToRecyclerView(final RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(this);
     }
 
     @Override
-    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+    public void onDetachedFromRecyclerView(final RecyclerView recyclerView) {
         super.onDetachedFromRecyclerView(recyclerView);
         ItemClickSupport.removeFrom(recyclerView);
     }
 
     @Override
-    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+    public void onItemClicked(final RecyclerView recyclerView, final int position, final View v) {
         if (selectedPositions.contains(position)) {
             v.setSelected(false);
             selectedPositions.remove(Integer.valueOf(position));

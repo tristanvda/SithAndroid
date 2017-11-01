@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_content"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                 xmlns:tools="http://schemas.android.com/tools"
+                                                 android:id="@+id/main_content"
+                                                 android:layout_width="match_parent"
+                                                 android:layout_height="match_parent">
 
     <com.grietenenknapen.sithandroid.ui.views.SithStarView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:ignore="UnusedAttribute" />
+        tools:ignore="UnusedAttribute"/>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -23,7 +23,7 @@
             android:layout_gravity="center"
             android:clipToPadding="false"
             android:fitsSystemWindows="true"
-            android:requiresFadingEdge="vertical" />
+            android:requiresFadingEdge="vertical"/>
 
     </FrameLayout>
 
@@ -50,7 +50,7 @@
                 android:contentDescription=""
                 android:padding="@dimen/padding_very_small"
                 android:src="@drawable/ic_done"
-                android:visibility="visible" />
+                android:visibility="visible"/>
 
             <ImageButton
                 android:id="@+id/playerDelete"
@@ -62,7 +62,7 @@
                 android:contentDescription=""
                 android:padding="@dimen/padding_very_small"
                 android:src="@drawable/ic_delete"
-                android:visibility="visible" />
+                android:visibility="visible"/>
 
             <LinearLayout
                 android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
                     android:text="@string/player_name"
                     android:textAppearance="?android:textAppearanceLarge"
                     android:textColor="@android:color/black"
-                    tools:ignore="RelativeOverlap,RtlHardcoded" />
+                    tools:ignore="RelativeOverlap,RtlHardcoded"/>
 
                 <EditText
                     android:id="@+id/playerNameEdit"
@@ -91,7 +91,7 @@
                     android:inputType="textPersonName"
                     android:nextFocusDown="@+id/playerPhoneEdit"
                     android:textAppearance="?android:textAppearanceLarge"
-                    tools:ignore="RtlHardcoded" />
+                    tools:ignore="RtlHardcoded"/>
 
 
                 <TextView
@@ -103,7 +103,7 @@
                     android:text="@string/player_number"
                     android:textAppearance="?android:textAppearanceLarge"
                     android:textColor="@android:color/black"
-                    tools:ignore="RtlHardcoded" />
+                    tools:ignore="RtlHardcoded"/>
 
                 <EditText
                     android:id="@+id/playerPhoneEdit"
@@ -114,7 +114,7 @@
                     android:imeOptions="actionDone"
                     android:inputType="phone"
                     android:textAppearance="?android:textAppearanceLarge"
-                    tools:ignore="RtlHardcoded" />
+                    tools:ignore="RtlHardcoded"/>
 
             </LinearLayout>
 

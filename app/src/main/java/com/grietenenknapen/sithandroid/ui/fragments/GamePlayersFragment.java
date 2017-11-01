@@ -16,7 +16,7 @@ import com.grietenenknapen.sithandroid.ui.PresenterFactory;
 import com.grietenenknapen.sithandroid.ui.adapters.TitlePlayerCardAdapter;
 import com.grietenenknapen.sithandroid.ui.adapters.managers.TitleGridLayoutManager;
 import com.grietenenknapen.sithandroid.ui.adapters.TitleGridMergeAdapter;
-import com.grietenenknapen.sithandroid.ui.fragments.gameflow.GameFragmentCallback;
+import com.grietenenknapen.sithandroid.ui.fragments.gameflow.GameFlowActivity;
 import com.grietenenknapen.sithandroid.ui.helper.ItemOffsetDecoration;
 import com.grietenenknapen.sithandroid.ui.presenters.GameFlowPresenter;
 import com.grietenenknapen.sithandroid.ui.presenters.GamePlayersPresenter;
@@ -28,7 +28,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class GamePlayersFragment extends CallbackPresenterFragment<GamePlayersPresenter, GamePlayersPresenter.View, GameFragmentCallback>
+public class GamePlayersFragment extends CallbackPresenterFragment<GamePlayersPresenter, GamePlayersPresenter.View, GameFlowActivity>
         implements GamePlayersPresenter.View {
     private static final String PRESENTER_TAG = "game_players_presenter";
 
@@ -42,10 +42,10 @@ public class GamePlayersFragment extends CallbackPresenterFragment<GamePlayersPr
     @BindView(R.id.listButton)
     ImageButton nextButton;
 
-    public static Bundle createArguments(final ArrayList<ActivePlayer> alivePlayers, final ArrayList<ActivePlayer> deathPlayers) {
+    public static Bundle createArguments(final List<ActivePlayer> alivePlayers, final List<ActivePlayer> deathPlayers) {
         final Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(KEY_PLAYERS_ALIVE, alivePlayers);
-        bundle.putParcelableArrayList(KEY_PLAYERS_DEATH, deathPlayers);
+        bundle.putParcelableArrayList(KEY_PLAYERS_ALIVE, new ArrayList<>(alivePlayers));
+        bundle.putParcelableArrayList(KEY_PLAYERS_DEATH, new ArrayList<>(deathPlayers));
         return bundle;
     }
 
@@ -61,6 +61,11 @@ public class GamePlayersFragment extends CallbackPresenterFragment<GamePlayersPr
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         initLayout();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         callback.setGameStatus(GameFlowPresenter.STATUS_GAME_PLAYERS);
     }
 
@@ -73,7 +78,6 @@ public class GamePlayersFragment extends CallbackPresenterFragment<GamePlayersPr
         RecyclerView.ItemDecoration itemDecoration = new ItemOffsetDecoration(getContext(), R.dimen.card_margin);
         playerRecyclerView.addItemDecoration(itemDecoration);
     }
-
 
     @Override
     protected String getPresenterTag() {
@@ -96,12 +100,12 @@ public class GamePlayersFragment extends CallbackPresenterFragment<GamePlayersPr
         final TitleGridMergeAdapter mergeAdapter = new TitleGridMergeAdapter();
 
         if (deathPlayers.size() > 0) {
-            TitlePlayerCardAdapter killAdapter = new TitlePlayerCardAdapter(getActivity(), deathPlayers, getString(R.string.killed_players),
+            TitlePlayerCardAdapter killAdapter = new TitlePlayerCardAdapter(deathPlayers, getString(R.string.killed_players),
                     ResourceUtils.getDefaultCardItemSize(getActivity().getWindowManager()));
             mergeAdapter.addAdapter(killAdapter);
         }
 
-        TitlePlayerCardAdapter aliveAdapter = new TitlePlayerCardAdapter(getActivity(), alivePlayers, getString(R.string.alive_players),
+        TitlePlayerCardAdapter aliveAdapter = new TitlePlayerCardAdapter(alivePlayers, getString(R.string.alive_players),
                 ResourceUtils.getDefaultCardItemSize(getActivity().getWindowManager()));
         mergeAdapter.addAdapter(aliveAdapter);
 

@@ -11,6 +11,8 @@
     <string name="player_name">Nickname: </string>
     <string name="player_number">Phone number: </string>
     <string name="select_players">Add players to your game</string>
+    <string name="kill_players">Kill players</string>
+    <string name="show_players">Show players</string>
     <string name="select_players_kill">Select players to kill!</string>
     <string name="roles_players">Cards shuffled! Check your roles!</string>
     <string name="pair_select_players">Bind two players</string>
@@ -30,6 +32,26 @@
     <string name="killed_players">Killed players:</string>
     <string name="alive_players">Alive players:</string>
     <string name="players">Players</string>
+    <string name="server_started">Server started</string>
+    <string name="drawer_open">Open servers</string>
+    <string name="drawer_close">Close servers</string>
+    <string name="error_title">The force is not with you..</string>
+    <string name="loading">Loading…</string>
+    <string name="client_identify">Who are you?</string>
+    <string name="your_role">This is your role %1s!</string>
+
+    <!-- Wifi network strings -->
+    <string name="creation_server_group_failed">Creation Server failed due to mysterious reasons (During creation group)..</string>
+    <string name="creation_server_group_owner_failed">Creation Server failed because you are not the group owner :(</string>
+    <string name="creation_server_service_failed">Creation Server failed due to mysterious reasons (During creation service)..</string>
+    <string name="server_failed">The server failed and got stopped. Start the server again to re-host</string>
+    <string name="server_failed_p2p">The server stopped, because p2p got disabled</string>
+    <string name="service_discovery_failed">Unable to discover Sith Services</string>
+    <string name="discovering_services">Discovering Sith Services</string>
+    <string name="p2p_disabled_feature">Enable P2P to use this feature</string>
+    <string name="server_list_title">Join remote Games</string>
+    <string name="connection_to_server_failed">Connection to server failed</string>
+    <string name="server_disconnected">You are disconnected from the server</string>
 
     <!-- Settings -->
     <string name="music_title">Music</string>

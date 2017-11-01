@@ -3,16 +3,25 @@ package com.grietenenknapen.sithandroid.ui.activities;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionMenu;
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.application.Settings;
+import com.grietenenknapen.sithandroid.maingame.multiplayer.client.WifiP2pService;
+import com.grietenenknapen.sithandroid.ui.fragments.ServerListFragment;
+import com.grietenenknapen.sithandroid.ui.helper.AnimateActionBarDrawerToggle;
 import com.grietenenknapen.sithandroid.ui.presenters.HomePresenter;
 import com.grietenenknapen.sithandroid.ui.PresenterActivity;
 import com.grietenenknapen.sithandroid.ui.PresenterFactory;
@@ -22,7 +31,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class HomeActivity extends PresenterActivity<HomePresenter, HomePresenter.View> implements HomePresenter.View {
+public class HomeActivity extends PresenterActivity<HomePresenter, HomePresenter.View> implements HomePresenter.View, ServerListFragment.Callback {
     private static final String PRESENTER_TAG = "home_presenter";
 
     private static final int SEND_SMS_PERMISSION = 1;
@@ -33,8 +42,13 @@ public class HomeActivity extends PresenterActivity<HomePresenter, HomePresenter
     TextView menuResume;
     @BindView(R.id.fab)
     FloatingActionMenu fab;
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawerLayout;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     private boolean permissionGiven;
+    private AnimateActionBarDrawerToggle drawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +59,51 @@ public class HomeActivity extends PresenterActivity<HomePresenter, HomePresenter
     }
 
     private void initLayout() {
+        setSupportActionBar(toolbar);
         Typeface starWars = FontCache.get("fonts/Starjedi.ttf", this);
         menuStart.setTypeface(starWars);
         menuResume.setTypeface(starWars);
+
+        drawerToggle = new AnimateActionBarDrawerToggle(this, drawerLayout, toolbar,
+                R.string.drawer_open, R.string.drawer_close) {
+
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                invalidateOptionsMenu();
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                invalidateOptionsMenu();
+            }
+        };
+        drawerToggle.enableSliderTitleAnimation(R.id.title_server_list);
+        drawerToggle.setDrawerIndicatorEnabled(true);
+        drawerLayout.addDrawerListener(drawerToggle);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        drawerToggle.syncState();
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @OnClick(R.id.menuStart)
@@ -111,6 +167,8 @@ public class HomeActivity extends PresenterActivity<HomePresenter, HomePresenter
     public void onBackPressed() {
         if (fab.isOpened()) {
             fab.close(true);
+        } else if (drawerLayout.isDrawerOpen(Gravity.START)) {
+            drawerLayout.closeDrawer(Gravity.START);
         } else {
             super.onBackPressed();
         }
@@ -133,7 +191,7 @@ public class HomeActivity extends PresenterActivity<HomePresenter, HomePresenter
 
     @Override
     public void goToGameFlowScreen() {
-        startActivity(new Intent(this, GameFlowActivity.class));
+        startActivity(new Intent(this, MainGameFlowActivity.class));
     }
 
     @Override
@@ -177,6 +235,11 @@ public class HomeActivity extends PresenterActivity<HomePresenter, HomePresenter
     @Override
     protected HomePresenter.View getPresenterView() {
         return this;
+    }
+
+    @Override
+    public void onServerItemClicked(@NonNull final WifiP2pService wifiP2pService) {
+        startActivity(GameClientFlowActivity.createStartIntent(this, wifiP2pService));
     }
 
     private static class HomePresenterFactory implements PresenterFactory<HomePresenter> {

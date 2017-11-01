@@ -1,10 +1,15 @@
 package com.grietenenknapen.sithandroid.ui.activities;
 
+import android.content.Context;
+import android.content.IntentFilter;
+import android.net.wifi.WifiManager;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -12,18 +17,18 @@ import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.application.Settings;
 import com.grietenenknapen.sithandroid.application.SithApplication;
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
-import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseId;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCasePairId;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseYesNo;
+import com.grietenenknapen.sithandroid.game.usecase.UseCase;
 import com.grietenenknapen.sithandroid.maingame.MainGame;
-import com.grietenenknapen.sithandroid.maingame.usecases.UseCaseCard;
+import com.grietenenknapen.sithandroid.maingame.multiplayer.WifiDirectBroadcastReceiver;
+import com.grietenenknapen.sithandroid.maingame.multiplayer.server.WifiDirectGameServerManager;
+import com.grietenenknapen.sithandroid.maingame.multiplayer.server.WifiDirectGameServerManagerImpl;
 import com.grietenenknapen.sithandroid.model.database.Player;
 import com.grietenenknapen.sithandroid.model.database.SithCard;
 import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 import com.grietenenknapen.sithandroid.model.game.GameTeam;
 import com.grietenenknapen.sithandroid.service.PlayerService;
 import com.grietenenknapen.sithandroid.service.SithCardService;
+import com.grietenenknapen.sithandroid.ui.fragments.BackPressFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.CardShuffleFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.DayFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.GameOverFragment;
@@ -31,7 +36,7 @@ import com.grietenenknapen.sithandroid.ui.fragments.GamePlayersFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.PlayerKillFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.PlayerSelectFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.gameflow.DelayGameFlowFragment;
-import com.grietenenknapen.sithandroid.ui.fragments.gameflow.GameFragmentCallback;
+import com.grietenenknapen.sithandroid.ui.fragments.gameflow.GameFlowActivity;
 import com.grietenenknapen.sithandroid.ui.fragments.gameflow.SelectPlayerPairGameFlowFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.gameflow.SelectPlayerSingleGameFlowFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.gameflow.ShowPlayerYesNoGameFlowFragment;
@@ -45,6 +50,7 @@ import com.grietenenknapen.sithandroid.ui.PresenterFactory;
 import com.grietenenknapen.sithandroid.util.ActivityUtils;
 import com.grietenenknapen.sithandroid.util.FragmentUtils;
 import com.grietenenknapen.sithandroid.util.MediaSoundPlayer;
+import com.grietenenknapen.sithandroid.util.ResourceProvider;
 import com.grietenenknapen.sithandroid.util.ResourceUtils;
 import com.grietenenknapen.sithandroid.util.SMSUtils;
 import com.grietenenknapen.sithandroid.util.SithMusicPlayer;
@@ -56,12 +62,14 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameFlowPresenter.View> implements
+public class MainGameFlowActivity extends PresenterActivity<GameFlowPresenter, GameFlowPresenter.View> implements
         GameFlowPresenter.View, CardShuffleFragment.Callback, PlayerSelectFragment.Callback,
-        DayFragment.CallBack, GameOverFragment.Callback,
-        GameFragmentCallback {
+        GameFlowActivity, DayFragment.CallBack, GameOverFragment.Callback {
+
     private static final String PRESENTER_TAG = "game_flow_presenter";
     private static final String RANDOM_COMMENT_PREFIX = "random_comment";
+    private final WifiDirectBroadcastReceiver receiver = new WifiDirectBroadcastReceiver();
+    private final IntentFilter intentFilter = new IntentFilter();
 
     @BindView(R.id.activityLayout)
     RelativeLayout activityLayout;
@@ -71,13 +79,10 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_flow);
         ButterKnife.bind(this);
-    }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        MediaSoundPlayer.stopPlayer(PRESENTER_TAG);
-        MediaSoundPlayer.setMediaSoundPlayListener(null, PRESENTER_TAG);
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
     }
 
     @Override
@@ -90,6 +95,18 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
             }
         }, PRESENTER_TAG);
 
+        registerReceiver(receiver, intentFilter);
+        presenter.setWifiDirectBroadcastReceiver(receiver);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MediaSoundPlayer.stopPlayer(PRESENTER_TAG);
+        MediaSoundPlayer.setMediaSoundPlayListener(null, PRESENTER_TAG);
+
+        this.receiver.clearAllWifiDirectReceivers();
+        unregisterReceiver(receiver);
     }
 
     @Override
@@ -110,6 +127,11 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
     }
 
     @Override
+    public UseCase getCurrentGameUseCase() {
+        return presenter.getCurrentUseCase();
+    }
+
+    @Override
     protected String getPresenterTag() {
         return PRESENTER_TAG;
     }
@@ -124,12 +146,17 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
             mainGame = null;
         }
 
+        final ResourceProvider resourceProvider = new ResourceProvider(getApplicationContext());
+        final WifiDirectGameServerManager gameServerManager = new WifiDirectGameServerManagerImpl(this,
+                (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE),
+                (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE));
+
         if (Settings.isRandomComments(this)) {
             return new GameFlowPresenterFactory(((SithApplication) getApplicationContext()).getPlayerService(),
-                    ((SithApplication) getApplicationContext()).getSithCardService(), mainGame, getRandomResourceList());
+                    ((SithApplication) getApplicationContext()).getSithCardService(), mainGame, gameServerManager, resourceProvider, getRandomResourceList());
         } else {
             return new GameFlowPresenterFactory(((SithApplication) getApplicationContext()).getPlayerService(),
-                    ((SithApplication) getApplicationContext()).getSithCardService(), mainGame);
+                    ((SithApplication) getApplicationContext()).getSithCardService(), mainGame, gameServerManager, resourceProvider);
         }
     }
 
@@ -149,78 +176,79 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
     }
 
     @Override
-    public void goToDelayScreen(final long delay, final GameUseCase gameUseCase, final FlowDetails flowDetails) {
+    public void goToDelayScreen(final long delay, final FlowDetails flowDetails) {
         FragmentUtils.handleGameFlowFragmentTransaction(this, DelayGameFlowFragment.class, R.id.container,
-                DelayGameFlowFragment.createStartBundle(flowDetails, delay), flowDetails, gameUseCase, getFragmentAnimation());
+                DelayGameFlowFragment.createStartBundle(flowDetails, delay), flowDetails, getFragmentAnimation());
     }
 
     @Override
-    public void goToYesNoScreen(final boolean disableYes, final UseCaseYesNo gameUseCase,
+    public void goToYesNoScreen(final boolean disableYes,
                                 final FlowDetails flowDetails, final int titleResId) {
 
         FragmentUtils.handleGameFlowFragmentTransaction(this, YesNoGameFlowFragment.class, R.id.container,
-                YesNoGameFlowFragment.createStartBundle(flowDetails, disableYes, getString(titleResId)), flowDetails, gameUseCase, getFragmentAnimation());
+                YesNoGameFlowFragment.createStartBundle(flowDetails, disableYes, getString(titleResId)), flowDetails, getFragmentAnimation());
     }
 
     @Override
     public void goToPlayerYesNoScreen(final ActivePlayer activePlayer, final boolean disableYes,
-                                            final int titleResId, final UseCaseYesNo gameUseCase, final FlowDetails flowDetails) {
+                                      final int titleResId, final FlowDetails flowDetails) {
 
         FragmentUtils.handleGameFlowFragmentTransaction(this, ShowPlayerYesNoGameFlowFragment.class, R.id.container,
-                ShowPlayerYesNoGameFlowFragment.createStartBundle(flowDetails, activePlayer, getString(titleResId), disableYes), flowDetails, gameUseCase, getFragmentAnimation());
+                ShowPlayerYesNoGameFlowFragment.createStartBundle(flowDetails, activePlayer, getString(titleResId), disableYes), flowDetails,
+                getFragmentAnimation());
     }
 
     @Override
-    public void goToUserPlayerSelectionScreen(final List<Player> activePlayers, final UseCaseId useCase, final FlowDetails flowDetails) {
+    public void goToUserPlayerSelectionScreen(final List<ActivePlayer> activePlayers, final FlowDetails flowDetails) {
         FragmentUtils.handleGameFlowFragmentTransaction(this, SelectPlayerSingleGameFlowFragment.class, R.id.container,
-                SelectPlayerSingleGameFlowFragment.createStartBundle(flowDetails, (ArrayList<Player>) activePlayers), flowDetails, useCase, getFragmentAnimation());
+                SelectPlayerSingleGameFlowFragment.createStartBundle(flowDetails, activePlayers), flowDetails, getFragmentAnimation());
     }
 
     @Override
-    public void goToUserCardSelectionScreen(final List<SithCard> availableSithCards, final UseCaseCard useCase, final FlowDetails flowDetails) {
+    public void goToUserCardSelectionScreen(final List<SithCard> availableSithCards, final FlowDetails flowDetails) {
         FragmentUtils.handleGameFlowFragmentTransaction(this, SithCardSelectGameFlowFragment.class, R.id.container,
-                SithCardSelectGameFlowFragment.createStartBundle(flowDetails, (ArrayList<SithCard>) availableSithCards), flowDetails, useCase, getFragmentAnimation());
+                SithCardSelectGameFlowFragment.createStartBundle(flowDetails, availableSithCards), flowDetails, getFragmentAnimation());
     }
 
     @Override
-    public void goToUserCardPeekScreen(final List<ActivePlayer> activePlayers, final long delay, GameUseCase useCase, final FlowDetails flowDetails) {
+    public void goToUserCardPeekScreen(final List<ActivePlayer> activePlayers, final long delay, final FlowDetails flowDetails) {
         FragmentUtils.handleGameFlowFragmentTransaction(this, UserCardPeekGameFlowFragment.class, R.id.container,
-                UserCardPeekGameFlowFragment.createStartBundle(flowDetails, (ArrayList<ActivePlayer>) activePlayers), flowDetails, useCase, getFragmentAnimation());
+                UserCardPeekGameFlowFragment.createStartBundle(flowDetails, activePlayers), flowDetails, getFragmentAnimation());
     }
 
     @Override
-    public void goToSpeakScreen(final int soundResId, final int stringResId, final GameUseCase useCase, final FlowDetails flowDetails) {
+    public void goToSpeakScreen(final int soundResId, final int stringResId, final FlowDetails flowDetails) {
         FragmentUtils.handleGameFlowFragmentTransaction(this, SpeakGameFlowFragment.class, R.id.container,
-                SpeakGameFlowFragment.createStartBundle(flowDetails, soundResId, stringResId), flowDetails, useCase, getFragmentAnimation());
+                SpeakGameFlowFragment.createStartBundle(flowDetails, soundResId, stringResId), flowDetails, getFragmentAnimation());
     }
 
     @Override
-    public void goTotUserPairPlayerSelection(final List<Player> players, final UseCasePairId useCase, final FlowDetails flowDetails) {
+    public void goTotUserPairPlayerSelection(final List<ActivePlayer> players, final FlowDetails flowDetails) {
         FragmentUtils.handleGameFlowFragmentTransaction(this, SelectPlayerPairGameFlowFragment.class, R.id.container,
-                SelectPlayerPairGameFlowFragment.createStartBundle(flowDetails, (ArrayList<Player>) players), flowDetails, useCase, getFragmentAnimation());
+                SelectPlayerPairGameFlowFragment.createStartBundleActive(flowDetails, players), flowDetails, getFragmentAnimation());
     }
 
     @Override
     public void showSelectPlayersScreen(final List<Player> players) {
-        Bundle bundle = PlayerSelectFragment.createArguments(new ArrayList<>(players), 30);
+        Bundle bundle = PlayerSelectFragment.createArguments(players, 30);
         FragmentUtils.replaceOrAddFragment(this, PlayerSelectFragment.class, R.id.container,
-                PlayerSelectFragment.class.getName(), FragmentUtils.Animation.ANIMATE_NONE, bundle, false);
+                PlayerSelectFragment.class.getName(), false, FragmentUtils.Animation.ANIMATE_NONE, bundle);
     }
 
     @Override
-    public void showKillPlayersScreen(final List<Player> activePlayers) {
-        Bundle bundle = PlayerKillFragment.createArguments(new ArrayList<>(activePlayers));
+    public void showKillPlayersScreen(final List<ActivePlayer> activePlayers) {
+        Bundle bundle = PlayerKillFragment.createArguments(activePlayers);
         FragmentUtils.replaceOrAddFragment(this, PlayerKillFragment.class, R.id.container,
-                PlayerKillFragment.class.getName(), FragmentUtils.Animation.ANIMATE_SLIDE_LEFT, bundle, true);
+                PlayerKillFragment.class.getName(), true, FragmentUtils.Animation.ANIMATE_SLIDE_LEFT, bundle);
     }
 
     @Override
     public void goToShuffleScreen(final List<Player> players) {
         final int animation = getSupportFragmentManager().findFragmentById(R.id.container) != null ?
                 FragmentUtils.Animation.ANIMATE_SLIDE_LEFT : FragmentUtils.Animation.ANIMATE_NONE;
-        Bundle bundle = CardShuffleFragment.createArguments(new ArrayList<>(players));
+        Bundle bundle = CardShuffleFragment.createArguments(players);
         FragmentUtils.replaceOrAddFragment(this, CardShuffleFragment.class, R.id.container,
-                CardShuffleFragment.class.getName(), animation, bundle, true);
+                CardShuffleFragment.class.getName(), true, animation, bundle);
     }
 
     @Override
@@ -231,7 +259,7 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
                 FragmentUtils.Animation.ANIMATE_SLIDE_UP : FragmentUtils.Animation.ANIMATE_NONE;
         Bundle bundle = DayFragment.createArguments(game);
         FragmentUtils.replaceOrAddFragment(this, DayFragment.class, R.id.container,
-                DayFragment.class.getName(), animation, bundle, false);
+                DayFragment.class.getName(), false, animation, bundle);
     }
 
     @Override
@@ -263,13 +291,49 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
     @Override
     public void showGameOver(final List<ActivePlayer> players, @GameTeam.Team final int winningTeam) {
         FragmentUtils.replaceOrAddFragment(this, GameOverFragment.class, R.id.container,
-                GameOverFragment.class.getName(), FragmentUtils.Animation.ANIMATE_SLIDE_LEFT,
-                GameOverFragment.createArguments((ArrayList<ActivePlayer>) players, winningTeam), false);
+                GameOverFragment.class.getName(), false, FragmentUtils.Animation.ANIMATE_SLIDE_LEFT,
+                GameOverFragment.createArguments(players, winningTeam));
     }
 
     @Override
     public void showError(final int stringId) {
         ActivityUtils.showSnackBar(activityLayout, getString(stringId));
+    }
+
+    @Override
+    public void showError(final String error) {
+        ActivityUtils.showSnackBar(activityLayout, error);
+    }
+
+    @Override
+    public void showMessage(final int stringResId) {
+        Toast.makeText(this, getString(stringResId), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void startWifiDirectLoading() {
+        final Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
+        if (FragmentUtils.validateFragment(fragment) && fragment instanceof DayFragment) {
+            ((DayFragment) fragment).startWifiDirectLoading();
+        }
+    }
+
+    @Override
+    public void stopWifiDirectLoading() {
+        final Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
+        if (FragmentUtils.validateFragment(fragment) && fragment instanceof DayFragment) {
+            ((DayFragment) fragment).stopWifiDirectLoading();
+        }
+    }
+
+    @Override
+    public void updateWifiServerState(final boolean wifiP2PEnabled, final boolean serverRunning) {
+        final Fragment currentFrag = getSupportFragmentManager().findFragmentById(R.id.container);
+        if (FragmentUtils.validateFragment(currentFrag)
+                && currentFrag instanceof DayFragment) {
+
+            ((DayFragment) currentFrag).updateWifiServerState(wifiP2PEnabled, serverRunning);
+        }
     }
 
     @Override
@@ -341,6 +405,13 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
 
     @Override
     public void onBackPressed() {
+        final Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.container);
+        if (currentFragment != null
+                && currentFragment instanceof BackPressFragment
+                && ((BackPressFragment) currentFragment).onBackPressed()) {
+            return;
+        }
+
         if (!getPresenter().onBackPressed()) {
             super.onBackPressed();
         }
@@ -369,10 +440,18 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
     @Override
     public void onGamePlayersSelected(final List<ActivePlayer> alivePlayers, final List<ActivePlayer> killedPlayers) {
         FragmentUtils.replaceOrAddFragment(this, GamePlayersFragment.class, R.id.container,
-                GamePlayersFragment.class.getName(), FragmentUtils.Animation.ANIMATE_SLIDE_LEFT,
-                GamePlayersFragment.createArguments((ArrayList<ActivePlayer>) alivePlayers,
-                        (ArrayList<ActivePlayer>) killedPlayers), true);
+                GamePlayersFragment.class.getName(), true, FragmentUtils.Animation.ANIMATE_SLIDE_LEFT,
+                GamePlayersFragment.createArguments(alivePlayers, killedPlayers));
+    }
 
+    @Override
+    public void onServerButtonClicked() {
+        presenter.onServerButtonClicked();
+    }
+
+    @Override
+    public Pair<Boolean, Boolean> getWifiServerState() {
+        return new Pair<>(getPresenter().isWifiP2PEnabled(), getPresenter().isServerRunning());
     }
 
     @Override
@@ -384,32 +463,44 @@ public class GameFlowActivity extends PresenterActivity<GameFlowPresenter, GameF
         private final PlayerService playerService;
         private final SithCardService sithCardService;
         private final MainGame mainGame;
+        private final WifiDirectGameServerManager wifiDirectGameServerManager;
         private List<Pair<Integer, Integer>> randomResourceList;
+        private final ResourceProvider resourceProvider;
 
         GameFlowPresenterFactory(final PlayerService playerService,
                                  final SithCardService sithCardService,
-                                 final MainGame mainGame) {
+                                 final MainGame mainGame,
+                                 final WifiDirectGameServerManager wifiDirectGameServerManager,
+                                 final ResourceProvider resourceProvider) {
+
             this.playerService = playerService;
             this.sithCardService = sithCardService;
             this.mainGame = mainGame;
+            this.wifiDirectGameServerManager = wifiDirectGameServerManager;
+            this.resourceProvider = resourceProvider;
         }
 
         GameFlowPresenterFactory(final PlayerService playerService,
                                  final SithCardService sithCardService,
                                  final MainGame mainGame,
+                                 final WifiDirectGameServerManager wifiDirectGameServerManager,
+                                 final ResourceProvider resourceProvider,
                                  final List<Pair<Integer, Integer>> randomResourceList) {
+
             this.playerService = playerService;
             this.sithCardService = sithCardService;
             this.mainGame = mainGame;
+            this.wifiDirectGameServerManager = wifiDirectGameServerManager;
             this.randomResourceList = randomResourceList;
+            this.resourceProvider = resourceProvider;
         }
 
         @Override
         public GameFlowPresenter createPresenter() {
             if (randomResourceList != null) {
-                return new GameFlowPresenter(playerService, sithCardService, mainGame, randomResourceList);
+                return new GameFlowPresenter(playerService, sithCardService, mainGame, wifiDirectGameServerManager, resourceProvider, randomResourceList);
             } else {
-                return new GameFlowPresenter(playerService, sithCardService, mainGame);
+                return new GameFlowPresenter(playerService, sithCardService, mainGame, wifiDirectGameServerManager, resourceProvider);
             }
         }
     }

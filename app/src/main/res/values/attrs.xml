@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="LightSaberLoadingView">
+        <attr name="saberColor" format="enum">
+            <enum name="red" value="0"/>
+            <enum name="green" value="1"/>
+            <enum name="random" value="50"/>
+        </attr>
+    </declare-styleable>
+</resources>

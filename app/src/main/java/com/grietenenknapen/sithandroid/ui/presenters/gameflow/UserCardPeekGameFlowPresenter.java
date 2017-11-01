@@ -2,6 +2,7 @@ package com.grietenenknapen.sithandroid.ui.presenters.gameflow;
 
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
+import com.grietenenknapen.sithandroid.game.usecase.UseCase;
 import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 import com.grietenenknapen.sithandroid.ui.Presenter;
 import com.grietenenknapen.sithandroid.ui.PresenterView;
@@ -9,7 +10,7 @@ import com.grietenenknapen.sithandroid.ui.PresenterView;
 import java.util.List;
 
 public class UserCardPeekGameFlowPresenter extends Presenter<UserCardPeekGameFlowPresenter.View> {
-    private GameUseCase gameUseCase;
+    private UseCase gameUseCase;
     private final FlowDetails flowDetails;
     private final List<ActivePlayer> activePlayers;
     private ActivePlayer selectedPlayer;
@@ -31,7 +32,7 @@ public class UserCardPeekGameFlowPresenter extends Presenter<UserCardPeekGameFlo
         }
     }
 
-    public void setGameUseCase(GameUseCase gameUseCase){
+    public void setGameUseCase(UseCase gameUseCase){
         this.gameUseCase = gameUseCase;
     }
 

@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:clipChildren="false"
-    android:clipToPadding="false"
-    android:orientation="vertical">
+                xmlns:fab="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:orientation="vertical">
 
     <TextView
         android:id="@+id/dayTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
         android:layout_margin="@dimen/margin_default"
         android:gravity="center"
         android:text="@string/title_day_time"
-        android:textAppearance="?android:textAppearanceLarge" />
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textStyle="bold"/>
 
     <ImageView
         android:layout_width="match_parent"
@@ -23,7 +25,7 @@
         android:layout_marginBottom="-50dp"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
-        android:src="@drawable/day_background" />
+        android:src="@drawable/day_background"/>
 
 
     <RelativeLayout
@@ -48,35 +50,68 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:clipToPadding="false"
-                android:requiresFadingEdge="vertical" />
+                android:requiresFadingEdge="vertical"/>
         </LinearLayout>
 
         <ImageButton
             android:id="@+id/dayButtonStart"
-            android:layout_width="@dimen/button_main_size"
-            android:layout_height="@dimen/button_main_size"
+            android:layout_width="@dimen/button_main_size_large"
+            android:layout_height="@dimen/button_main_size_large"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:background="@drawable/button_circle_background"
-            android:src="@drawable/ic_play" />
+            android:src="@drawable/ic_play"/>
+
+
+        <com.github.clans.fab.FloatingActionMenu
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="bottom|right"
+            fab:menu_colorNormal="@color/blue"
+            fab:menu_colorPressed="@color/card_blue"
+            fab:menu_colorRipple="@color/card_blue"
+            fab:menu_fab_size="normal"
+            fab:menu_icon="@drawable/ic_menu_fab"
+            fab:menu_showShadow="false"
+            tools:ignore="RtlHardcoded">
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/dayButtonPlayers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_person"
+                fab:fab_colorNormal="@color/yellow"
+                fab:fab_colorPressed="@color/darkYellow"
+                fab:fab_colorRipple="@color/darkYellow"
+                fab:fab_label="@string/show_players"
+                fab:fab_size="mini"/>
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/dayButtonKill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_thumb_down"
+                fab:fab_colorNormal="@color/card_red"
+                fab:fab_colorPressed="@color/red"
+                fab:fab_colorRipple="@color/red"
+                fab:fab_label="@string/kill_players"
+                fab:fab_size="mini"/>
+
+        </com.github.clans.fab.FloatingActionMenu>
 
         <ImageButton
-            android:id="@+id/dayButtonKill"
-            android:layout_width="@dimen/button_main_size"
-            android:layout_height="@dimen/button_main_size"
+            android:id="@+id/dayButtonServer"
+            android:layout_width="@dimen/button_main_fab"
+            android:layout_height="@dimen/button_main_fab"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            android:background="@drawable/button_circle_background_red"
-            android:src="@drawable/ic_thumb_down" />
-
-        <ImageButton
-            android:id="@+id/dayButtonPlayers"
-            android:layout_width="@dimen/button_main_size"
-            android:layout_height="@dimen/button_main_size"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
+            android:scaleType="centerInside"
             android:background="@drawable/button_circle_background_blue"
-            android:src="@drawable/ic_person" />
+            android:src="@drawable/ic_wifi_1"/>
 
     </RelativeLayout>
 

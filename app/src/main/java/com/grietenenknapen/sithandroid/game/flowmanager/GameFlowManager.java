@@ -46,6 +46,7 @@ public abstract class GameFlowManager<U extends GameFlowCallBack> implements Use
      */
     public void detach() {
         this.uiListener = null;
+        started = false;
     }
 
     /**
@@ -59,6 +60,10 @@ public abstract class GameFlowManager<U extends GameFlowCallBack> implements Use
 
     public boolean isAttached() {
         return uiListener != null;
+    }
+
+    public GameUseCase getActiveGameUseCase() {
+        return currentUseCase;
     }
 
     @Override

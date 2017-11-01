@@ -14,7 +14,10 @@
 
     <!-- sizes -->
     <dimen name="card_size">160dp</dimen>
+    <dimen name="card_size_large">225dp</dimen>
     <dimen name="button_main_size">65dp</dimen>
+    <dimen name="button_main_fab">56dp</dimen>
+    <dimen name="button_main_size_large">82dp</dimen>
     <dimen name="card_margin">8dp</dimen>
 
 </resources>

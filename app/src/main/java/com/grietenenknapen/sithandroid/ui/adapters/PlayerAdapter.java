@@ -12,7 +12,7 @@ import com.grietenenknapen.sithandroid.model.database.Player;
 
 import java.util.List;
 
-public class PlayerAdapter extends AnimateAdapter<Player, PlayerAdapter.ViewHolder> {
+public class PlayerAdapter extends AnimateGridAdapter<Player, PlayerAdapter.ViewHolder> {
     protected List<Player> players;
 
     public PlayerAdapter(final int cardSize) {
@@ -21,24 +21,24 @@ public class PlayerAdapter extends AnimateAdapter<Player, PlayerAdapter.ViewHold
     }
 
     @Override
-    public void setData(List<Player> items, boolean animate) {
+    public void setData(final List<Player> items, final boolean animate) {
         players = items;
         super.setData(items, animate);
     }
 
     @Override
-    protected PlayerAdapter.ViewHolder onCustomCreateViewHolder(ViewGroup parent, int viewType) {
+    protected PlayerAdapter.ViewHolder onCustomCreateViewHolder(final ViewGroup parent, final int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         return new ViewHolder(layoutInflater.inflate(R.layout.list_item_player_card, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.onBind(players.get(position));
     }
 
     @Override
-    public long getItemId(int position) {
+    public long getItemId(final int position) {
         return players.get(position).getId();
     }
 

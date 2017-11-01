@@ -3,8 +3,8 @@ package com.grietenenknapen.sithandroid.maingame.usecases;
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.flowmanager.UseCaseCallBack;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseId;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseYesNo;
+import com.grietenenknapen.sithandroid.game.usecase.type.UseCaseId;
+import com.grietenenknapen.sithandroid.game.usecase.type.UseCaseYesNo;
 
 public class BobaFettUseCase extends GameUseCase<BobaFettUseCase.CallBack> implements UseCaseYesNo, UseCaseId {
 

@@ -10,9 +10,10 @@ import android.widget.TextView;
 
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseYesNo;
+import com.grietenenknapen.sithandroid.game.usecase.type.UseCaseYesNo;
 import com.grietenenknapen.sithandroid.ui.CallbackPresenterFragment;
 import com.grietenenknapen.sithandroid.ui.PresenterFactory;
+import com.grietenenknapen.sithandroid.ui.activities.MainGameFlowActivity;
 import com.grietenenknapen.sithandroid.ui.presenters.GameFlowPresenter;
 import com.grietenenknapen.sithandroid.ui.presenters.gameflow.YesNoGameFlowPresenter;
 import com.grietenenknapen.sithandroid.util.FontCache;
@@ -21,8 +22,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class YesNoGameFlowFragment extends CallbackPresenterFragment<YesNoGameFlowPresenter, YesNoGameFlowPresenter.View, GameFragmentCallback>
-        implements YesNoGameFlowPresenter.View, GameFlowFragment<UseCaseYesNo> {
+public class YesNoGameFlowFragment extends CallbackPresenterFragment<YesNoGameFlowPresenter, YesNoGameFlowPresenter.View, GameFlowActivity>
+        implements YesNoGameFlowPresenter.View, GameFlowFragment {
 
     private static final String PRESENTER_TAG = "yes_no_id_flow_presenter";
     private static final String KEY_FLOW_DETAIL = "key:flow_details";
@@ -30,7 +31,7 @@ public class YesNoGameFlowFragment extends CallbackPresenterFragment<YesNoGameFl
     private static final String KEY_FLOW_HIDE_YES = "key:hideYes";
 
     private FlowDetails flowDetails;
-    private UseCaseYesNo gameUseCaseYesNoId;
+    private UseCaseYesNo gameUseCaseYesNo;
 
     @BindView(R.id.menuYes)
     TextView menuYes;
@@ -55,7 +56,6 @@ public class YesNoGameFlowFragment extends CallbackPresenterFragment<YesNoGameFl
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         flowDetails = getArguments().getParcelable(KEY_FLOW_DETAIL);
-        getPresenter().setGameUseCaseYesNo(gameUseCaseYesNoId);
     }
 
     @Nullable
@@ -70,7 +70,14 @@ public class YesNoGameFlowFragment extends CallbackPresenterFragment<YesNoGameFl
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         initLayout();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         callback.setGameStatus(GameFlowPresenter.STATUS_GAME);
+        gameUseCaseYesNo = (UseCaseYesNo) callback.getCurrentGameUseCase();
+        getPresenter().setGameUseCaseYesNo(gameUseCaseYesNo);
     }
 
     private void initLayout() {
@@ -104,11 +111,6 @@ public class YesNoGameFlowFragment extends CallbackPresenterFragment<YesNoGameFl
     @Override
     protected YesNoGameFlowPresenter.View getPresenterView() {
         return this;
-    }
-
-    @Override
-    public void setUseCase(UseCaseYesNo useCase) {
-        this.gameUseCaseYesNoId = useCase;
     }
 
     @Override

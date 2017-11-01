@@ -30,7 +30,7 @@ public class EditablePlayerAdapter extends PlayerAdapter {
     }
 
     @Override
-    public int getItemViewType(int position) {
+    public int getItemViewType(final int position) {
         if (position == getItemCount() - 1) {
             return VIEW_TYPE_ADD;
         }
@@ -38,7 +38,7 @@ public class EditablePlayerAdapter extends PlayerAdapter {
     }
 
     @Override
-    public long getItemId(int position) {
+    public long getItemId(final int position) {
         if (getItemViewType(position) == VIEW_TYPE_ADD) {
             return -110000 + VIEW_TYPE_ADD;
         } else {
@@ -47,7 +47,7 @@ public class EditablePlayerAdapter extends PlayerAdapter {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         if (holder.getItemViewType() == VIEW_TYPE_ADD) {
             return;
         }

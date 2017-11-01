@@ -3,9 +3,9 @@ package com.grietenenknapen.sithandroid.maingame;
 import android.support.v4.util.Pair;
 
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseId;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCasePairId;
-import com.grietenenknapen.sithandroid.game.usecase.usecasetemplate.UseCaseYesNo;
+import com.grietenenknapen.sithandroid.game.usecase.type.UseCaseId;
+import com.grietenenknapen.sithandroid.game.usecase.type.UseCasePairId;
+import com.grietenenknapen.sithandroid.game.usecase.type.UseCaseYesNo;
 import com.grietenenknapen.sithandroid.maingame.usecases.BobaFettUseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.SithUseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.UseCaseCard;
@@ -149,77 +149,78 @@ public class MainGameFlowManagerTest {
         mainGameFlowManager.attach(new MainGameFlowCallBack() {
 
             @Override
-            public void requestUserPairPlayerSelection(List<ActivePlayer> players, UseCasePairId useCase) {
+            public void requestUserPairPlayerSelection(List<ActivePlayer> players) {
                 //link two jedi users and kill them in this round
                 Assert.assertEquals(mainGame.getCurrentRound(), 1);
-                useCase.onExecuteStep(mainGame.getCurrentStep(), new Pair<>(lover1.getPlayerId(), lover2.getPlayerId()));
+                ((UseCasePairId) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(),
+                        new Pair<>(lover1.getPlayerId(), lover2.getPlayerId()));
                 callbackCount.decrementAndGet();
             }
 
             @Override
-            public void showDelay(long delay, GameUseCase gameUseCase) {
-                gameUseCase.onExecuteStep(mainGame.getCurrentStep());
+            public void showDelay(long delay) {
+                mainGameFlowManager.getActiveGameUseCase().onExecuteStep(mainGame.getCurrentStep());
             }
 
             @Override
-            public void requestYesNoAnswer(boolean disableYes, UseCaseYesNo useCase, int titleResId) {
+            public void requestYesNoAnswer(boolean disableYes, int titleResId) {
                 //Boba fett is going to kill the last jedi player and use his rocket launcher
                 if (mainGame.getCurrentRound() == 1) {
-                    useCase.onExecuteStep(mainGame.getCurrentStep(), true);
+                    ((UseCaseYesNo) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), true);
                     callbackCount.decrementAndGet();
                 } else if (mainGame.getCurrentRound() == 2) {
                     //In the second round, the rocket is already used
-                    useCase.onExecuteStep(mainGame.getCurrentStep(), false);
+                    ((UseCaseYesNo) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), false);
                 }
             }
 
             @Override
-            public void showPlayerYesNo(ActivePlayer activePlayer, boolean disableYes, int titleResId, UseCaseYesNo useCase) {
+            public void showPlayerYesNo(ActivePlayer activePlayer, boolean disableYes, int titleResId) {
                 //To make the sith win ASAP, Boba fett is not going to use his med pack
-                useCase.onExecuteStep(mainGame.getCurrentStep(), false);
+                ((UseCaseYesNo) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), false);
                 if (mainGame.getCurrentRound() == 1) {
                     callbackCount.decrementAndGet();
                 }
             }
 
             @Override
-            public void requestUserPlayerSelection(List<ActivePlayer> activePlayers, UseCaseId useCase) {
-                if (useCase instanceof SithUseCase) {
+            public void requestUserPlayerSelection(List<ActivePlayer> activePlayers) {
+                if (mainGameFlowManager.getActiveGameUseCase() instanceof SithUseCase) {
                     //The sith kill one of the lovers
                     if (mainGame.getCurrentRound() == 1) {
-                        useCase.onExecuteStep(mainGame.getCurrentStep(), lover1.getPlayerId());
+                        ((UseCaseId) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), lover1.getPlayerId());
                         callbackCount.decrementAndGet();
                     } else if (mainGame.getCurrentRound() == 2) {
                         //Kill kylo ren in the last round
-                        useCase.onExecuteStep(mainGame.getCurrentStep(), kyloRenPlayer.getPlayerId());
+                        ((UseCaseId) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), kyloRenPlayer.getPlayerId());
                     }
-                } else if (useCase instanceof BobaFettUseCase) {
+                } else if (mainGameFlowManager.getActiveGameUseCase() instanceof BobaFettUseCase) {
                     //Boba fett kills the last jedi player
-                    useCase.onExecuteStep(mainGame.getCurrentStep(), jediPlayer.getPlayerId());
+                    ((UseCaseId) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), jediPlayer.getPlayerId());
                     callbackCount.decrementAndGet();
                 }
             }
 
             @Override
-            public void requestUserCardSelection(List<SithCard> availableSithCards, UseCaseCard useCase) {
+            public void requestUserCardSelection(List<SithCard> availableSithCards) {
                 //To make the sith win ASAP, Han Solo is going to select a sith card
                 Assert.assertEquals(mainGame.getCurrentRound(), 1);
-                useCase.onExecuteStep(mainGame.getCurrentStep(), MainGameDefaults.getSithCardDarthMaul());
+                ((UseCaseCard) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), MainGameDefaults.getSithCardDarthMaul());
                 callbackCount.decrementAndGet();
             }
 
             @Override
-            public void requestUserCardPeek(List<ActivePlayer> players, long delay, GameUseCase useCase) {
+            public void requestUserCardPeek(List<ActivePlayer> players, long delay) {
                 //Maz kanata is going to look into a random card
-                useCase.onExecuteStep(1);
+                mainGameFlowManager.getActiveGameUseCase().onExecuteStep(1);
                 if (mainGame.getCurrentRound() == 1) {
                     callbackCount.decrementAndGet();
                 }
             }
 
             @Override
-            public void speak(int soundResId, int stringResId, GameUseCase useCase) {
-                useCase.onExecuteStep(mainGame.getCurrentStep());
+            public void speak(int soundResId, int stringResId) {
+                mainGameFlowManager.getActiveGameUseCase().onExecuteStep(mainGame.getCurrentStep());
             }
 
             @Override
@@ -320,67 +321,67 @@ public class MainGameFlowManagerTest {
         mainGameFlowManager.attach(new MainGameFlowCallBack() {
 
             @Override
-            public void requestUserPairPlayerSelection(List<ActivePlayer> players, UseCasePairId useCase) {
+            public void requestUserPairPlayerSelection(List<ActivePlayer> players) {
                 //link two jedi users
                 Assert.assertEquals(mainGame.getCurrentRound(), 1);
-                useCase.onExecuteStep(mainGame.getCurrentStep(), new Pair<>(lover1.getPlayerId(), lover2.getPlayerId()));
+                ((UseCasePairId) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), new Pair<>(lover1.getPlayerId(), lover2.getPlayerId()));
                 callbackCount.decrementAndGet();
             }
 
             @Override
-            public void showDelay(long delay, GameUseCase gameUseCase) {
-                gameUseCase.onExecuteStep(mainGame.getCurrentStep());
+            public void showDelay(long delay) {
+                mainGameFlowManager.getActiveGameUseCase().onExecuteStep(mainGame.getCurrentStep());
             }
 
             @Override
-            public void requestYesNoAnswer(boolean disableYes, UseCaseYesNo useCase, int titleResId) {
+            public void requestYesNoAnswer(boolean disableYes, int titleResId) {
                 //Boba fett is going to kill the only Sith player to make the Jedi win ASAP
-                useCase.onExecuteStep(mainGame.getCurrentStep(), true);
+                ((UseCaseYesNo)mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), true);
                 callbackCount.decrementAndGet();
             }
 
             @Override
-            public void showPlayerYesNo(ActivePlayer activePlayer, boolean disableYes, int titleResId, UseCaseYesNo useCase) {
+            public void showPlayerYesNo(ActivePlayer activePlayer, boolean disableYes, int titleResId) {
                 //Boba fett is going to rescue the killed jedi
-                useCase.onExecuteStep(mainGame.getCurrentStep(), true);
+                ((UseCaseYesNo) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), true);
                 if (mainGame.getCurrentRound() == 1) {
                     callbackCount.decrementAndGet();
                 }
             }
 
             @Override
-            public void requestUserPlayerSelection(List<ActivePlayer> activePlayers, UseCaseId useCase) {
-                if (useCase instanceof SithUseCase) {
+            public void requestUserPlayerSelection(List<ActivePlayer> activePlayers) {
+                if (mainGameFlowManager.getActiveGameUseCase() instanceof SithUseCase) {
                     //The sith kill the jedi
-                    useCase.onExecuteStep(mainGame.getCurrentStep(), jediPlayer.getPlayerId());
+                    ((UseCaseId) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), jediPlayer.getPlayerId());
                     callbackCount.decrementAndGet();
-                } else if (useCase instanceof BobaFettUseCase) {
+                } else if (mainGameFlowManager.getActiveGameUseCase() instanceof BobaFettUseCase) {
                     //Boba fett kills the Sith
-                    useCase.onExecuteStep(mainGame.getCurrentStep(), sithPlayer.getPlayerId());
+                    ((UseCaseId) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), sithPlayer.getPlayerId());
                     callbackCount.decrementAndGet();
                 }
             }
 
             @Override
-            public void requestUserCardSelection(List<SithCard> availableSithCards, UseCaseCard useCase) {
+            public void requestUserCardSelection(List<SithCard> availableSithCards) {
                 //To make the jedi win ASAP, Han Solo is going to select a Jedi card
                 Assert.assertEquals(mainGame.getCurrentRound(), 1);
-                useCase.onExecuteStep(mainGame.getCurrentStep(), MainGameDefaults.getSithCardObiWanKenobi());
+                ((UseCaseCard) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), MainGameDefaults.getSithCardObiWanKenobi());
                 callbackCount.decrementAndGet();
             }
 
             @Override
-            public void requestUserCardPeek(List<ActivePlayer> players, long delay, GameUseCase useCase) {
+            public void requestUserCardPeek(List<ActivePlayer> players, long delay) {
                 //Maz kanata is going to look into a random card
-                useCase.onExecuteStep(1);
+                mainGameFlowManager.getActiveGameUseCase().onExecuteStep(1);
                 if (mainGame.getCurrentRound() == 1) {
                     callbackCount.decrementAndGet();
                 }
             }
 
             @Override
-            public void speak(int soundResId, int stringResId, GameUseCase useCase) {
-                useCase.onExecuteStep(mainGame.getCurrentStep());
+            public void speak(int soundResId, int stringResId) {
+                mainGameFlowManager.getActiveGameUseCase().onExecuteStep(mainGame.getCurrentStep());
             }
 
             @Override
@@ -463,76 +464,76 @@ public class MainGameFlowManagerTest {
         mainGameFlowManager.attach(new MainGameFlowCallBack() {
 
             @Override
-            public void requestUserPairPlayerSelection(List<ActivePlayer> players, UseCasePairId useCase) {
+            public void requestUserPairPlayerSelection(List<ActivePlayer> players) {
                 //link two a sith and Jedi player, so they have to win together
                 Assert.assertEquals(mainGame.getCurrentRound(), 1);
-                useCase.onExecuteStep(mainGame.getCurrentStep(), new Pair<>(lover1.getPlayerId(), lover2.getPlayerId()));
+                ((UseCasePairId) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), new Pair<>(lover1.getPlayerId(), lover2.getPlayerId()));
                 callbackCount.decrementAndGet();
             }
 
             @Override
-            public void showDelay(long delay, GameUseCase gameUseCase) {
-                gameUseCase.onExecuteStep(mainGame.getCurrentStep());
+            public void showDelay(long delay) {
+                mainGameFlowManager.getActiveGameUseCase().onExecuteStep(mainGame.getCurrentStep());
             }
 
             @Override
-            public void requestYesNoAnswer(boolean disableYes, UseCaseYesNo useCase, int titleResId) {
+            public void requestYesNoAnswer(boolean disableYes, int titleResId) {
                 //Boba fett is going to kill a jedi player the first round
                 if (mainGame.getCurrentRound() == 1) {
-                    useCase.onExecuteStep(mainGame.getCurrentStep(), true);
+                    ((UseCaseYesNo) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), true);
                     callbackCount.decrementAndGet();
                 } else {
-                    useCase.onExecuteStep(mainGame.getCurrentStep(), false);
+                    ((UseCaseYesNo) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), false);
                 }
             }
 
             @Override
-            public void showPlayerYesNo(ActivePlayer activePlayer, boolean disableYes, int titleResId, UseCaseYesNo useCase) {
+            public void showPlayerYesNo(ActivePlayer activePlayer, boolean disableYes, int titleResId) {
                 //Boba fett is never going to rescue the killed player
-                useCase.onExecuteStep(mainGame.getCurrentStep(), false);
+                ((UseCaseYesNo) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), false);
                 if (mainGame.getCurrentRound() == 1) {
                     callbackCount.decrementAndGet();
                 }
             }
 
             @Override
-            public void requestUserPlayerSelection(List<ActivePlayer> activePlayers, UseCaseId useCase) {
-                if (useCase instanceof SithUseCase) {
+            public void requestUserPlayerSelection(List<ActivePlayer> activePlayers) {
+                if (mainGameFlowManager.getActiveGameUseCase() instanceof SithUseCase) {
                     //The sith kill boba Fett
                     if (mainGame.getCurrentRound() == 1) {
-                        useCase.onExecuteStep(mainGame.getCurrentStep(), bobaFettPlayer.getPlayerId());
+                        ((UseCaseId) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), bobaFettPlayer.getPlayerId());
                         callbackCount.decrementAndGet();
                     } else if (mainGame.getCurrentRound() == 2) {
-                        useCase.onExecuteStep(mainGame.getCurrentStep(), hanSoloPlayer.getPlayerId());
+                        ((UseCaseId) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), hanSoloPlayer.getPlayerId());
                     } else if (mainGame.getCurrentRound() == 3) {
-                        useCase.onExecuteStep(mainGame.getCurrentStep(), bb8Player.getPlayerId());
+                        ((UseCaseId) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), bb8Player.getPlayerId());
                     }
-                } else if (useCase instanceof BobaFettUseCase) {
-                    useCase.onExecuteStep(mainGame.getCurrentStep(), jediPlayer.getPlayerId());
+                } else if (mainGameFlowManager.getActiveGameUseCase() instanceof BobaFettUseCase) {
+                    ((UseCaseId) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), jediPlayer.getPlayerId());
                     callbackCount.decrementAndGet();
                 }
             }
 
             @Override
-            public void requestUserCardSelection(List<SithCard> availableSithCards, UseCaseCard useCase) {
+            public void requestUserCardSelection(List<SithCard> availableSithCards) {
                 //Han Solo is going to take a Sith card
                 Assert.assertEquals(mainGame.getCurrentRound(), 1);
-                useCase.onExecuteStep(mainGame.getCurrentStep(), MainGameDefaults.getSithCardDarthMaul());
+                ((UseCaseCard) mainGameFlowManager.getActiveGameUseCase()).onExecuteStep(mainGame.getCurrentStep(), MainGameDefaults.getSithCardDarthMaul());
                 callbackCount.decrementAndGet();
             }
 
             @Override
-            public void requestUserCardPeek(List<ActivePlayer> players, long delay, GameUseCase useCase) {
+            public void requestUserCardPeek(List<ActivePlayer> players, long delay) {
                 //Maz kanata is going to look into a random card)
-                useCase.onExecuteStep(1);
+                mainGameFlowManager.getActiveGameUseCase().onExecuteStep(1);
                 if (mainGame.getCurrentRound() == 1) {
                     callbackCount.decrementAndGet();
                 }
             }
 
             @Override
-            public void speak(int soundResId, int stringResId, GameUseCase useCase) {
-                useCase.onExecuteStep(mainGame.getCurrentStep());
+            public void speak(int soundResId, int stringResId) {
+                mainGameFlowManager.getActiveGameUseCase().onExecuteStep(mainGame.getCurrentStep());
             }
 
             @Override

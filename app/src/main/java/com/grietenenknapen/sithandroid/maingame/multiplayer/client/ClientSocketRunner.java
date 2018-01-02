@@ -1,5 +1,7 @@
 package com.grietenenknapen.sithandroid.maingame.multiplayer.client;
 
+import android.net.wifi.WifiManager;
+import android.os.PowerManager;
 import android.util.Log;
 
 import com.grietenenknapen.sithandroid.maingame.multiplayer.DeviceSocketHandler;
@@ -18,14 +20,28 @@ public class ClientSocketRunner extends Thread {
     private final DeviceSocketHandler handler;
     private final String hostAddress;
     private final Socket socket;
+    private final WifiManager.WifiLock wifiLock;
+    private final PowerManager.WakeLock wakeLock;
 
-    public ClientSocketRunner(final DeviceSocketHandler handler, final InetAddress serverAddress) {
+    public ClientSocketRunner(final DeviceSocketHandler handler,
+                              final InetAddress serverAddress,
+                              final WifiManager.WifiLock wifiLock,
+                              final PowerManager.WakeLock wakeLock) {
+
+        this.wifiLock = wifiLock;
+        this.wakeLock = wakeLock;
         this.socket = new Socket();
         this.handler = handler;
         this.hostAddress = serverAddress.getHostAddress();
     }
 
-    public ClientSocketRunner(final DeviceSocketHandler handler, final String hostAddress) {
+    public ClientSocketRunner(final DeviceSocketHandler handler,
+                              final String hostAddress,
+                              final WifiManager.WifiLock wifiLock,
+                              final PowerManager.WakeLock wakeLock) {
+
+        this.wifiLock = wifiLock;
+        this.wakeLock = wakeLock;
         this.socket = new Socket();
         this.handler = handler;
         this.hostAddress = hostAddress;
@@ -38,7 +54,7 @@ public class ClientSocketRunner extends Thread {
             socket.bind(null);
             socket.connect(new InetSocketAddress(hostAddress, WifiDirectGameServerManager.SERVER_PORT), 5000);
             Log.d(TAG, "Launching the I/O handler");
-            new Thread(new DeviceSocketManager(socket, handler)).start();
+            new Thread(new DeviceSocketManager(socket, handler, wifiLock, wakeLock)).start();
         } catch (IOException e) {
             Log.d(TAG, e.getMessage());
             try {
@@ -66,4 +82,5 @@ public class ClientSocketRunner extends Thread {
     public DeviceSocketHandler getDeviceSocketHandler() {
         return handler;
     }
+
 }

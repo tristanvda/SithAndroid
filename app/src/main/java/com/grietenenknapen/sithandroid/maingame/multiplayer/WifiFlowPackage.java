@@ -7,7 +7,6 @@ public abstract class WifiFlowPackage extends WifiPackage {
     //Flow Details to synchronize flow package
     private final FlowDetails flowDetails;
 
-
     public WifiFlowPackage(final int packageType,
                            final FlowDetails flowDetails) {
 

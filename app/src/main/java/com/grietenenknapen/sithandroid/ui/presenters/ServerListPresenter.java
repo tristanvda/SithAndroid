@@ -23,7 +23,7 @@ import java.util.Map;
 public class ServerListPresenter extends Presenter<ServerListPresenter.View> {
 
     private static final String TAG = ServerListPresenter.class.getName();
-    private static final long DNS_SERVICE_INTERVAL = 1000 * 20;
+    private static final long DNS_SERVICE_INTERVAL = 1000 * 30;
     final HashMap<String, TxRecord> txServices = new HashMap<>();
 
     private final WifiP2pManager manager;

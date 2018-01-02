@@ -3,9 +3,9 @@ package com.grietenenknapen.sithandroid.maingame.multiplayer.server;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.grietenenknapen.sithandroid.game.Game;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.WifiDirectBroadcastReceiver;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.WifiPackage;
-import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public interface WifiDirectGameServerManager {
 
     void setClientResponseListener(@Nullable WifiGameServerListener wifiGameServerListener);
 
-    void setActivePlayers(@NonNull List<ActivePlayer> activePlayers);
+    void setGame(@NonNull Game game);
 
     void setBroadcastReceiver(@Nullable WifiDirectBroadcastReceiver receiver);
 
@@ -42,7 +42,6 @@ public interface WifiDirectGameServerManager {
     interface WifiServerStartListener {
 
         void serverStarted();
-
 
         void serverStartFailed(String message);
 

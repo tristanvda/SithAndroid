@@ -3,6 +3,7 @@ package com.grietenenknapen.sithandroid.ui.presenters;
 import android.support.annotation.StringRes;
 import android.support.v4.util.Pair;
 
+import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
 import com.grietenenknapen.sithandroid.game.usecase.UseCase;
 import com.grietenenknapen.sithandroid.game.usecase.type.UseCaseId;
@@ -40,6 +41,7 @@ import java.util.List;
 public class GameClientFlowPresenter extends Presenter<GameClientFlowPresenter.View> {
 
     private static final int PEEK_DELAY = 3000;
+    private static final int MESSAGE_DELAY = 5000;
 
     private final WifiDirectGameClientManager wifiDirectGameClientManager;
     private final WifiP2pService wifiP2pService;
@@ -80,11 +82,13 @@ public class GameClientFlowPresenter extends Presenter<GameClientFlowPresenter.V
     private void handleCommandMessage(WifiFlowCommandMessage message) {
         switch (message.getResponseCode()) {
             case WifiFlowCommandMessage.ResponseType.CODE_SUCCESS:
-                //TODO: nothing to do here yet?..
+                if (getView() != null) {
+                    getView().showMessage(message.getMessage(), MESSAGE_DELAY);
+                }
                 break;
             case WifiFlowCommandMessage.ResponseType.CODE_FAIL:
                 if (getView() != null) {
-                    getView().showError(message.getMessage());
+                    getView().showError(message.getMessage(), 0);
                 }
                 break;
         }
@@ -102,9 +106,6 @@ public class GameClientFlowPresenter extends Presenter<GameClientFlowPresenter.V
                         switch (wifiPackage.getPackageType()) {
                             case WifiPackage.PackageType.COMMAND_TYPE_CARD_PEEK:
                                 handleCardPeekCommand((WifiFlowCommandPeek) wifiPackage);
-                                break;
-                            case WifiPackage.PackageType.COMMAND_TYPE_MESSAGE:
-                                handleCommandMessage((WifiFlowCommandMessage) wifiPackage);
                                 break;
                             case WifiPackage.PackageType.COMMAND_TYPE_REQUEST_YES_NO:
                                 handleYesNoCommand((WifiFlowCommandYesNo) wifiPackage);
@@ -131,6 +132,12 @@ public class GameClientFlowPresenter extends Presenter<GameClientFlowPresenter.V
                                 playerRole = ((WifiCommandRole) wifiPackage).getActivePlayer();
                                 showUserRoleScreen();
                                 break;
+                            case WifiPackage.PackageType.COMMAND_TYPE_GAME_OVER:
+                                getView().showMessage(R.string.game_over, 0);
+                                break;
+                            case WifiPackage.PackageType.COMMAND_TYPE_MESSAGE:
+                                handleCommandMessage((WifiFlowCommandMessage) wifiPackage);
+                                break;
                         }
                     }
                 }
@@ -139,7 +146,7 @@ public class GameClientFlowPresenter extends Presenter<GameClientFlowPresenter.V
             @Override
             public void onServerError(@StringRes final int messageRes) {
                 if (getView() != null) {
-                    getView().showError(messageRes);
+                    getView().showError(messageRes, 0);
                 }
             }
         });
@@ -177,7 +184,7 @@ public class GameClientFlowPresenter extends Presenter<GameClientFlowPresenter.V
             @Override
             public void onConnectionError(@StringRes final int messageRes) {
                 if (getView() != null) {
-                    getView().showError(messageRes);
+                    getView().showError(messageRes, 0);
                 }
             }
         });
@@ -198,7 +205,11 @@ public class GameClientFlowPresenter extends Presenter<GameClientFlowPresenter.V
 
     private void showUserRoleScreen() {
         if (getView() != null && playerRole != null) {
-            getView().showUserRoleScreen(playerRole);
+            if (playerRole.isAlive()) {
+                getView().showUserRoleScreen(playerRole);
+            } else {
+                getView().showMessage(R.string.user_killed, 0);
+            }
         }
     }
 
@@ -208,7 +219,7 @@ public class GameClientFlowPresenter extends Presenter<GameClientFlowPresenter.V
 
         @Override
         public void onExecuteStep(final int step) {
-            //TODO: nothing here yet I guess?
+            showUserRoleScreen();
         }
 
         @Override
@@ -238,9 +249,13 @@ public class GameClientFlowPresenter extends Presenter<GameClientFlowPresenter.V
 
     public interface View extends PresenterView {
 
-        void showError(@StringRes int errorResId);
+        void showError(@StringRes int errorResId, long delay);
 
-        void showError(String error);
+        void showError(String error, long delay);
+
+        void showMessage(String message, long delay);
+
+        void showMessage(@StringRes int messageResId, long delay);
 
         void showLoadingScreen();
 

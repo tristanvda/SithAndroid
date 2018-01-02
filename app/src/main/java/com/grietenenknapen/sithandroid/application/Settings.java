@@ -14,6 +14,7 @@ public final class Settings {
     private final static String SAVES_MAIN_GAME_FLAG = "main_game_save_flag";
     private final static String SETTING_MUSIC = "music";
     private final static String SETTING_SMS = "sms";
+    private final static String SETTING_VIBRATE = "vibrate";
     private final static String SETTINGS_BATTERY_SAVING = "battery_saving";
     private final static String RANDOM_COMMENTS = "random_comments";
 
@@ -74,6 +75,12 @@ public final class Settings {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
         return preferences.getBoolean(SETTING_SMS, false);
+    }
+
+    public static boolean isVibrateNotificationEnabled(final Context context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return preferences.getBoolean(SETTING_VIBRATE, false);
     }
 
     public static boolean isBatterySavingMode(final Context context) {

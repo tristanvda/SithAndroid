@@ -45,6 +45,7 @@ public class MainGame implements Game, Parcelable {
         return new FlowDetails(currentNight, currentUseCaseStep, currentTurn);
     }
 
+    @Override
     public List<ActivePlayer> getActivePlayers() {
         return activePlayers;
     }
@@ -207,6 +208,7 @@ public class MainGame implements Game, Parcelable {
         deathList.add(playerId);
     }
 
+    @Override
     public ActivePlayer getActivePlayer(final long id) {
         for (ActivePlayer activePlayer : activePlayers) {
             if (activePlayer.getPlayerId() == id) {

@@ -19,6 +19,7 @@ import com.grietenenknapen.sithandroid.maingame.multiplayer.command.WifiFlowComm
 import com.grietenenknapen.sithandroid.maingame.multiplayer.command.WifiFlowCommandSelectPair;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.command.WifiFlowCommandSelectPlayer;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.command.WifiFlowCommandSelectSithCard;
+import com.grietenenknapen.sithandroid.maingame.multiplayer.command.WifiFlowCommandYesNo;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.response.WifiFlowResponseCard;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.response.WifiFlowResponseId;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.response.WifiFlowResponsePairId;
@@ -53,6 +54,7 @@ public final class WifiPackageHelper {
                     case WifiPackage.PackageType.COMMAND_TYPE_SELECT_ROLE:
                         return WifiCommandSelectRole.class;
                     case WifiPackage.PackageType.RESPONSE_TYPE_REQUEST_ROLE:
+                    case WifiPackage.PackageType.COMMAND_TYPE_GAME_OVER:
                     case WifiPackage.PackageType.COMMAND_TYPE_OK:
                         return EmptyWifiPackage.class;
                     case WifiPackage.PackageType.COMMAND_TYPE_SELECT_SITH_CARD:
@@ -62,7 +64,7 @@ public final class WifiPackageHelper {
                     case WifiPackage.PackageType.RESPONSE_TYPE_ID:
                         return WifiFlowResponseId.class;
                     case WifiPackage.PackageType.COMMAND_TYPE_REQUEST_YES_NO:
-                        return WifiFlowResponseCard.class;
+                        return WifiFlowCommandYesNo.class;
                     case WifiPackage.PackageType.RESPONSE_TYPE_PAIR_ID:
                         return WifiFlowResponsePairId.class;
                     case WifiPackage.PackageType.RESPONSE_TYPE_ROLE:

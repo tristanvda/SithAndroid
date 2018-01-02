@@ -165,7 +165,7 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
         if (sithCards == null) {
             return;
         }
-        wifiDirectGameServerManager.setActivePlayers(game.getActivePlayers());
+        wifiDirectGameServerManager.setGame(game);
         if (gameFlowManager == null) {
             if (playRandomComments) {
                 gameFlowManager = new MainGameRandomFlowManager(game, sithCards, randomResourceList);

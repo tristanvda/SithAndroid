@@ -5,6 +5,7 @@ import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
@@ -149,7 +150,8 @@ public class MainGameFlowActivity extends PresenterActivity<GameFlowPresenter, G
         final ResourceProvider resourceProvider = new ResourceProvider(getApplicationContext());
         final WifiDirectGameServerManager gameServerManager = new WifiDirectGameServerManagerImpl(this,
                 (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE),
-                (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE));
+                (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE),
+                (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE));
 
         if (Settings.isRandomComments(this)) {
             return new GameFlowPresenterFactory(((SithApplication) getApplicationContext()).getPlayerService(),

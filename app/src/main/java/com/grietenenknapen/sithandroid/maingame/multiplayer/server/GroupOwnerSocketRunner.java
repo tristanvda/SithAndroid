@@ -1,5 +1,7 @@
 package com.grietenenknapen.sithandroid.maingame.multiplayer.server;
 
+import android.net.wifi.WifiManager;
+import android.os.PowerManager;
 import android.util.Log;
 
 import com.grietenenknapen.sithandroid.maingame.multiplayer.DeviceSocketHandler;
@@ -20,8 +22,15 @@ public class GroupOwnerSocketRunner extends Thread {
     private final int THREAD_COUNT_MAX = 16;
     private final DeviceSocketHandler handler;
     private volatile boolean running;
+    private PowerManager.WakeLock wakeLock;
+    private WifiManager.WifiLock wifiLock;
 
-    public GroupOwnerSocketRunner(DeviceSocketHandler handler) throws IOException {
+    public GroupOwnerSocketRunner(DeviceSocketHandler handler,
+                                  PowerManager.WakeLock wakeLock,
+                                  WifiManager.WifiLock wifiLock) throws IOException {
+
+        this.wakeLock = wakeLock;
+        this.wifiLock = wifiLock;
         try {
             this.socket = new ServerSocket(WifiDirectGameServerManager.SERVER_PORT);
             this.handler = handler;
@@ -43,7 +52,7 @@ public class GroupOwnerSocketRunner extends Thread {
             while (running) {
                 // A blocking operation. Initiate a DeviceSocketManager instance when
                 // there is a new connection
-                pool.execute(new DeviceSocketManager(socket.accept(), handler)); //TODO: check if there is a problem with this on lollipop
+                pool.execute(new DeviceSocketManager(socket.accept(), handler, wifiLock, wakeLock)); //TODO: check if there is a problem with this on lollipop
                 Log.d(TAG, "Launching the I/O handler");
             }
         } catch (IOException e) {

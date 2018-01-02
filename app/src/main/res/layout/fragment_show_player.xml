@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:clickable="true"
         android:gravity="center"
         android:textAppearance="?android:textAppearanceLarge"
         android:textColor="@color/color_yellow_selector"
@@ -68,7 +67,8 @@
             android:gravity="center"
             android:text="@string/yes"
             android:textAppearance="@style/TextAppearance.Big"
-            android:textColor="@color/color_yellow_selector"/>
+            android:textColor="@color/color_yellow_selector"
+            android:focusable="true"/>
 
         <TextView
             android:id="@+id/menuNo"
@@ -79,7 +79,8 @@
             android:gravity="center"
             android:text="@string/no"
             android:textAppearance="@style/TextAppearance.Big"
-            android:textColor="@color/color_yellow_selector"/>
+            android:textColor="@color/color_yellow_selector"
+            android:focusable="true"/>
     </LinearLayout>
 
 </RelativeLayout>

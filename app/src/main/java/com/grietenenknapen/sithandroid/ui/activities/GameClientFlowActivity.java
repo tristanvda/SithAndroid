@@ -5,12 +5,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.PowerManager;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.view.WindowManager;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.grietenenknapen.sithandroid.R;
+import com.grietenenknapen.sithandroid.application.Settings;
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
 import com.grietenenknapen.sithandroid.game.usecase.UseCase;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.WifiBroadcastReceiver;
@@ -23,6 +28,7 @@ import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 import com.grietenenknapen.sithandroid.ui.PresenterActivity;
 import com.grietenenknapen.sithandroid.ui.PresenterFactory;
 import com.grietenenknapen.sithandroid.ui.fragments.ClientErrorFragment;
+import com.grietenenknapen.sithandroid.ui.fragments.ClientMessageFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.LoadingFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.PlayerSelectFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.UserRoleFragment;
@@ -48,6 +54,8 @@ public class GameClientFlowActivity extends PresenterActivity<GameClientFlowPres
     private static final String PRESENTER_TAG = "game_client_flow_presenter";
     private final WifiBroadcastReceiver receiver = new WifiBroadcastReceiver();
     private final IntentFilter intentFilter = new IntentFilter();
+    private final Handler delayHandler = new Handler();
+    private long delayTime = 0;
 
     public static Intent createStartIntent(final Context context, final WifiP2pService wifiP2pService) {
         Intent intent = new Intent(context, GameClientFlowActivity.class);
@@ -57,6 +65,7 @@ public class GameClientFlowActivity extends PresenterActivity<GameClientFlowPres
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_flow);
         ButterKnife.bind(this);
@@ -70,6 +79,7 @@ public class GameClientFlowActivity extends PresenterActivity<GameClientFlowPres
 
         registerReceiver(receiver, intentFilter);
         presenter.setWifiDirectBroadcastReceiver(receiver);
+        handleDelay(delayTime);
     }
 
     @Override
@@ -78,6 +88,7 @@ public class GameClientFlowActivity extends PresenterActivity<GameClientFlowPres
 
         this.receiver.clearAllWifiDirectReceivers();
         unregisterReceiver(receiver);
+        delayHandler.removeCallbacksAndMessages(null);
     }
 
     @Override
@@ -102,24 +113,63 @@ public class GameClientFlowActivity extends PresenterActivity<GameClientFlowPres
                 .show();
     }
 
-
     @Override
-    public void showError(@StringRes final int errorResId) {
+    public void showError(@StringRes final int errorResId, final long delay) {
         final String errorString = getString(errorResId);
-        if (getSupportFragmentManager().findFragmentById(R.id.container) instanceof ClientErrorFragment) {
-            return;
-        }
-        FragmentUtils.replaceOrAddFragment(this, ClientErrorFragment.class, R.id.container, errorString,
-                false, FragmentUtils.Animation.ANIMATE_SLIDE_LEFT, ClientErrorFragment.createArguments(errorString));
+        showErrorFragment(errorString);
+        handleDelay(delay);
     }
 
     @Override
-    public void showError(final String error) {
+    public void showError(final String error, final long delay) {
+        showErrorFragment(error);
+        handleDelay(delay);
+    }
+
+    private void showErrorFragment(final String error) {
         if (getSupportFragmentManager().findFragmentById(R.id.container) instanceof ClientErrorFragment) {
             return;
         }
         FragmentUtils.replaceOrAddFragment(this, ClientErrorFragment.class, R.id.container, error,
                 false, FragmentUtils.Animation.ANIMATE_SLIDE_LEFT, ClientErrorFragment.createArguments(error));
+    }
+
+    @Override
+    public void showMessage(final String message, final long delay) {
+        showMessageFragment(message);
+        handleDelay(delay);
+    }
+
+    @Override
+    public void showMessage(final int messageResId, final long delay) {
+        final String messageString = getString(messageResId);
+        showMessageFragment(messageString);
+        handleDelay(delay);
+    }
+
+    private void showMessageFragment(final String message) {
+        if (getSupportFragmentManager().findFragmentById(R.id.container) instanceof ClientMessageFragment) {
+            return;
+        }
+        FragmentUtils.replaceOrAddFragment(this, ClientMessageFragment.class, R.id.container, message,
+                false, FragmentUtils.Animation.ANIMATE_SLIDE_LEFT, ClientMessageFragment.createArguments(message));
+    }
+
+    private void handleDelay(long delay) {
+        if (delay == 0) {
+            return;
+        }
+
+        delayTime = delay;
+        delayHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                delayTime = 0;
+                if (presenter != null) {
+                    presenter.getResponseUseCase().onExecuteStep(0);
+                }
+            }
+        }, delay);
     }
 
     @Override
@@ -196,7 +246,10 @@ public class GameClientFlowActivity extends PresenterActivity<GameClientFlowPres
     protected PresenterFactory<GameClientFlowPresenter> getPresenterFactory() {
         final WifiP2pService wifiP2pService = getIntent().getParcelableExtra(KEY_WIFI_P2P_SERVICE);
         final WifiDirectGameClientManager wifiDirectGameClientManager =
-                new WifiDirectGameClientManagerImpl((WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE));
+                new WifiDirectGameClientManagerImpl((WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE),
+                        (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE),
+                        (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE),
+                        Settings.isVibrateNotificationEnabled(this));
         return new GameClientFlowPresenterFactory(wifiDirectGameClientManager, wifiP2pService);
     }
 

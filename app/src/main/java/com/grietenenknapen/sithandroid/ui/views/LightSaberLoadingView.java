@@ -54,7 +54,7 @@ public class LightSaberLoadingView extends View {
     private static final int ROTATE_DURATION = 1500;
     private static final int DESIRED_WIDTH_DP = 56;
     private static final int DESIRED_HEIGHT_DP = 56;
-    private static final float TAIL_SIZE_PERCENTAGE = 0.03f;
+    private static final float TAIL_SIZE_PERCENTAGE = 0.08f;
     private VectorDrawableCompat lightSaberDrawable;
     private float rotateAngle = 0;
     private RectF tailCircle;
@@ -242,7 +242,7 @@ public class LightSaberLoadingView extends View {
     @Override
     protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        tailSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, h * TAIL_SIZE_PERCENTAGE, getResources().getDisplayMetrics());
+        tailSize = h * TAIL_SIZE_PERCENTAGE;
         tailPaint.setStrokeWidth(tailSize);
 
         final float halfTailSize = tailSize / 2;
@@ -253,7 +253,7 @@ public class LightSaberLoadingView extends View {
     protected void onDraw(final Canvas canvas) {
         super.onDraw(canvas);
         final float tailAngle = (float) ((rotateAngle > 180 ? 360 - rotateAngle : rotateAngle) / (1.25 - (Math.abs(180 - rotateAngle) / 720)));
-        final float extraMarginAngle = tailSize / 2; //This is extra margin to make make sure the the light doesn't appear before the saber
+        final float extraMarginAngle = 8; //This is extra margin to make make sure the the light doesn't appear before the saber
         canvas.drawArc(tailCircle, rotateAngle - tailAngle - 90 - extraMarginAngle, tailAngle, false, tailPaint);
         canvas.save();
         canvas.rotate(rotateAngle, getWidth() / 2, getHeight() / 2);

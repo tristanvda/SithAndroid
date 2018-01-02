@@ -201,12 +201,10 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
         mainGame.setLovers(new Pair<>(lover1, lover2));
 
         if (!TextUtils.isEmpty(lover1.getTelephoneNumber())) {
-            //TODO: resources
             uiListener.sendSMS(R.string.linked_by_BB8, lover1.getTelephoneNumber());
         }
 
         if (!TextUtils.isEmpty(lover2.getTelephoneNumber())) {
-            //TODO: resources
             uiListener.sendSMS(R.string.linked_by_BB8, lover2.getTelephoneNumber());
         }
     }

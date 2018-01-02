@@ -3,6 +3,9 @@ package com.grietenenknapen.sithandroid.maingame.multiplayer.client;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
+import android.os.PowerManager;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -11,18 +14,28 @@ import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.DeviceSocketHandler;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.DeviceSocketManager;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.WifiBroadcastReceiver;
+import com.grietenenknapen.sithandroid.maingame.multiplayer.WifiFlowPackage;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.WifiPackage;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.WifiReceiverListener;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.helper.QueueStrategy;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.helper.SingleQueueStrategy;
+import com.grietenenknapen.sithandroid.maingame.multiplayer.server.WifiDirectGameServerManager;
 
 import java.util.List;
 import java.util.Queue;
 
 public class WifiDirectGameClientManagerImpl implements WifiDirectGameClientManager {
+    private static final String TAG = WifiDirectGameClientManager.class.getName();
+    private static final long[] VIBRATE_PATTERN = new long[]{0, 800, 200, 300, 200, 800};
+
+
     private final WifiManager manager;
+    private final PowerManager.WakeLock wakeLock;
+    private final WifiManager.WifiLock wifiLock;
+    private final Vibrator vibrator;
+    private final boolean vibrateEnabled;
+
     private static final int CONNECT_DELAY = 1000;
-    private static final int START_DELAY = 500;
 
     private ClientSocketRunner socketRunner;
     private WifiBroadcastReceiver receiver;
@@ -41,8 +54,16 @@ public class WifiDirectGameClientManagerImpl implements WifiDirectGameClientMana
     private Queue<WifiPackage> serverResponseQueue = clientQueueStrategy.createQueue();
     private Queue<Integer> errorResQueue = errorQueueStrategy.createQueue();
 
-    public WifiDirectGameClientManagerImpl(final WifiManager manager) {
+    public WifiDirectGameClientManagerImpl(final WifiManager manager,
+                                           final PowerManager powerManager,
+                                           final Vibrator vibrator,
+                                           final boolean vibrateEnabled) {
+
         this.manager = manager;
+        this.vibrator = vibrator;
+        this.vibrateEnabled = vibrateEnabled;
+        this.wifiLock = manager.createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
+        this.wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
     }
 
     @Override
@@ -171,6 +192,9 @@ public class WifiDirectGameClientManagerImpl implements WifiDirectGameClientMana
 
         @Override
         public void onDevicePackageReceived(final DeviceSocketManager deviceSocketManager, final WifiPackage wifiPackage) {
+            if (wifiPackage instanceof WifiFlowPackage && vibrateEnabled) {
+                vibrator.vibrate(VIBRATE_PATTERN, -1);
+            }
             handleOnServerResponse(wifiPackage);
         }
 
@@ -201,7 +225,7 @@ public class WifiDirectGameClientManagerImpl implements WifiDirectGameClientMana
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    socketRunner = new ClientSocketRunner(clientSocketHandler, wifiP2pService.deviceAddress);
+                    socketRunner = new ClientSocketRunner(clientSocketHandler, wifiP2pService.deviceAddress, wifiLock, wakeLock);
                     socketRunner.start();
                     if (tempConnectToServerListener != null) {
                         tempConnectToServerListener.onConnectedToServer();

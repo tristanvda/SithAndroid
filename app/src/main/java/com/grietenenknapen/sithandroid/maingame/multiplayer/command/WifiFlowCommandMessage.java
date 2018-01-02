@@ -2,8 +2,7 @@ package com.grietenenknapen.sithandroid.maingame.multiplayer.command;
 
 import android.support.annotation.IntDef;
 
-import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
-import com.grietenenknapen.sithandroid.maingame.multiplayer.WifiFlowPackage;
+import com.grietenenknapen.sithandroid.maingame.multiplayer.WifiPackage;
 
 import java.lang.annotation.Retention;
 
@@ -11,7 +10,7 @@ import static com.grietenenknapen.sithandroid.maingame.multiplayer.command.WifiF
 import static com.grietenenknapen.sithandroid.maingame.multiplayer.command.WifiFlowCommandMessage.ResponseType.CODE_SUCCESS;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
-public class WifiFlowCommandMessage extends WifiFlowPackage {
+public class WifiFlowCommandMessage extends WifiPackage {
     private final String message;
     private final int responseCode;
 
@@ -23,11 +22,10 @@ public class WifiFlowCommandMessage extends WifiFlowPackage {
         int CODE_FAIL = 2;
     }
 
-    public WifiFlowCommandMessage(final FlowDetails flowDetails,
-                                  final String message,
+    public WifiFlowCommandMessage(final String message,
                                   final @ResponseType int responseCode) {
 
-        super(PackageType.COMMAND_TYPE_MESSAGE, flowDetails);
+        super(PackageType.COMMAND_TYPE_MESSAGE);
         this.message = message;
         this.responseCode = responseCode;
     }

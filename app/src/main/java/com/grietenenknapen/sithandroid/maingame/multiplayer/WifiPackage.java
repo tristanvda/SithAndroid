@@ -4,6 +4,7 @@ import android.support.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 
+import static com.grietenenknapen.sithandroid.maingame.multiplayer.WifiPackage.PackageType.COMMAND_TYPE_GAME_OVER;
 import static com.grietenenknapen.sithandroid.maingame.multiplayer.WifiPackage.PackageType.COMMAND_TYPE_CARD_PEEK;
 import static com.grietenenknapen.sithandroid.maingame.multiplayer.WifiPackage.PackageType.COMMAND_TYPE_MESSAGE;
 import static com.grietenenknapen.sithandroid.maingame.multiplayer.WifiPackage.PackageType.COMMAND_TYPE_OK;
@@ -30,7 +31,7 @@ public class WifiPackage {
     @IntDef({COMMAND_TYPE_SELECT_PLAYER, COMMAND_TYPE_SELECT_PAIR, COMMAND_TYPE_SELECT_SITH_CARD,
             COMMAND_TYPE_CARD_PEEK, COMMAND_TYPE_SHOW_PLAYER_YES_NO, COMMAND_TYPE_MESSAGE, COMMAND_TYPE_SELECT_ROLE,
             RESPONSE_TYPE_ID, RESPONSE_TYPE_PAIR_ID, RESPONSE_TYPE_YES_NO, RESPONSE_TYPE_ROLE, RESPONSE_TYPE_REQUEST_ROLE,
-            COMMAND_TYPE_REQUEST_YES_NO, RESPONSE_TYPE_CARD, COMMAND_TYPE_OK, COMMAND_TYPE_ROLE})
+            COMMAND_TYPE_REQUEST_YES_NO, RESPONSE_TYPE_CARD, COMMAND_TYPE_OK, COMMAND_TYPE_ROLE, COMMAND_TYPE_GAME_OVER})
 
     public @interface PackageType {
         int COMMAND_TYPE_SELECT_PLAYER = 1;
@@ -43,6 +44,7 @@ public class WifiPackage {
         int COMMAND_TYPE_REQUEST_YES_NO = 8;
         int COMMAND_TYPE_OK = 9;
         int COMMAND_TYPE_ROLE = 10;
+        int COMMAND_TYPE_GAME_OVER = 11;
         int RESPONSE_TYPE_ID = 51;
         int RESPONSE_TYPE_PAIR_ID = 52;
         int RESPONSE_TYPE_YES_NO = 53;

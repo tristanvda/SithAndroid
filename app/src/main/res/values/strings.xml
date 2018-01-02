@@ -25,6 +25,7 @@
     <string name="han_solo_choose_card">Choose a new card.</string>
     <string name="boba_fett_use_med_pack">Use your med pack on this player?</string>
     <string name="boba_fett_use_rocket_launcher">Use your rocket launcher?</string>
+    <string name="user_killed">Sorry, You are killed!</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="game_over">Game over</string>
@@ -65,6 +66,9 @@
     <string name="sms_title">SMS</string>
     <string name="sms_summary_on">SMS send function (Roles, BB8) enabled</string>
     <string name="sms_summary_off">SMS send function (Roles, BB8) disabled</string>
+    <string name="vibrate_notification_title">Vibrate notification</string>
+    <string name="vibrate_notification_on">Vibrate notification enabled</string>
+    <string name="vibrate_notification_off">Vibrate notification disabled</string>
     <string name="battery_saving_mode_title">Battery saving</string>
     <string name="battery_saving_mode_on">App will reduce the graphical effects to make the battery last longer</string>
     <string name="battery_saving_mode_off">App will show full effects. This might drain the battery faster</string>

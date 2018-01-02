@@ -11,14 +11,17 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.util.Log;
 
 import com.grietenenknapen.sithandroid.R;
+import com.grietenenknapen.sithandroid.game.Game;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.DeviceSocketHandler;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.DeviceSocketManager;
+import com.grietenenknapen.sithandroid.maingame.multiplayer.EmptyWifiPackage;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.WifiDirectBroadcastReceiver;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.WifiDirectReceiverListenerAdapter;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.WifiPackage;
@@ -26,18 +29,14 @@ import com.grietenenknapen.sithandroid.maingame.multiplayer.command.WifiCommandR
 import com.grietenenknapen.sithandroid.maingame.multiplayer.command.WifiCommandSelectRole;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.helper.QueueStrategy;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.helper.SingleQueueStrategy;
-import com.grietenenknapen.sithandroid.maingame.multiplayer.helper.WifiDirectHelper;
 import com.grietenenknapen.sithandroid.maingame.multiplayer.response.WifiResponseRole;
 import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
@@ -54,12 +53,16 @@ public class WifiDirectGameServerManagerImpl implements WifiDirectGameServerMana
     private final WifiP2pManager manager;
     private final WifiManager wifiManager;
     private final WifiP2pManager.Channel channel;
-    private final List<ActivePlayer> activePlayers = new ArrayList<>();
+    private final PowerManager.WakeLock wakeLock;
+    private final WifiManager.WifiLock wifiLock;
+
+    private Game game;
     private GroupOwnerSocketRunner socketRunner;
     private WifiGameServerListener wifiGameServerListener;
     private WifiDirectBroadcastReceiver receiver = null;
     private WifiServerStartListener tempStartServerListener = null;
     private boolean groupCreationStarted = false;
+    private boolean stoppingServer = false;
 
     //Currently the queues will have a default strategy which only can have a single Queue
     //Later this can be changed by multiple strategies
@@ -72,17 +75,21 @@ public class WifiDirectGameServerManagerImpl implements WifiDirectGameServerMana
     public WifiDirectGameServerManagerImpl(
             final Context context,
             final WifiP2pManager manager,
-            final WifiManager wifiManager) {
+            final WifiManager wifiManager,
+            final PowerManager powerManager) {
 
         this.manager = manager;
         this.wifiManager = wifiManager;
         this.playerIdsClients = Collections.synchronizedMap(new HashMap<Long, Client>());
         this.channel = manager.initialize(context.getApplicationContext(), Looper.getMainLooper(), null);
+        this.wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
+        this.wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
     }
 
     @Override
     public void createAndStartHostingServer(@Nullable final WifiServerStartListener listener) {
         //Stop server first
+        stoppingServer = false;
         stopAndDestroyHostingServer();
         this.tempStartServerListener = listener;
         new Handler().postDelayed(new Runnable() {
@@ -159,13 +166,17 @@ public class WifiDirectGameServerManagerImpl implements WifiDirectGameServerMana
         public void onDevicePackageReceived(final DeviceSocketManager deviceSocketManager, final WifiPackage wifiPackage) {
             switch (wifiPackage.getPackageType()) {
                 case WifiPackage.PackageType.RESPONSE_TYPE_REQUEST_ROLE:
-                    final ArrayList<ActivePlayer> availableActivePlayers = new ArrayList<>();
-                    for (ActivePlayer activePlayer : activePlayers) {
-                        if (!isPlayerConnected(activePlayer.getPlayerId())) {
-                            availableActivePlayers.add(activePlayer);
+                    if (game.isGameOver()) {
+                        deviceSocketManager.write(new EmptyWifiPackage(WifiCommandRole.PackageType.COMMAND_TYPE_GAME_OVER));
+                    } else {
+                        final ArrayList<ActivePlayer> availableActivePlayers = new ArrayList<>();
+                        for (ActivePlayer activePlayer : game.getActivePlayers()) {
+                            if (!isPlayerConnected(activePlayer.getPlayerId())) {
+                                availableActivePlayers.add(activePlayer);
+                            }
                         }
+                        deviceSocketManager.write(new WifiCommandSelectRole(availableActivePlayers));
                     }
-                    deviceSocketManager.write(new WifiCommandSelectRole(availableActivePlayers));
                     return;
                 case WifiPackage.PackageType.RESPONSE_TYPE_ROLE:
                     final WifiResponseRole wifiResponseRole = (WifiResponseRole) wifiPackage;
@@ -202,7 +213,7 @@ public class WifiDirectGameServerManagerImpl implements WifiDirectGameServerMana
     });
 
     private ActivePlayer findActivePlayer(final long playerId) {
-        for (ActivePlayer activePlayer : activePlayers) {
+        for (ActivePlayer activePlayer : game.getActivePlayers()) {
             if (activePlayer.getPlayerId() == playerId) {
                 return activePlayer;
             }
@@ -213,7 +224,7 @@ public class WifiDirectGameServerManagerImpl implements WifiDirectGameServerMana
     private void startListeningForClients() {
         try {
             stopAndDestroySocketRunner();
-            socketRunner = new GroupOwnerSocketRunner(serverDeviceSocketHandler);
+            socketRunner = new GroupOwnerSocketRunner(serverDeviceSocketHandler, wakeLock, wifiLock);
             socketRunner.start();
         } catch (IOException e) {
             Log.d(TAG, "Failed to create a server thread - " + e.getMessage());
@@ -241,7 +252,9 @@ public class WifiDirectGameServerManagerImpl implements WifiDirectGameServerMana
         if (this.wifiGameServerListener != null) {
             if (!errorResQueue.isEmpty()) {
                 for (int resId : errorResQueue) {
-                    this.wifiGameServerListener.onServerError(resId);
+                    if (!stoppingServer) {
+                        this.wifiGameServerListener.onServerError(resId);
+                    }
                 }
             } else if (!clientResponseQueue.isEmpty()) {
                 for (WifiPackage wifiPackage : clientResponseQueue) {
@@ -260,6 +273,10 @@ public class WifiDirectGameServerManagerImpl implements WifiDirectGameServerMana
     }
 
     private void handleOnServerError(@StringRes final int intRes) {
+        if (stoppingServer) {
+            return;
+        }
+
         if (wifiGameServerListener != null) {
             wifiGameServerListener.onServerError(intRes);
         } else {
@@ -268,9 +285,8 @@ public class WifiDirectGameServerManagerImpl implements WifiDirectGameServerMana
     }
 
     @Override
-    public void setActivePlayers(@NonNull final List<ActivePlayer> activePlayers) {
-        this.activePlayers.clear();
-        this.activePlayers.addAll(activePlayers);
+    public void setGame(@NonNull final Game game) {
+        this.game = game;
     }
 
     private WifiDirectReceiverListenerAdapter wifiDirectReceiverListenerAdapter = new WifiDirectReceiverListenerAdapter() {
@@ -342,6 +358,7 @@ public class WifiDirectGameServerManagerImpl implements WifiDirectGameServerMana
 
     @Override
     public void stopAndDestroyHostingServer() {
+        stoppingServer = true;
         tempStartServerListener = null;
         stopAndDestroySocketRunner();
 
@@ -352,6 +369,13 @@ public class WifiDirectGameServerManagerImpl implements WifiDirectGameServerMana
         //This is to reconnect
         wifiManager.disconnect();
         wifiManager.reconnect();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                stoppingServer = false;
+            }
+        }, 200);
     }
 
     private void stopAndDestroySocketRunner() {

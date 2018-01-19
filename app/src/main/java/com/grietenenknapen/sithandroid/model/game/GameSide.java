@@ -21,7 +21,7 @@ public final class GameSide {
 
     @GameSide.Side
     public static int getSideFromCardType(@GameCardType.CardType int cardType) {
-        if (cardType == GameCardType.SITH) {
+        if (cardType == GameCardType.SITH || cardType == GameCardType.GENERAL_GRIEVOUS) {
             return SITH;
         } else {
             return JEDI;

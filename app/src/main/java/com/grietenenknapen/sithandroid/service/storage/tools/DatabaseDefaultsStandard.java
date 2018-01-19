@@ -150,7 +150,7 @@ public class DatabaseDefaultsStandard {
 
     public static SithCard getSithCardGeneralGrievous() {
         return SithCard.newBuilder()
-                .cardType(GameCardType.SITH)
+                .cardType(GameCardType.GENERAL_GRIEVOUS)
                 .name("General Grievous")
                 .imageResId("card_general_grievous")
                 .soundResId("general_grievous")

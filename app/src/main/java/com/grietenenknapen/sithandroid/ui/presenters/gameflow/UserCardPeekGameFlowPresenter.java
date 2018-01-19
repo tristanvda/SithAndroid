@@ -1,8 +1,7 @@
 package com.grietenenknapen.sithandroid.ui.presenters.gameflow;
 
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
-import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
-import com.grietenenknapen.sithandroid.game.usecase.UseCase;
+import com.grietenenknapen.sithandroid.game.usecase.type.UseCaseId;
 import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 import com.grietenenknapen.sithandroid.ui.Presenter;
 import com.grietenenknapen.sithandroid.ui.PresenterView;
@@ -10,7 +9,7 @@ import com.grietenenknapen.sithandroid.ui.PresenterView;
 import java.util.List;
 
 public class UserCardPeekGameFlowPresenter extends Presenter<UserCardPeekGameFlowPresenter.View> {
-    private UseCase gameUseCase;
+    private UseCaseId gameUseCase;
     private final FlowDetails flowDetails;
     private final List<ActivePlayer> activePlayers;
     private ActivePlayer selectedPlayer;
@@ -32,7 +31,7 @@ public class UserCardPeekGameFlowPresenter extends Presenter<UserCardPeekGameFlo
         }
     }
 
-    public void setGameUseCase(UseCase gameUseCase){
+    public void setGameUseCase(UseCaseId gameUseCase){
         this.gameUseCase = gameUseCase;
     }
 
@@ -43,7 +42,7 @@ public class UserCardPeekGameFlowPresenter extends Presenter<UserCardPeekGameFlo
     }
 
     public void onNextClicked() {
-        gameUseCase.onExecuteStep(flowDetails.getStep());
+        gameUseCase.onExecuteStep(flowDetails.getStep(), selectedPlayer.getPlayerId());
     }
 
 

@@ -21,7 +21,7 @@ public final class GameTeam {
 
     @GameTeam.Team
     public static int getInitialTeamFromCardType(@GameCardType.CardType int cardType) {
-        if (cardType == GameCardType.SITH) {
+        if (cardType == GameCardType.SITH || cardType == GameCardType.GENERAL_GRIEVOUS) {
             return SITH;
         } else {
             return JEDI;

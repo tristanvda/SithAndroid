@@ -11,7 +11,7 @@ public final class GameCardType {
     }
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({BB8, SITH, JEDI, HAN_SOLO, BOBA_FETT, KYLO_REN, PEEPING_FINN, MAZ_KANATA, CHEWBACCA})
+    @IntDef({BB8, SITH, JEDI, HAN_SOLO, BOBA_FETT, KYLO_REN, PEEPING_FINN, MAZ_KANATA, CHEWBACCA, GENERAL_GRIEVOUS})
     public @interface CardType {}
 
     public static final int BB8 = 1;
@@ -23,4 +23,5 @@ public final class GameCardType {
     public static final int PEEPING_FINN = 7;
     public static final int MAZ_KANATA = 8;
     public static final int CHEWBACCA = 9;
+    public static final int GENERAL_GRIEVOUS = 10;
 }

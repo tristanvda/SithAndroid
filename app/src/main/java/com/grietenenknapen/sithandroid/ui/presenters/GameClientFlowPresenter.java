@@ -219,6 +219,7 @@ public class GameClientFlowPresenter extends Presenter<GameClientFlowPresenter.V
 
         @Override
         public void onExecuteStep(final int step) {
+            //Nothing to do here yet, but might happen in the future
             showUserRoleScreen();
         }
 

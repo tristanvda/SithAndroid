@@ -1,11 +1,8 @@
 package com.grietenenknapen.sithandroid.ui.presenters;
 
-import android.renderscript.ScriptIntrinsicHistogram;
-
 import com.grietenenknapen.sithandroid.model.database.Player;
 import com.grietenenknapen.sithandroid.model.database.SithCard;
 import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
-import com.grietenenknapen.sithandroid.model.game.GameCardType;
 import com.grietenenknapen.sithandroid.model.game.GameSide;
 import com.grietenenknapen.sithandroid.model.game.GameTeam;
 import com.grietenenknapen.sithandroid.service.ServiceCallBack;
@@ -58,13 +55,10 @@ public class CardShufflePresenter extends Presenter<CardShufflePresenter.View> {
     }
 
     private void shuffleCards() {
-
         long seed = System.nanoTime();
         final List<SithCard> shuffledCards = new ArrayList<>(sithCards);
 
-
         Collections.shuffle(shuffledCards, new Random(seed));
-
         filterSithCards(shuffledCards, players.size(), 0.4f);
 
         activePlayers = new ArrayList<>();
@@ -75,7 +69,9 @@ public class CardShufflePresenter extends Presenter<CardShufflePresenter.View> {
             Player player = players.get(i);
             SithCard card = shuffledCards.get(i);
 
-            if (card.getCardType() == GameCardType.SITH) {
+            final int gameSide = GameSide.getSideFromCardType(card.getCardType());
+
+            if (gameSide == GameSide.SITH) {
                 sithCount++;
             }
 
@@ -83,7 +79,7 @@ public class CardShufflePresenter extends Presenter<CardShufflePresenter.View> {
                     .player_id(player.getId())
                     .alive(true)
                     .name(player.getName())
-                    .side(GameSide.getSideFromCardType(card.getCardType()))
+                    .side(gameSide)
                     .team(GameTeam.getInitialTeamFromCardType(card.getCardType()))
                     .sithCard(card)
                     .telephoneNumber(player.getTelephoneNumber())
@@ -97,11 +93,11 @@ public class CardShufflePresenter extends Presenter<CardShufflePresenter.View> {
         }
     }
 
-    private void replaceCardWithSithCard(List<SithCard> shuffledCards) {
+    private void replaceCardWithSithCard(final List<SithCard> shuffledCards) {
         for (int i = players.size(); i < shuffledCards.size(); i++) {
             SithCard card = shuffledCards.get(i);
 
-            if (card.getCardType() == GameCardType.SITH) {
+            if (GameSide.getSideFromCardType(card.getCardType()) == GameSide.SITH) {
                 final int replacePosition = MathUtils.generateRandomInteger(0, activePlayers.size() - 1);
                 final ActivePlayer activePlayer = activePlayers.get(replacePosition);
                 activePlayer.setSithCard(card);
@@ -112,16 +108,15 @@ public class CardShufflePresenter extends Presenter<CardShufflePresenter.View> {
         }
     }
 
-    private void filterSithCards(List<SithCard> cards, int amountPlayers, float maxPercentageSith) {
+    private void filterSithCards(final List<SithCard> cards, final int amountPlayers, final float maxPercentageSith) {
         int countSith = 0;
 
         final int maxSithCardCount = (int) (amountPlayers * maxPercentageSith);
-
         Iterator<SithCard> iterator = cards.iterator();
 
         while (iterator.hasNext()) {
             final SithCard card = iterator.next();
-            if (card.getCardType() == GameCardType.SITH) {
+            if (GameSide.getSideFromCardType(card.getCardType()) == GameSide.SITH) {
                 countSith++;
                 if (countSith > maxSithCardCount && cards.size() > amountPlayers) {
                     iterator.remove();

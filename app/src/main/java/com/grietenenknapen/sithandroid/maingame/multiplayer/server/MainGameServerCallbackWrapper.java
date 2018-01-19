@@ -168,7 +168,7 @@ public class MainGameServerCallbackWrapper implements MainGameFlowCallBack {
         }
         for (ActivePlayer activePlayer : game.getAlivePlayers()) {
             if (activePlayer.isAlive()
-                    && MainGameUseCaseHelper.isUseCaseActivePlayer(gameUseCase, activePlayer)) {
+                    && MainGameUseCaseHelper.activePlayerCanExecuteUseCase(gameUseCase, activePlayer)) {
 
                 serverManager.sendWifiFlowPackageToPlayer(wifiPackage, activePlayer.getPlayerId());
             }

@@ -105,6 +105,19 @@
     <string name="basis13_boba_fett_gaat_terug_slapen">Boba Fett gaat terug slapen en de Jedi council ontwaakt.</string>
     <string name="basis14_kylo_ren_ontwaakt">Kylo Ren ontwaakt deze nacht, hij heeft definitief voor de Dark Side gekozen en speelt nu dus mee met de Sith.</string>
 
+    <!-- Role descriptions -->
+    <string name="bb8_description">BB8 brings people together and makes them fall in love. You wake up the first night and bind two players that will love each other for eternity.</string>
+    <string name="boba_fett_description">Boba Fett is a very skilled bounty hunter. You wake up at the end of every round and decide who gets to live and who gets to die. Use your med pack and rocket launcher sparingly, you can only use them once.</string>
+    <string name="chewbacca_description">Who dares to face Chewbacca! When you get killed during the day, you can kill someone else to your liking.</string>
+    <string name="sith_description">You are a Sith that wakes up every night to kill an innocent player. The sith win when they are the only ones left in the game.</string>
+    <string name="jedi_description">You are a Jedi that has to face the Sith. Be sure to kill all off the sith players during the day and you win the game.</string>
+    <string name="general_grievous_description">General grievous works together with the sith, but is not a force user. You wake up during the night to kill an innocent player.</string>
+    <string name="finn_description">Finn is always there to get a glimpse of what\'s happening. You can peep trough your fingers during the night, but don't let the sith see you!</string>
+    <string name="han_solo_description">Han Solo, the smuggler, wakes up the first night to choose another role. You can choose any role that has not been taken yet.</string>
+    <string name="kylo_ren_description">Kylo Ren will play together with the jedi before the first 3 nights, but will turn a sith the 3th night.</string>
+    <string name="maz_kanata_description">Maz kanata sees everything. Every round you can look at the card of a player of your choosing.</string>
+    <string name="no_description">This is the description of your role. It\'s not implemented yet, so stop crying!</string>
+
     <string name="behalve">Behalve</string>
     <string name="linked_by_BB8">Verbonden door BB8!</string>
     <string name="bb8">BB8</string>

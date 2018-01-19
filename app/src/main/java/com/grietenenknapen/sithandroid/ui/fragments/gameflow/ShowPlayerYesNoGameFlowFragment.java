@@ -1,5 +1,6 @@
 package com.grietenenknapen.sithandroid.ui.fragments.gameflow;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -13,9 +14,9 @@ import com.grietenenknapen.sithandroid.game.usecase.type.UseCaseYesNo;
 import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 import com.grietenenknapen.sithandroid.ui.CallbackPresenterFragment;
 import com.grietenenknapen.sithandroid.ui.PresenterFactory;
-import com.grietenenknapen.sithandroid.ui.activities.MainGameFlowActivity;
 import com.grietenenknapen.sithandroid.ui.presenters.GameFlowPresenter;
 import com.grietenenknapen.sithandroid.ui.presenters.gameflow.ShowPlayerYesNoGameFlowPresenter;
+import com.grietenenknapen.sithandroid.util.FontCache;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,12 +33,14 @@ public class ShowPlayerYesNoGameFlowFragment extends CallbackPresenterFragment<S
 
     private FlowDetails flowDetails;
 
+    @BindView(R.id.menuYes)
+    TextView menuYes;
+    @BindView(R.id.menuNo)
+    TextView menuNo;
     @BindView(R.id.showPlayerTitle)
     TextView titleText;
     @BindView(R.id.playerCardName)
     TextView playerCardName;
-    @BindView(R.id.menuYes)
-    TextView buttonYes;
 
     public static Bundle createStartBundle(final FlowDetails flowDetails,
                                            final ActivePlayer activePlayer,
@@ -84,6 +87,10 @@ public class ShowPlayerYesNoGameFlowFragment extends CallbackPresenterFragment<S
     }
 
     private void initLayout() {
+        Typeface starWars = FontCache.get("fonts/Starjedi.ttf", getContext());
+
+        menuYes.setTypeface(starWars);
+        menuNo.setTypeface(starWars);
         titleText.setText(getArguments().getString(KEY_TITLE));
     }
 
@@ -94,7 +101,7 @@ public class ShowPlayerYesNoGameFlowFragment extends CallbackPresenterFragment<S
 
     @Override
     public void disableYesButton() {
-        buttonYes.setVisibility(View.GONE);
+        menuYes.setVisibility(View.GONE);
     }
 
     @Override

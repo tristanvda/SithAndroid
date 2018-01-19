@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.flowmanager.GameFlowManager;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
+import com.grietenenknapen.sithandroid.game.usecase.UseCase;
 import com.grietenenknapen.sithandroid.game.usecase.type.UseCaseId;
 import com.grietenenknapen.sithandroid.game.usecase.type.UseCasePairId;
 import com.grietenenknapen.sithandroid.game.usecase.type.UseCaseYesNo;
@@ -21,6 +22,7 @@ import com.grietenenknapen.sithandroid.maingame.usecases.PeepingFinnUseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.SithUseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.SkipUseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.UseCaseCard;
+import com.grietenenknapen.sithandroid.maingame.usecases.helper.MainGameUseCaseHelper;
 import com.grietenenknapen.sithandroid.model.database.SithCard;
 import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 import com.grietenenknapen.sithandroid.model.game.GameCardType;
@@ -62,28 +64,27 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
             case 1:
                 return new IntroUseCase(this, true, false);
             case 2:
-                return new HanSoloUseCase(this, cardIsActive(GameCardType.HAN_SOLO), cardsInGameAndKilled(GameCardType.HAN_SOLO));
+                return new HanSoloUseCase(this, CardOfUseCaseIsActive(HanSoloUseCase.class), CardOfUseCaseIsInGameAndKilled(HanSoloUseCase.class));
             case 3:
-                return new BB8UseCase(this, cardIsActive(GameCardType.BB8), cardsInGameAndKilled(GameCardType.BB8));
+                return new BB8UseCase(this, CardOfUseCaseIsActive(BB8UseCase.class), CardOfUseCaseIsInGameAndKilled(BB8UseCase.class));
             case 4:
-                return new MazKanataUseCase(this, cardIsActive(GameCardType.MAZ_KANATA), cardsInGameAndKilled(GameCardType.MAZ_KANATA));
+                return new MazKanataUseCase(this, CardOfUseCaseIsActive(MazKanataUseCase.class), CardOfUseCaseIsInGameAndKilled(MazKanataUseCase.class));
             case 5:
-                return new KyloRenUseCase(this, cardIsActive(GameCardType.KYLO_REN), cardsInGameAndKilled(GameCardType.KYLO_REN));
+                return new KyloRenUseCase(this, CardOfUseCaseIsActive(KyloRenUseCase.class), CardOfUseCaseIsInGameAndKilled(KyloRenUseCase.class));
             case 6:
                 if (mainGame.getAlivePlayersLightSide().size() > 0) {
-                    return new SithUseCase(this, cardIsActive(GameCardType.SITH), cardsInGameAndKilled(GameCardType.SITH));
+                    return new SithUseCase(this, CardOfUseCaseIsActive(SithUseCase.class), CardOfUseCaseIsInGameAndKilled(SithUseCase.class));
                 } else {
                     return new SkipUseCase(this, true, false);
                 }
             case 7:
-                return new JediUseCase(this, cardIsActive(GameCardType.JEDI), cardsInGameAndKilled(GameCardType.JEDI));
+                return new JediUseCase(this, CardOfUseCaseIsActive(JediUseCase.class), CardOfUseCaseIsInGameAndKilled(JediUseCase.class));
             case 8:
-                return new PeepingFinnUseCase(this, cardIsActive(GameCardType.PEEPING_FINN), cardsInGameAndKilled(GameCardType.PEEPING_FINN));
+                return new PeepingFinnUseCase(this, CardOfUseCaseIsActive(PeepingFinnUseCase.class), CardOfUseCaseIsInGameAndKilled(PeepingFinnUseCase.class));
             case 9:
-                return new ChewBaccaUseCase(this, cardIsActive(GameCardType.CHEWBACCA), cardsInGameAndKilled(GameCardType.CHEWBACCA));
+                return new ChewBaccaUseCase(this, CardOfUseCaseIsActive(ChewBaccaUseCase.class), CardOfUseCaseIsInGameAndKilled(ChewBaccaUseCase.class));
             case 10:
-                return new BobaFettUseCase(this, cardIsActive(GameCardType.BOBA_FETT), cardsInGameAndKilled(GameCardType.BOBA_FETT),
-                        mainGame.isRocketAlreadySelected());
+                return new BobaFettUseCase(this, CardOfUseCaseIsActive(BobaFettUseCase.class), CardOfUseCaseIsInGameAndKilled(BobaFettUseCase.class), mainGame.isRocketAlreadySelected());
             default:
                 return new SkipUseCase(this);
         }
@@ -99,7 +100,7 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
             }
         }
 
-        if (cardsInGameAndKilled(GameCardType.BOBA_FETT) && !bobaFettKilledThisRound) {
+        if (CardOfUseCaseIsInGameAndKilled(BobaFettUseCase.class) && !bobaFettKilledThisRound) {
             uiListener.stackAndSpeak(RAW_SOUND_COUNCIL_AWAKES);
         }
         if (mainGame.getDeathList().size() > 0) {
@@ -115,15 +116,26 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
         return mainGame.isGameOver();
     }
 
-    private boolean cardIsActive(@GameCardType.CardType int type) {
-        List<ActivePlayer> activePlayers = mainGame.findPlayersByType(type);
+    private <T extends UseCase> boolean CardOfUseCaseIsActive(final Class<T> useCaseClass) {
+        int size = 0;
 
-        return activePlayers.size() > 0;
+        for (ActivePlayer activePlayer : mainGame.getActivePlayers()) {
+            if (MainGameUseCaseHelper.activePlayerCanExecuteUseCase(useCaseClass, activePlayer)) {
+                size++;
+            }
+        }
+
+        return size > 0;
     }
 
-    private boolean cardsInGameAndKilled(@GameCardType.CardType int type) {
+    private <T extends UseCase> boolean CardOfUseCaseIsInGameAndKilled(final Class<T> useCaseClass) {
+        List<ActivePlayer> activePlayers = new ArrayList<>();
 
-        List<ActivePlayer> activePlayers = mainGame.findPlayersByType(type);
+        for (ActivePlayer activePlayer: mainGame.getActivePlayers()){
+            if (MainGameUseCaseHelper.activePlayerCanExecuteUseCase(useCaseClass, activePlayer)){
+                activePlayers.add(activePlayer);
+            }
+        }
 
         if (activePlayers.size() == 0) {
             return false;
@@ -161,6 +173,14 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
             ActivePlayer kyloRen = players.get(0);
             kyloRen.setSide(GameSide.SITH);
             kyloRen.setTeam(GameTeam.SITH);
+
+            if (mainGame.isLover(kyloRen)) {
+                final Pair<ActivePlayer, ActivePlayer> lovers = mainGame.getLovers();
+                if (lovers.first.getTeam() != lovers.second.getTeam()) {
+                    lovers.first.setTeam(GameTeam.LOVERS);
+                    lovers.second.setTeam(GameTeam.LOVERS);
+                }
+            }
         }
     }
 
@@ -196,8 +216,12 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
     public void linkTwoLovers(final long lover1Id, long lover2Id) {
         final ActivePlayer lover1 = mainGame.getActivePlayer(lover1Id);
         final ActivePlayer lover2 = mainGame.getActivePlayer(lover2Id);
-        lover1.setTeam(GameTeam.LOVERS);
-        lover2.setTeam(GameTeam.LOVERS);
+
+        //The lovers are only on the lover team, when they originally were different teams
+        if (lover1.getTeam() != lover2.getTeam()) {
+            lover1.setTeam(GameTeam.LOVERS);
+            lover2.setTeam(GameTeam.LOVERS);
+        }
         mainGame.setLovers(new Pair<>(lover1, lover2));
 
         if (!TextUtils.isEmpty(lover1.getTelephoneNumber())) {

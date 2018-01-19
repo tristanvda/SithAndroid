@@ -13,12 +13,10 @@ import android.widget.TextView;
 
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.usecase.FlowDetails;
-import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
-import com.grietenenknapen.sithandroid.game.usecase.UseCase;
+import com.grietenenknapen.sithandroid.game.usecase.type.UseCaseId;
 import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 import com.grietenenknapen.sithandroid.ui.CallbackPresenterFragment;
 import com.grietenenknapen.sithandroid.ui.PresenterFactory;
-import com.grietenenknapen.sithandroid.ui.activities.MainGameFlowActivity;
 import com.grietenenknapen.sithandroid.ui.adapters.PlayerCardAdapter;
 import com.grietenenknapen.sithandroid.ui.helper.ItemOffsetDecoration;
 import com.grietenenknapen.sithandroid.ui.presenters.GameFlowPresenter;
@@ -82,7 +80,7 @@ public class UserCardPeekGameFlowFragment extends CallbackPresenterFragment<User
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         callback.setGameStatus(GameFlowPresenter.STATUS_GAME);
-        final UseCase gameUseCase = callback.getCurrentGameUseCase();
+        final UseCaseId gameUseCase = (UseCaseId) callback.getCurrentGameUseCase();
         getPresenter().setGameUseCase(gameUseCase);
     }
 

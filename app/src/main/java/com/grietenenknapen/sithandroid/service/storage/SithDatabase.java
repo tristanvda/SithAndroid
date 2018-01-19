@@ -1,5 +1,6 @@
 package com.grietenenknapen.sithandroid.service.storage;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -43,7 +44,7 @@ public class SithDatabase extends DatabaseManager<SithDatabase.DbHelper> {
     public static class DbHelper extends SQLiteOpenHelper {
 
         private static final String DATABASE_NAME = "sithDatabase.db";
-        private static final int DATABASE_VERSION = 2;
+        private static final int DATABASE_VERSION = 3;
 
         static {
             // register our models
@@ -92,6 +93,13 @@ public class SithDatabase extends DatabaseManager<SithDatabase.DbHelper> {
             switch (i1) {
                 case 2:
                     cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardGeneralGrievous());
+                    break;
+                case 3:
+                    //Update cardType of Grievous
+                    ContentValues values = new ContentValues(1);
+                    SithCard newSithCard = DatabaseDefaults.getSithCardGeneralGrievous();
+                    values.put("cardType", newSithCard.getCardType());
+                    cupboard().withDatabase(sqLiteDatabase).update(SithCard.class, values, "name =?", newSithCard.getName());
             }
         }
     }

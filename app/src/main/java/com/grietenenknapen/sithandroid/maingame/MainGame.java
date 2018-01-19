@@ -262,6 +262,18 @@ public class MainGame implements Game, Parcelable {
         return typePlayers;
     }
 
+    //TODO: unused, maybe remove?
+    public List<ActivePlayer> findPlayersBySide(@GameSide.Side int side) {
+        final List<ActivePlayer> sidePlayers = new ArrayList<>();
+
+        for (ActivePlayer activePlayer : activePlayers) {
+            if (activePlayer.getSide() == side) {
+                sidePlayers.add(activePlayer);
+            }
+        }
+        return sidePlayers;
+    }
+
     public ActivePlayer getCurrentKilledPlayer() {
         if (deathList.size() > 0) {
             return getActivePlayer(deathList.get(0));
@@ -270,41 +282,34 @@ public class MainGame implements Game, Parcelable {
         }
     }
 
+    public boolean isLover(ActivePlayer activePlayer) {
+        return lovers != null
+                && (lovers.first == activePlayer.getPlayerId()
+                || lovers.second == activePlayer.getPlayerId());
+    }
+
     private boolean checkGameOver() {
-        int jediSideCount = 0;
-        int sithSideCount = 0;
-        int aliveCount = 0;
+        ActivePlayer firstAlivePlayer = null;
+        boolean gameOver = true;
 
         for (ActivePlayer activePlayer : activePlayers) {
             if (!activePlayer.isAlive()) {
                 continue;
             }
-            aliveCount++;
 
-            if (activePlayer.getSide() == GameSide.SITH) {
-                sithSideCount++;
-            } else {
-                jediSideCount++;
+            if (firstAlivePlayer == null) {
+                firstAlivePlayer = activePlayer;
+            } else if (firstAlivePlayer.getTeam() != activePlayer.getTeam()) {
+                gameOver = false;
+                break;
             }
         }
 
-        if (lovers != null
-                && getActivePlayer(lovers.first).isAlive()
-                && getActivePlayer(lovers.second).isAlive()
-                && aliveCount == 2) {
-
-            setWinningTeam(GameTeam.LOVERS);
-            return true;
-        } else {
-            if (jediSideCount == 0) {
-                setWinningTeam(GameTeam.SITH);
-                return true;
-            } else if (sithSideCount == 0) {
-                setWinningTeam(GameTeam.JEDI);
-                return true;
-            }
-            return false;
+        if (gameOver && firstAlivePlayer != null) {
+            setWinningTeam(firstAlivePlayer.getTeam());
         }
+
+        return gameOver;
     }
 
     @GameTeam.Team

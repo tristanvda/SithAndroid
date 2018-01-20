@@ -23,7 +23,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         app:layout_constraintBottom_toTopOf="@+id/refreshButton"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -33,17 +33,18 @@
         android:id="@+id/refreshButton"
         android:layout_width="@dimen/button_main_size"
         android:layout_height="@dimen/button_main_size"
+        android:layout_marginBottom="@dimen/margin_default"
         android:background="@drawable/button_circle_background"
         android:src="@drawable/ic_shuffle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/closeButton"/>
 
-
     <ImageButton
         android:id="@+id/closeButton"
         android:layout_width="@dimen/button_main_size"
         android:layout_height="@dimen/button_main_size"
+        android:layout_marginBottom="@dimen/margin_default"
         android:background="@drawable/button_circle_background"
         android:src="@drawable/ic_close"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -1,5 +1,6 @@
 package com.grietenenknapen.sithandroid.ui.fragments;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.ui.CallbackFragment;
+import com.grietenenknapen.sithandroid.util.FontCache;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,6 +56,9 @@ public class ClientErrorFragment extends CallbackFragment<ClientErrorFragment.Ca
         if (getArguments() == null) {
             return;
         }
+
+        Typeface starWars = FontCache.get("fonts/Starjedi.ttf", getContext());
+        errorMessage.setTypeface(starWars);
 
         if (getArguments().containsKey(KEY_TITLE)) {
             errorTitle.setText(getArguments().getString(KEY_TITLE));

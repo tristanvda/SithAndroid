@@ -119,7 +119,7 @@ public class MainGameFlowActivity extends PresenterActivity<GameFlowPresenter, G
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        SithMusicPlayer.stopPlaying();
+        SithMusicPlayer.getInstance().stopPlaying();
     }
 
     @Override
@@ -362,12 +362,12 @@ public class MainGameFlowActivity extends PresenterActivity<GameFlowPresenter, G
 
     @Override
     public void playMusic(final int musicType) {
-        SithMusicPlayer.playMusic(this, musicType);
+        SithMusicPlayer.getInstance().playMusic(this, musicType);
     }
 
     @Override
     public void stopPlayingMusic() {
-        SithMusicPlayer.stopPlaying();
+        SithMusicPlayer.getInstance().stopPlaying();
     }
 
     @Override

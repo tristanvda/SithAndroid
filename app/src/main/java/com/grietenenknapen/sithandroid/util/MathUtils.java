@@ -16,6 +16,17 @@ public final class MathUtils {
         return random;
     }
 
+    public static int getRandomWithExclusion(int start, int end, int... exclude) {
+        int random = start + getRandom().nextInt(end - start + 1 - exclude.length);
+        for (int ex : exclude) {
+            if (random < ex) {
+                break;
+            }
+            random++;
+        }
+        return random;
+    }
+
     public static int generateRandomInteger(final int min, final int max) {
         final Random r = getRandom();
         return r.nextInt((max - min) + 1) + min;

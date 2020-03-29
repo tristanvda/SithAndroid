@@ -72,6 +72,7 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
     private GameFlowManager<MainGameFlowCallBack> gameFlowManager;
     private List<Pair<Integer, Integer>> randomResourceList;
     private Queue<Integer> speakStack;
+
     @Nullable
     private WifiDirectGameServerManager wifiDirectGameServerManager;
     private boolean playRandomComments;

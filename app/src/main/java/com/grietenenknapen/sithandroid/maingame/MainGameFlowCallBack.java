@@ -23,6 +23,8 @@ public interface MainGameFlowCallBack extends GameFlowCallBack {
 
     void requestUserPlayerSelection(List<ActivePlayer> activePlayers);
 
+    void requestUsersPlayerSelection(List<ActivePlayer> activePlayers, int titleResId, int min, int max);
+
     void requestUserCardSelection(List<SithCard> availableSithCards);
 
     void requestUserCardPeek(List<ActivePlayer> players, long delay);
@@ -41,6 +43,8 @@ public interface MainGameFlowCallBack extends GameFlowCallBack {
 
     void stopPlayingMusic();
 
-    void sendSMS(int stringResId, String number);
+    void sendSMS(String number, int stringResId);
+
+    void sendSMS(String number, int stringResId, Object... formatArgs);
 
 }

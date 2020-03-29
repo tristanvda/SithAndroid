@@ -2,6 +2,7 @@ package com.grietenenknapen.sithandroid.ui.activities;
 
 import android.content.Context;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
@@ -40,6 +41,7 @@ import com.grietenenknapen.sithandroid.ui.fragments.gameflow.DelayGameFlowFragme
 import com.grietenenknapen.sithandroid.ui.fragments.gameflow.GameFlowActivity;
 import com.grietenenknapen.sithandroid.ui.fragments.gameflow.SelectPlayerPairGameFlowFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.gameflow.SelectPlayerSingleGameFlowFragment;
+import com.grietenenknapen.sithandroid.ui.fragments.gameflow.SelectPlayersGameFlowFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.gameflow.ShowPlayerYesNoGameFlowFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.gameflow.SithCardSelectGameFlowFragment;
 import com.grietenenknapen.sithandroid.ui.fragments.gameflow.SpeakGameFlowFragment;
@@ -147,11 +149,18 @@ public class MainGameFlowActivity extends PresenterActivity<GameFlowPresenter, G
             mainGame = null;
         }
 
+        final WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        final PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
+
+        PackageManager pm = getPackageManager();
+        WifiDirectGameServerManager gameServerManager = null;
+
+        if (pm.hasSystemFeature(PackageManager.FEATURE_WIFI_DIRECT) && wifiManager != null && powerManager != null) {
+            gameServerManager = new WifiDirectGameServerManagerImpl(this,
+                    (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE), wifiManager, powerManager);
+        }
+
         final ResourceProvider resourceProvider = new ResourceProvider(getApplicationContext());
-        final WifiDirectGameServerManager gameServerManager = new WifiDirectGameServerManagerImpl(this,
-                (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE),
-                (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE),
-                (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE));
 
         if (Settings.isRandomComments(this)) {
             return new GameFlowPresenterFactory(((SithApplication) getApplicationContext()).getPlayerService(),
@@ -170,7 +179,7 @@ public class MainGameFlowActivity extends PresenterActivity<GameFlowPresenter, G
 
     private int getFragmentAnimation() {
         final Fragment oldFragment = getSupportFragmentManager().findFragmentById(R.id.container);
-        if (oldFragment != null && oldFragment instanceof DayFragment) {
+        if (oldFragment instanceof DayFragment) {
             return FragmentUtils.Animation.ANIMATE_SLIDE_DOWN;
         } else {
             return FragmentUtils.Animation.ANIMATE_SLIDE_LEFT;
@@ -204,6 +213,13 @@ public class MainGameFlowActivity extends PresenterActivity<GameFlowPresenter, G
     public void goToUserPlayerSelectionScreen(final List<ActivePlayer> activePlayers, final FlowDetails flowDetails) {
         FragmentUtils.handleGameFlowFragmentTransaction(this, SelectPlayerSingleGameFlowFragment.class, R.id.container,
                 SelectPlayerSingleGameFlowFragment.createStartBundle(flowDetails, activePlayers), flowDetails, getFragmentAnimation());
+    }
+
+    @Override
+    public void goToUsersPlayerSelectionScreen(final List<ActivePlayer> activePlayers, final int titleResId, final int min, final int max, final FlowDetails flowDetails) {
+        FragmentUtils.handleGameFlowFragmentTransaction(this, SelectPlayersGameFlowFragment.class, R.id.container,
+                SelectPlayersGameFlowFragment.createStartBundleActive(flowDetails, activePlayers, getString(titleResId), min, max),
+                flowDetails, getFragmentAnimation());
     }
 
     @Override
@@ -339,6 +355,16 @@ public class MainGameFlowActivity extends PresenterActivity<GameFlowPresenter, G
     }
 
     @Override
+    public void hideWifiServerState() {
+        final Fragment currentFrag = getSupportFragmentManager().findFragmentById(R.id.container);
+        if (FragmentUtils.validateFragment(currentFrag)
+                && currentFrag instanceof DayFragment) {
+
+            ((DayFragment) currentFrag).updateWifiServerState(false, false);
+        }
+    }
+
+    @Override
     public void closeScreen() {
         this.finish();
     }
@@ -371,13 +397,18 @@ public class MainGameFlowActivity extends PresenterActivity<GameFlowPresenter, G
     }
 
     @Override
-    public void sendSMS(final int stringResId, final String number) {
-        SMSUtils.sendSMS(this, getString(stringResId), number);
+    public void sendSMS(final String number, final int stringResId) {
+        SMSUtils.sendSMS(this, number, getString(stringResId));
     }
 
     @Override
-    public void sendSMS(final String text, final String number) {
-        SMSUtils.sendSMS(this, text, number);
+    public void sendSMS(final String number, final String text) {
+        SMSUtils.sendSMS(this, number, text);
+    }
+
+    @Override
+    public void sendSMS(final String number, final int stringResId, final Object... formatArgs) {
+        SMSUtils.sendSMS(this, number, getString(stringResId, formatArgs));
     }
 
     private List<Pair<Integer, Integer>> getRandomResourceList() {

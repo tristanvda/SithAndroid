@@ -35,5 +35,10 @@
     <color name="card_the_emperor">@color/card_red</color>
     <color name="card_yoda">@color/card_green</color>
     <color name="card_general_grievous">@color/card_red</color>
+    <color name="card_count_dooku">@color/card_red</color>
+    <color name="card_jar_jar_binks">@color/card_blue</color>
+    <color name="card_galen_erso">@color/card_green</color>
+    <color name="card_r2d2">@color/card_green</color>
+    <color name="card_rancor">@color/grey</color>
 
 </resources>

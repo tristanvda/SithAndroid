@@ -41,10 +41,10 @@ import java.util.Map;
 import java.util.Queue;
 
 /*
-* Wifi direct server responsible for handling clients
-* This server will accept client connections and offer Roles
-* When a client selects
-*
+ * Wifi direct server responsible for handling clients
+ * This server will accept client connections and offer Roles
+ * When a client selects
+ *
  */
 public class WifiDirectGameServerManagerImpl implements WifiDirectGameServerManager {
     private static final String TAG = WifiDirectGameServerManager.class.getName();
@@ -52,13 +52,14 @@ public class WifiDirectGameServerManagerImpl implements WifiDirectGameServerMana
     private final Map<Long, Client> playerIdsClients;
     private final WifiP2pManager manager;
     private final WifiManager wifiManager;
-    private final WifiP2pManager.Channel channel;
+    private WifiP2pManager.Channel channel;
     private final PowerManager.WakeLock wakeLock;
     private final WifiManager.WifiLock wifiLock;
 
     private Game game;
     private GroupOwnerSocketRunner socketRunner;
     private WifiGameServerListener wifiGameServerListener;
+    private Context applicationContext;
     private WifiDirectBroadcastReceiver receiver = null;
     private WifiServerStartListener tempStartServerListener = null;
     private boolean groupCreationStarted = false;
@@ -80,8 +81,8 @@ public class WifiDirectGameServerManagerImpl implements WifiDirectGameServerMana
 
         this.manager = manager;
         this.wifiManager = wifiManager;
+        this.applicationContext = context.getApplicationContext();
         this.playerIdsClients = Collections.synchronizedMap(new HashMap<Long, Client>());
-        this.channel = manager.initialize(context.getApplicationContext(), Looper.getMainLooper(), null);
         this.wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
         this.wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
     }
@@ -89,6 +90,7 @@ public class WifiDirectGameServerManagerImpl implements WifiDirectGameServerMana
     @Override
     public void createAndStartHostingServer(@Nullable final WifiServerStartListener listener) {
         //Stop server first
+        this.channel = manager.initialize(applicationContext.getApplicationContext(), Looper.getMainLooper(), null);
         stoppingServer = false;
         stopAndDestroyHostingServer();
         this.tempStartServerListener = listener;
@@ -125,7 +127,6 @@ public class WifiDirectGameServerManagerImpl implements WifiDirectGameServerMana
         record.put(WifiDirectGameServerManager.INFO_DEVICE_NAME, android.os.Build.MODEL);
         record.put(WifiDirectGameServerManager.INFO_AVAILABLE, WifiDirectGameServerManager.INFO_AVAILABLE_VISIBLE);
         record.put(WifiDirectGameServerManager.INFO_SERVICE_NAME, WifiDirectGameServerManager.SERVICE_NAME);
-        record.put(WifiDirectGameServerManager.INFO_AVAILABLE, WifiDirectGameServerManager.INFO_AVAILABLE_VISIBLE);
         record.put(WifiDirectGameServerManager.INFO_NETWORK_NAME, networkName);
         record.put(WifiDirectGameServerManager.INFO_PASS_PHRASE, passPhrase);
         record.put(WifiDirectGameServerManager.INFO_DEVICE_ADDRESS, address);
@@ -362,9 +363,11 @@ public class WifiDirectGameServerManagerImpl implements WifiDirectGameServerMana
         tempStartServerListener = null;
         stopAndDestroySocketRunner();
 
-        manager.clearLocalServices(channel, null);
-        manager.removeGroup(channel, null);
-        manager.cancelConnect(channel, null);
+        if (channel != null) {
+            manager.clearLocalServices(channel, null);
+            manager.removeGroup(channel, null);
+            manager.cancelConnect(channel, null);
+        }
 
         //This is to reconnect
         wifiManager.disconnect();

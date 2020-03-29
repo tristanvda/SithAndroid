@@ -47,6 +47,11 @@ public class ServerListPresenter extends Presenter<ServerListPresenter.View> {
 
     @Override
     protected void onViewBound() {
+        if (manager == null) {
+            getView().showEmptyMessage(R.string.server_failed_p2p_not_supported);
+            return;
+        }
+
         if (!wifiP2PEnabled) {
             getView().showEmptyMessage(R.string.p2p_disabled_feature);
             return;
@@ -98,6 +103,9 @@ public class ServerListPresenter extends Presenter<ServerListPresenter.View> {
     }
 
     private void restartServiceDiscovery(final boolean boost) {
+        if (manager == null) {
+            return;
+        }
         if (boost || services.isEmpty()) {
             getView().showLoading(boost);
         }
@@ -203,6 +211,9 @@ public class ServerListPresenter extends Presenter<ServerListPresenter.View> {
     }
 
     private void clearServiceDiscovery() {
+        if (manager == null) {
+            return;
+        }
         intervalHandler.removeCallbacksAndMessages(null);
 
         services.clear();

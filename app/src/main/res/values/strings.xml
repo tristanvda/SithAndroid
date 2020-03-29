@@ -40,6 +40,8 @@
     <string name="loading">Loading…</string>
     <string name="client_identify">Who are you?</string>
     <string name="your_role">This is your role %1s!</string>
+    <string name="your_new_role">This is your new role %1s!</string>
+    <string name="r2d2_select_players">Select 3 players</string>
 
     <!-- Wifi network strings -->
     <string name="creation_server_group_failed">Creation Server failed due to mysterious reasons (During creation group)..</string>
@@ -47,6 +49,7 @@
     <string name="creation_server_service_failed">Creation Server failed due to mysterious reasons (During creation service)..</string>
     <string name="server_failed">The server failed and got stopped. Start the server again to re-host</string>
     <string name="server_failed_p2p">The server stopped, because p2p got disabled</string>
+    <string name="server_failed_p2p_not_supported">P2p is not supported on this device</string>
     <string name="service_discovery_failed">Unable to discover Sith Services</string>
     <string name="discovering_services">Discovering Sith Services</string>
     <string name="p2p_disabled_feature">Enable P2P to use this feature</string>
@@ -78,10 +81,14 @@
 
     <!-- Teams -->
     <string name="team_sith">Sith</string>
+    <string name="team_galen_erso">Galen Erso</string>
     <string name="team_jedi">Jedi</string>
     <string name="team_lovers">Lovers</string>
-    <string name="winning_team_1">The</string>
-    <string name="winning_team_2">have won the game!</string>
+
+    <string name="team_sith_winning_text">The <b>Sith</b> have won the game!</string>
+    <string name="team_jedi_winning_text">The <b>Jedi</b> have won the game!</string>
+    <string name="team_lovers_winning_text">The <b>Lovers</b> have won the game!</string>
+    <string name="team_galen_erso_winning_text"><b>Galen Erso</b> has won the game!</string>
 
     <!-- Menu items -->
     <string name="menu_settings">Settings</string>
@@ -104,6 +111,8 @@
     <string name="basis12_boba_fett_rocketlauncher">Gebruikt hij zijn rocket launcher?</string>
     <string name="basis13_boba_fett_gaat_terug_slapen">Boba Fett gaat terug slapen en de Jedi council ontwaakt.</string>
     <string name="basis14_kylo_ren_ontwaakt">Kylo Ren ontwaakt deze nacht, hij heeft definitief voor de Dark Side gekozen en speelt nu dus mee met de Sith.</string>
+    <string name="basis15_r2d2_ontwaakt">R2D2 wordt nu wakker, hij mag de rollen van drie personen omwisselen.</string>
+    <string name="basis15_r2d2_mag_terug_gaan_slapen">R2D2 mag terug gaan slapen.</string>
 
     <!-- Role descriptions -->
     <string name="bb8_description">BB8 brings people together and makes them fall in love. You wake up the first night and bind two players that will love each other for eternity.</string>

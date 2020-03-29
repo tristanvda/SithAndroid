@@ -11,6 +11,7 @@ import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 import com.grietenenknapen.sithandroid.model.game.GameCardType;
 import com.grietenenknapen.sithandroid.model.game.GameSide;
 import com.grietenenknapen.sithandroid.model.game.GameTeam;
+import com.grietenenknapen.sithandroid.util.MathUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class MainGame implements Game, Parcelable {
     private long gameStartTimeStamp;
     private List<ActivePlayer> activePlayers;
     private List<Long> deathList;
+    private List<Long> switchRolesList;
     private Pair<Long, Long> lovers;
     private boolean bobaMedPackUsed;
     private boolean bobaRocketUsed;
@@ -39,6 +41,7 @@ public class MainGame implements Game, Parcelable {
         gameStartTimeStamp = System.currentTimeMillis();
         dayCycle = DayCycle.CYCLE_DAY;
         deathList = new ArrayList<>();
+        switchRolesList = new ArrayList<>();
     }
 
     public FlowDetails getFlowDetails() {
@@ -87,6 +90,17 @@ public class MainGame implements Game, Parcelable {
         return activeDeathList;
     }
 
+    public List<ActivePlayer> getSwitchRolesList() {
+        final List<ActivePlayer> activeSwitchRoleList = new ArrayList<>();
+
+        for (Long switchRolePlayerId : this.switchRolesList) {
+            activeSwitchRoleList.add(getActivePlayer(switchRolePlayerId));
+        }
+        return activeSwitchRoleList;
+    }
+
+
+
     public void setLovers(Pair<ActivePlayer, ActivePlayer> lovers) {
         this.lovers = new Pair<>(lovers.first.getPlayerId(), lovers.second.getPlayerId());
     }
@@ -119,6 +133,7 @@ public class MainGame implements Game, Parcelable {
         nextRound();
         dayCycle = DayCycle.CYCLE_NIGHT;
         deathList = new ArrayList<>();
+        switchRolesList = new ArrayList<>();
     }
 
     @Override
@@ -129,6 +144,7 @@ public class MainGame implements Game, Parcelable {
         dayCycle = DayCycle.CYCLE_DAY;
 
         updateDeathListWithLovers();
+        switchRoles(switchRolesList);
 
         for (Long deathPlayerId : deathList) {
             getActivePlayer(deathPlayerId).setAlive(false);
@@ -144,6 +160,32 @@ public class MainGame implements Game, Parcelable {
             }
         }
         gameOver = checkGameOver();
+    }
+
+    private void switchRoles(List<Long> playerIds) {
+        final int direction = MathUtils.generateRandomInteger(0, 1); //shift left, shift right
+
+        final List<ActivePlayer> players = new ArrayList<>();
+
+        for (Long id : playerIds) {
+            final ActivePlayer activePlayer = getActivePlayer(id);
+            if (activePlayer != null) {
+                players.add(activePlayer);
+            }
+        }
+
+        //TODO: use seperate list for the roles in original position
+
+        for (int i = 0; i < players.size(); i++) {
+            final ActivePlayer player = players.get(i);
+            if (i == players.size() - 1 && direction == 0) {
+                player.setSithCard(players.get(0).getSithCard());
+            } else if (i == 0 && direction == 1) {
+                player.setSithCard(players.get(players.size() - 1).getSithCard());
+            } else {
+                player.setSithCard(players.get(direction == 0 ? i + 1 : i - 1).getSithCard());
+            }
+        }
     }
 
     private void updateDeathListWithLovers() {
@@ -204,6 +246,11 @@ public class MainGame implements Game, Parcelable {
         }
     }
 
+    public void setSwitchRolesList(List<Long> ids) {
+        switchRolesList.clear();
+        switchRolesList.addAll(ids);
+    }
+
     public void addToDeathList(long playerId) {
         deathList.add(playerId);
     }
@@ -262,6 +309,17 @@ public class MainGame implements Game, Parcelable {
         return typePlayers;
     }
 
+    public List<ActivePlayer> findPlayersByTeam(@GameTeam.Team int team) {
+        final List<ActivePlayer> teamPlayers = new ArrayList<>();
+
+        for (ActivePlayer activePlayer : activePlayers) {
+            if (activePlayer.getTeam() == team) {
+                teamPlayers.add(activePlayer);
+            }
+        }
+        return teamPlayers;
+    }
+
     //TODO: unused, maybe remove?
     public List<ActivePlayer> findPlayersBySide(@GameSide.Side int side) {
         final List<ActivePlayer> sidePlayers = new ArrayList<>();
@@ -292,16 +350,26 @@ public class MainGame implements Game, Parcelable {
         ActivePlayer firstAlivePlayer = null;
         boolean gameOver = true;
 
-        for (ActivePlayer activePlayer : activePlayers) {
-            if (!activePlayer.isAlive()) {
-                continue;
-            }
+        List<ActivePlayer> galenErsoList = findPlayersByTeam(GameTeam.GALEN_ERSO);
 
-            if (firstAlivePlayer == null) {
-                firstAlivePlayer = activePlayer;
-            } else if (firstAlivePlayer.getTeam() != activePlayer.getTeam()) {
-                gameOver = false;
-                break;
+        if (!galenErsoList.isEmpty()
+                && !galenErsoList.get(0).isAlive()
+                && getCurrentRound() == 1
+                && !isRoundActive()) {
+
+            firstAlivePlayer = galenErsoList.get(0);
+        } else {
+            for (ActivePlayer activePlayer : activePlayers) {
+                if (!activePlayer.isAlive()) {
+                    continue;
+                }
+
+                if (firstAlivePlayer == null) {
+                    firstAlivePlayer = activePlayer;
+                } else if (firstAlivePlayer.getTeam() != activePlayer.getTeam()) {
+                    gameOver = false;
+                    break;
+                }
             }
         }
 
@@ -334,6 +402,7 @@ public class MainGame implements Game, Parcelable {
         dest.writeLong(this.gameStartTimeStamp);
         dest.writeTypedList(this.activePlayers);
         dest.writeList(this.deathList);
+        dest.writeList(this.switchRolesList);
         dest.writeLong(lovers != null ? lovers.first : -1);
         dest.writeLong(lovers != null ? lovers.second : -1);
         dest.writeByte(this.bobaMedPackUsed ? (byte) 1 : (byte) 0);
@@ -352,6 +421,8 @@ public class MainGame implements Game, Parcelable {
         this.activePlayers = in.createTypedArrayList(ActivePlayer.CREATOR);
         this.deathList = new ArrayList<>();
         in.readList(this.deathList, Long.class.getClassLoader());
+        this.switchRolesList = new ArrayList<>();
+        in.readList(this.switchRolesList, Long.class.getClassLoader());
         final long lover1 = in.readLong();
         final long lover2 = in.readLong();
         if (lover1 != -1 && lover2 != -1) {

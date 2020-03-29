@@ -9,6 +9,7 @@ import com.grietenenknapen.sithandroid.maingame.usecases.JediUseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.KyloRenUseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.MazKanataUseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.PeepingFinnUseCase;
+import com.grietenenknapen.sithandroid.maingame.usecases.R2d2UseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.SithUseCase;
 import com.grietenenknapen.sithandroid.model.game.ActivePlayer;
 import com.grietenenknapen.sithandroid.model.game.GameCardType;
@@ -48,6 +49,8 @@ public final class MainGameUseCaseHelper {
             return cardType == GameCardType.PEEPING_FINN;
         } else if (SithUseCase.class.equals(useCaseClass)) {
             return side == GameSide.SITH;
+        } else if (R2d2UseCase.class.equals(useCaseClass)){
+            return cardType == GameCardType.R2D2;
         }
 
         return false;

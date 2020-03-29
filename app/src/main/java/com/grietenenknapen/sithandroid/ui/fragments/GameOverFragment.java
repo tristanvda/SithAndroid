@@ -1,13 +1,8 @@
 package com.grietenenknapen.sithandroid.ui.fragments;
 
-import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,31 +92,23 @@ public class GameOverFragment extends CallbackFragment<GameOverFragment.Callback
 
         gameOverWinners.setText(stringBuilder.toString());
 
-        String winTeamText = getString(R.string.team_sith);
+        CharSequence winTeamText = getString(R.string.team_sith);
 
         switch (winningTeam) {
             case GameTeam.JEDI:
-                winTeamText = getString(R.string.team_jedi);
+                winTeamText = getText(R.string.team_jedi_winning_text);
                 break;
             case GameTeam.LOVERS:
-                winTeamText = getString(R.string.team_lovers);
+                winTeamText = getText(R.string.team_lovers_winning_text);
                 break;
             case GameTeam.SITH:
-                winTeamText = getString(R.string.team_sith);
+                winTeamText = getText(R.string.team_sith_winning_text);
                 break;
+            case GameTeam.GALEN_ERSO:
+                winTeamText = getText(R.string.team_galen_erso_winning_text);
         }
 
-        SpannableStringBuilder builder = new SpannableStringBuilder();
-        builder.append(getString(R.string.winning_team_1));
-        builder.append(" ");
-        final int start = builder.length();
-        builder.append(winTeamText);
-        builder.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), start, start + winTeamText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        builder.append(" ");
-
-        builder.append(getString(R.string.winning_team_2));
-
-        gameOverWinningTeamText.setText(builder);
+        gameOverWinningTeamText.setText(winTeamText);
     }
 
     @OnClick(R.id.nextButton)

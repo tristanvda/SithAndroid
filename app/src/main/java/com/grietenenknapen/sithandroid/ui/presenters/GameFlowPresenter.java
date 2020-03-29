@@ -1,6 +1,7 @@
 package com.grietenenknapen.sithandroid.ui.presenters;
 
 import android.support.annotation.IntDef;
+import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 import android.text.TextUtils;
 
@@ -71,6 +72,7 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
     private GameFlowManager<MainGameFlowCallBack> gameFlowManager;
     private List<Pair<Integer, Integer>> randomResourceList;
     private Queue<Integer> speakStack;
+    @Nullable
     private WifiDirectGameServerManager wifiDirectGameServerManager;
     private boolean playRandomComments;
     private boolean wifiP2PEnabled = false;
@@ -106,19 +108,22 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
                       final boolean playRandomComments) {
 
         this.playRandomComments = playRandomComments;
-        wifiDirectGameServerManager.setClientResponseListener(new WifiDirectGameServerManager.WifiGameServerListener() {
-            @Override
-            public void onClientResponse(final WifiPackage wifiPackage) {
-                handleNewWifiPackage(wifiPackage);
-            }
 
-            @Override
-            public void onServerError(final int messageRes) {
-                if (getView() != null) {
-                    getView().showError(messageRes);
+        if (wifiDirectGameServerManager != null) {
+            wifiDirectGameServerManager.setClientResponseListener(new WifiDirectGameServerManager.WifiGameServerListener() {
+                @Override
+                public void onClientResponse(final WifiPackage wifiPackage) {
+                    handleNewWifiPackage(wifiPackage);
                 }
-            }
-        });
+
+                @Override
+                public void onServerError(final int messageRes) {
+                    if (getView() != null) {
+                        getView().showError(messageRes);
+                    }
+                }
+            });
+        }
 
         if (mainGame != null) {
             game = mainGame;
@@ -149,14 +154,21 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
 
     @Override
     protected void onViewBound() {
-        getView().updateWifiServerState(wifiP2PEnabled, wifiDirectGameServerManager.isServerRunning());
+        if (wifiDirectGameServerManager != null) {
+            getView().updateWifiServerState(wifiP2PEnabled, wifiDirectGameServerManager.isServerRunning());
+        } else {
+            getView().hideWifiServerState();
+        }
+
         onSpeakDone();
     }
 
     @Override
     protected void onPresenterDestroy() {
         super.onPresenterDestroy();
-        wifiDirectGameServerManager.stopAndDestroyHostingServer();
+        if (wifiDirectGameServerManager != null) {
+            wifiDirectGameServerManager.stopAndDestroyHostingServer();
+        }
     }
 
     private void startOrResumeGame() {
@@ -165,7 +177,9 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
         if (sithCards == null) {
             return;
         }
-        wifiDirectGameServerManager.setGame(game);
+        if (wifiDirectGameServerManager != null) {
+            wifiDirectGameServerManager.setGame(game);
+        }
         if (gameFlowManager == null) {
             if (playRandomComments) {
                 gameFlowManager = new MainGameRandomFlowManager(game, sithCards, randomResourceList);
@@ -174,7 +188,11 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
             }
         }
         if (!gameFlowManager.isAttached()) {
-            gameFlowManager.attach(new MainGameServerCallbackWrapper(this, game, wifiDirectGameServerManager, resourceProvider, gameFlowManager));
+            if (wifiDirectGameServerManager == null) {
+                gameFlowManager.attach(this);
+            } else {
+                gameFlowManager.attach(new MainGameServerCallbackWrapper(this, game, wifiDirectGameServerManager, resourceProvider, gameFlowManager));
+            }
         }
     }
 
@@ -252,15 +270,14 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
         game = new MainGame(activePlayers);
         for (ActivePlayer activePlayer : activePlayers) {
             if (!TextUtils.isEmpty(activePlayer.getTelephoneNumber())) {
-                getView().sendSMS(activePlayer.getSithCard().getName(),
-                        activePlayer.getTelephoneNumber());
+                getView().sendSMS(activePlayer.getTelephoneNumber(), activePlayer.getSithCard().getName());
             }
         }
         startOrResumeGame();
     }
 
     public void onServerButtonClicked() {
-        if (wifiDirectGameServerManager.isServerRunning()) {
+        if (wifiDirectGameServerManager != null && wifiDirectGameServerManager.isServerRunning()) {
             wifiDirectGameServerManager.stopAndDestroyHostingServer();
             getView().updateWifiServerState(wifiP2PEnabled, false);
             return;
@@ -319,12 +336,14 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
     }
 
     public boolean isServerRunning() {
-        return wifiDirectGameServerManager.isServerRunning();
+        return wifiDirectGameServerManager != null && wifiDirectGameServerManager.isServerRunning();
     }
 
     public void setWifiDirectBroadcastReceiver(WifiDirectBroadcastReceiver wifiDirectBroadcastReceiver) {
-        wifiDirectBroadcastReceiver.addWifiDirectReceiver(wifiDirectReceiverListener);
-        wifiDirectGameServerManager.setBroadcastReceiver(wifiDirectBroadcastReceiver);
+        if (wifiDirectGameServerManager != null) {
+            wifiDirectBroadcastReceiver.addWifiDirectReceiver(wifiDirectReceiverListener);
+            wifiDirectGameServerManager.setBroadcastReceiver(wifiDirectBroadcastReceiver);
+        }
     }
 
     public boolean onBackPressed() {
@@ -378,6 +397,11 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
     @Override
     public void requestUserPlayerSelection(final List<ActivePlayer> activePlayers) {
         getView().goToUserPlayerSelectionScreen(activePlayers, game.getFlowDetails());
+    }
+
+    @Override
+    public void requestUsersPlayerSelection(final List<ActivePlayer> activePlayers, final int titleResId, final int min, final int max) {
+        getView().goToUsersPlayerSelectionScreen(activePlayers, titleResId, min, max, game.getFlowDetails());
     }
 
     @Override
@@ -442,8 +466,13 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
     }
 
     @Override
-    public void sendSMS(final int stringResId, String number) {
-        getView().sendSMS(stringResId, number);
+    public void sendSMS(String number, final int stringResId) {
+        getView().sendSMS(number, stringResId);
+    }
+
+    @Override
+    public void sendSMS(final String number, final int stringResId, final Object... formatArgs) {
+        getView().sendSMS(number, stringResId, formatArgs);
     }
 
     public void onSpeakDone() {
@@ -475,7 +504,11 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
     }
 
     private void goToGameOverFragment() {
-        getView().showGameOver(game.getAlivePlayers(), game.getWinningTeam());
+        if (game.getWinningTeam() == GameTeam.GALEN_ERSO) {
+            getView().showGameOver(game.findPlayersByTeam(GameTeam.GALEN_ERSO), game.getWinningTeam());
+        } else {
+            getView().showGameOver(game.getAlivePlayers(), game.getWinningTeam());
+        }
     }
 
     public interface View extends PresenterView {
@@ -487,6 +520,8 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
         void goToPlayerYesNoScreen(ActivePlayer activePlayer, boolean disableYes, int titleResId, FlowDetails flowDetails);
 
         void goToUserPlayerSelectionScreen(List<ActivePlayer> activePlayers, FlowDetails flowDetails);
+
+        void goToUsersPlayerSelectionScreen(List<ActivePlayer> activePlayers, int titleResId, int min, int max, FlowDetails flowDetails);
 
         void goToUserCardSelectionScreen(List<SithCard> availableSithCards, FlowDetails flowDetails);
 
@@ -532,12 +567,16 @@ public class GameFlowPresenter extends Presenter<GameFlowPresenter.View> impleme
 
         void stopPlayingMusic();
 
-        void sendSMS(final int stringResId, String number);
+        void sendSMS(String number, final int stringResId);
 
-        void sendSMS(String text, String number);
+        void sendSMS(String number, String text);
+
+        void sendSMS(final String number, final int stringResId, final Object... formatArgs);
 
         int getRawResourceId(String resourceName);
 
         void updateWifiServerState(boolean wifiP2PEnabled, boolean serverRunning);
+
+        void hideWifiServerState();
     }
 }

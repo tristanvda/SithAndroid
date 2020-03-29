@@ -158,4 +158,59 @@ public class DatabaseDefaultsStandard {
                 .nameResId("general_grievous")
                 .build();
     }
+
+//    public static SithCard getSithCardCountDooku() {
+//        return SithCard.newBuilder()
+//                .cardType(GameCardType.GENERAL_GRIEVOUS)
+//                .name("Count Dooku")
+//                .imageResId("card_count_dooku")
+//                .soundResId("count_dooku")
+//                .colorResId("card_count_dooku")
+//                .nameResId("count_dooku")
+//                .build();
+//    }
+
+    public static SithCard getSithCardJarJarBinks() {
+        return SithCard.newBuilder()
+                .cardType(GameCardType.JAR_JAR_BINKS)
+                .name("Jar Jar Binks")
+                .imageResId("card_jar_jar_binks")
+                .soundResId("jar_jar_binks")
+                .colorResId("card_jar_jar_binks")
+                .nameResId("jar_jar_binks")
+                .build();
+    }
+
+    public static SithCard getSithCardGalenErso() {
+        return SithCard.newBuilder()
+                .cardType(GameCardType.GALEN_ERSO)
+                .name("Galen Erso")
+                .imageResId("card_galen_erso")
+                .soundResId("galen_erso")
+                .colorResId("card_galen_erso")
+                .nameResId("galen_erso")
+                .build();
+    }
+
+//    public static SithCard getSithCardRancor() {
+//        return SithCard.newBuilder()
+//                .cardType(GameCardType.GENERAL_GRIEVOUS)
+//                .name("Rancor")
+//                .imageResId("card_rancor")
+//                .soundResId("rancor")
+//                .colorResId("card_rancor")
+//                .nameResId("rancor")
+//                .build();
+//    }
+
+    public static SithCard getSithCardR2D2() {
+        return SithCard.newBuilder()
+                .cardType(GameCardType.R2D2)
+                .name("R2D2")
+                .imageResId("card_r2d2")
+                .soundResId("r2d2")
+                .colorResId("card_r2d2")
+                .nameResId("r2d2")
+                .build();
+    }
 }

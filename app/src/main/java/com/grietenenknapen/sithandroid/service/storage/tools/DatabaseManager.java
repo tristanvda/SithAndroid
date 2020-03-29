@@ -1,6 +1,5 @@
 package com.grietenenknapen.sithandroid.service.storage.tools;
 
-
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 

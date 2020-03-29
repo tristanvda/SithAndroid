@@ -1,5 +1,7 @@
 package com.grietenenknapen.sithandroid.maingame.multiplayer.server;
 
+import android.support.annotation.Nullable;
+
 import com.grietenenknapen.sithandroid.R;
 import com.grietenenknapen.sithandroid.game.flowmanager.GameFlowManager;
 import com.grietenenknapen.sithandroid.game.usecase.UseCase;
@@ -26,13 +28,14 @@ public class MainGameServerCallbackWrapper implements MainGameFlowCallBack {
 
     private final MainGameFlowCallBack callBack;
     private final MainGame game;
+    @Nullable
     private final WifiDirectGameServerManager serverManager;
     private final ResourceProvider resourceProvider;
     private final GameFlowManager<MainGameFlowCallBack> flowManager;
 
     public MainGameServerCallbackWrapper(final MainGameFlowCallBack callBack,
                                          final MainGame game,
-                                         final WifiDirectGameServerManager serverManager,
+                                         @Nullable final WifiDirectGameServerManager serverManager,
                                          final ResourceProvider resourceProvider,
                                          final GameFlowManager<MainGameFlowCallBack> flowManager) {
 
@@ -88,6 +91,12 @@ public class MainGameServerCallbackWrapper implements MainGameFlowCallBack {
     }
 
     @Override
+    public void requestUsersPlayerSelection(final List<ActivePlayer> activePlayers, final int titleResId, final int min, final int max) {
+        this.callBack.requestUsersPlayerSelection(activePlayers, titleResId, min, max);
+        //TODO: add wifi package for this
+    }
+
+    @Override
     public void requestUserCardSelection(final List<SithCard> availableSithCards) {
         this.callBack.requestUserCardSelection(availableSithCards);
         final WifiPackage wifiPackage = new WifiFlowCommandSelectSithCard(game.getFlowDetails(), availableSithCards);
@@ -137,7 +146,13 @@ public class MainGameServerCallbackWrapper implements MainGameFlowCallBack {
     }
 
     @Override
-    public void sendSMS(final int stringResId, final String number) {
+    public void sendSMS(final String number, final int stringResId, final Object... formatArgs) {
+        this.callBack.sendSMS(number, stringResId, formatArgs);
+        //TODO: sendSMS
+    }
+
+    @Override
+    public void sendSMS(final String number, final int stringResId) {
         ActivePlayer activePlayer = null;
         for (ActivePlayer player : game.getActivePlayers()) {
             if (player.getTelephoneNumber().equals(number)) {
@@ -145,25 +160,26 @@ public class MainGameServerCallbackWrapper implements MainGameFlowCallBack {
             }
         }
         //Only send if player is not connected
-        if (activePlayer == null || !serverManager.isPlayerConnected(activePlayer.getPlayerId())) {
-            this.callBack.sendSMS(stringResId, number);
-        } else {
-            sendWifiPackageToPlayer(new WifiFlowCommandMessage(resourceProvider.getString(stringResId),
-                    WifiFlowCommandMessage.ResponseType.CODE_SUCCESS), activePlayer);
+        if (serverManager != null) {
+            if (activePlayer == null || !serverManager.isPlayerConnected(activePlayer.getPlayerId())) {
+                this.callBack.sendSMS(number, stringResId);
+            } else {
+                sendWifiPackageToPlayer(new WifiFlowCommandMessage(resourceProvider.getString(stringResId),
+                        WifiFlowCommandMessage.ResponseType.CODE_SUCCESS), activePlayer);
+            }
         }
     }
 
     private void sendWifiPackageToPlayer(final WifiPackage wifiPackage, final ActivePlayer activePlayer) {
-        if (!serverManager.isServerRunning()) {
+        if (serverManager == null || !serverManager.isServerRunning()) {
             return;
         }
 
         serverManager.sendWifiFlowPackageToPlayer(wifiPackage, activePlayer.getPlayerId());
-
     }
 
     private void sendWifiPackageForUseCase(final WifiPackage wifiPackage, final UseCase gameUseCase) {
-        if (!serverManager.isServerRunning()) {
+        if (serverManager == null || !serverManager.isServerRunning()) {
             return;
         }
         for (ActivePlayer activePlayer : game.getAlivePlayers()) {
@@ -176,7 +192,7 @@ public class MainGameServerCallbackWrapper implements MainGameFlowCallBack {
     }
 
     private void sendUserRoleToAllPlayers() {
-        if (!serverManager.isServerRunning()) {
+        if (serverManager == null || !serverManager.isServerRunning()) {
             return;
         }
         for (ActivePlayer activePlayer : game.getActivePlayers()) {
@@ -185,7 +201,7 @@ public class MainGameServerCallbackWrapper implements MainGameFlowCallBack {
     }
 
     private void sendGameOverToAllPlayers() {
-        if (!serverManager.isServerRunning()) {
+        if (serverManager == null || !serverManager.isServerRunning()) {
             return;
         }
         for (ActivePlayer activePlayer : game.getActivePlayers()) {

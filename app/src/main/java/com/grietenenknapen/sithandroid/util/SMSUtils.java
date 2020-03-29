@@ -8,7 +8,7 @@ import com.grietenenknapen.sithandroid.application.Settings;
 
 public class SMSUtils {
 
-    public static void sendSMS(Context context, final String text, final String number) {
+    public static void sendSMS(Context context, final String number, final String text) {
 
         if (!Settings.isSmsEnabled(context) || TextUtils.isEmpty(number)) {
             return;

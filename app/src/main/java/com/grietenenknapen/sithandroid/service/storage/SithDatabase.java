@@ -78,6 +78,9 @@ public class SithDatabase extends DatabaseManager<SithDatabase.DbHelper> {
             cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardRey());
             cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardTheEmperor());
             cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardGeneralGrievous());
+            //cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardR2D2());
+            cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardJarJarBinks());
+            cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardGalenErso());
 
             List<Player> defaultPlayers = DatabaseDefaults.generateBros();
 
@@ -100,6 +103,10 @@ public class SithDatabase extends DatabaseManager<SithDatabase.DbHelper> {
                     SithCard newSithCard = DatabaseDefaults.getSithCardGeneralGrievous();
                     values.put("cardType", newSithCard.getCardType());
                     cupboard().withDatabase(sqLiteDatabase).update(SithCard.class, values, "name =?", newSithCard.getName());
+                case 4:
+                   // cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardR2D2());
+                    cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardJarJarBinks());
+                    cupboard().withDatabase(sqLiteDatabase).put(DatabaseDefaults.getSithCardGalenErso());
             }
         }
     }

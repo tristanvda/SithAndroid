@@ -2,6 +2,7 @@ package com.grietenenknapen.sithandroid.ui.fragments;
 
 import android.content.Context;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -112,9 +113,16 @@ public class ServerListFragment extends CallbackPresenterFragment<ServerListPres
     @Override
     protected PresenterFactory<ServerListPresenter> getPresenterFactory() {
         final Context appContext = getContext().getApplicationContext();
-        WifiP2pManager manager = (WifiP2pManager) appContext.getSystemService(Context.WIFI_P2P_SERVICE);
-        WifiP2pManager.Channel channel = manager.initialize(appContext, getMainLooper(), null);
-        return new ServerListFragmentFactory(manager, channel);
+        PackageManager pm = getContext().getPackageManager();
+
+        if (pm.hasSystemFeature(PackageManager.FEATURE_WIFI_DIRECT)) {
+            WifiP2pManager manager = (WifiP2pManager) appContext.getSystemService(Context.WIFI_P2P_SERVICE);
+            if (manager != null) {
+                WifiP2pManager.Channel channel = manager.initialize(appContext, getMainLooper(), null);
+                return new ServerListFragmentFactory(manager, channel);
+            }
+        }
+        return new ServerListFragmentFactory(null, null);
     }
 
     @Override

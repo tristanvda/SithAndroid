@@ -8,6 +8,7 @@ import com.grietenenknapen.sithandroid.game.flowmanager.GameFlowManager;
 import com.grietenenknapen.sithandroid.game.usecase.GameUseCase;
 import com.grietenenknapen.sithandroid.game.usecase.UseCase;
 import com.grietenenknapen.sithandroid.game.usecase.type.UseCaseId;
+import com.grietenenknapen.sithandroid.game.usecase.type.UseCaseIds;
 import com.grietenenknapen.sithandroid.game.usecase.type.UseCasePairId;
 import com.grietenenknapen.sithandroid.game.usecase.type.UseCaseYesNo;
 import com.grietenenknapen.sithandroid.maingame.usecases.BB8UseCase;
@@ -19,6 +20,7 @@ import com.grietenenknapen.sithandroid.maingame.usecases.JediUseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.KyloRenUseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.MazKanataUseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.PeepingFinnUseCase;
+import com.grietenenknapen.sithandroid.maingame.usecases.R2d2UseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.SithUseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.SkipUseCase;
 import com.grietenenknapen.sithandroid.maingame.usecases.UseCaseCard;
@@ -40,9 +42,10 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
         MazKanataUseCase.CallBack,
         SithUseCase.CallBack,
         KyloRenUseCase.CallBack,
-        IntroUseCase.CallBack {
+        IntroUseCase.CallBack,
+        R2d2UseCase.CallBack {
 
-    private static final int TURN_COUNT = 10;
+    private static final int TURN_COUNT = 11;
     private static final int DELAY_PEAK = 3 * 1000;
 
     private static final int RAW_SOUND_BEHALVE = R.raw.behalve;
@@ -68,22 +71,25 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
             case 3:
                 return new BB8UseCase(this, CardOfUseCaseIsActive(BB8UseCase.class), CardOfUseCaseIsInGameAndKilled(BB8UseCase.class));
             case 4:
-                return new MazKanataUseCase(this, CardOfUseCaseIsActive(MazKanataUseCase.class), CardOfUseCaseIsInGameAndKilled(MazKanataUseCase.class));
+                return new SkipUseCase(this);
+                //return new R2d2UseCase(this, CardOfUseCaseIsActive(R2d2UseCase.class), CardOfUseCaseIsInGameAndKilled(R2d2UseCase.class));
             case 5:
-                return new KyloRenUseCase(this, CardOfUseCaseIsActive(KyloRenUseCase.class), CardOfUseCaseIsInGameAndKilled(KyloRenUseCase.class));
+                return new MazKanataUseCase(this, CardOfUseCaseIsActive(MazKanataUseCase.class), CardOfUseCaseIsInGameAndKilled(MazKanataUseCase.class));
             case 6:
+                return new KyloRenUseCase(this, CardOfUseCaseIsActive(KyloRenUseCase.class), CardOfUseCaseIsInGameAndKilled(KyloRenUseCase.class));
+            case 7:
                 if (mainGame.getAlivePlayersLightSide().size() > 0) {
                     return new SithUseCase(this, CardOfUseCaseIsActive(SithUseCase.class), CardOfUseCaseIsInGameAndKilled(SithUseCase.class));
                 } else {
                     return new SkipUseCase(this, true, false);
                 }
-            case 7:
-                return new JediUseCase(this, CardOfUseCaseIsActive(JediUseCase.class), CardOfUseCaseIsInGameAndKilled(JediUseCase.class));
             case 8:
-                return new PeepingFinnUseCase(this, CardOfUseCaseIsActive(PeepingFinnUseCase.class), CardOfUseCaseIsInGameAndKilled(PeepingFinnUseCase.class));
+                return new JediUseCase(this, CardOfUseCaseIsActive(JediUseCase.class), CardOfUseCaseIsInGameAndKilled(JediUseCase.class));
             case 9:
-                return new ChewBaccaUseCase(this, CardOfUseCaseIsActive(ChewBaccaUseCase.class), CardOfUseCaseIsInGameAndKilled(ChewBaccaUseCase.class));
+                return new PeepingFinnUseCase(this, CardOfUseCaseIsActive(PeepingFinnUseCase.class), CardOfUseCaseIsInGameAndKilled(PeepingFinnUseCase.class));
             case 10:
+                return new ChewBaccaUseCase(this, CardOfUseCaseIsActive(ChewBaccaUseCase.class), CardOfUseCaseIsInGameAndKilled(ChewBaccaUseCase.class));
+            case 11:
                 return new BobaFettUseCase(this, CardOfUseCaseIsActive(BobaFettUseCase.class), CardOfUseCaseIsInGameAndKilled(BobaFettUseCase.class), mainGame.isRocketAlreadySelected());
             default:
                 return new SkipUseCase(this);
@@ -109,6 +115,15 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
                 uiListener.stackAndSpeak(activePlayer.getSithCard().getSoundResId());
             }
         }
+
+        List<ActivePlayer> switchRolesList = mainGame.getSwitchRolesList();
+        if (switchRolesList.size() > 0) {
+            for (ActivePlayer activePlayer : switchRolesList) {
+                if (!TextUtils.isEmpty(activePlayer.getTelephoneNumber())) {
+                    uiListener.sendSMS(activePlayer.getTelephoneNumber(), R.string.your_new_role, activePlayer.getSithCard().getName());
+                }
+            }
+        }
     }
 
     @Override
@@ -131,8 +146,8 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
     private <T extends UseCase> boolean CardOfUseCaseIsInGameAndKilled(final Class<T> useCaseClass) {
         List<ActivePlayer> activePlayers = new ArrayList<>();
 
-        for (ActivePlayer activePlayer: mainGame.getActivePlayers()){
-            if (MainGameUseCaseHelper.activePlayerCanExecuteUseCase(useCaseClass, activePlayer)){
+        for (ActivePlayer activePlayer : mainGame.getActivePlayers()) {
+            if (MainGameUseCaseHelper.activePlayerCanExecuteUseCase(useCaseClass, activePlayer)) {
                 activePlayers.add(activePlayer);
             }
         }
@@ -225,11 +240,11 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
         mainGame.setLovers(new Pair<>(lover1, lover2));
 
         if (!TextUtils.isEmpty(lover1.getTelephoneNumber())) {
-            uiListener.sendSMS(R.string.linked_by_BB8, lover1.getTelephoneNumber());
+            uiListener.sendSMS(lover1.getTelephoneNumber(), R.string.linked_by_BB8);
         }
 
         if (!TextUtils.isEmpty(lover2.getTelephoneNumber())) {
-            uiListener.sendSMS(R.string.linked_by_BB8, lover2.getTelephoneNumber());
+            uiListener.sendSMS(lover2.getTelephoneNumber(), R.string.linked_by_BB8);
         }
     }
 
@@ -292,8 +307,23 @@ public class MainGameFlowManager extends GameFlowManager<MainGameFlowCallBack> i
     }
 
     @Override
+    public void requestUserPlayersSelection(final UseCaseIds useCase, final int titleRes, final int minNumber, final int maxNumber) {
+        uiListener.requestUsersPlayerSelection(mainGame.getActivePlayers(), titleRes, minNumber, maxNumber);
+    }
+
+    @Override
     public void speak(final int soundResId, final int stringResId, final GameUseCase gameUseCase) {
         uiListener.speak(soundResId, stringResId);
+    }
+
+    @Override
+    public void switchRoles(final List<Long> players) {
+        mainGame.setSwitchRolesList(players);
+    }
+
+    @Override
+    public void playR2D2Music() {
+        uiListener.playMusic(SithMusicPlayer.MUSIC_TYPE_MAZ_KANATA);
     }
 
     @Override
